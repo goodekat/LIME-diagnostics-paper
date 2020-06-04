@@ -367,11 +367,11 @@ The plot on the left of \autoref{fig:concept-plot-good} shows the relationship b
 
 \subsection{Motivation for Diagnosing LIME}
 
-The concept of LIME is relatively simple: use an interpretable model to approximate a complex model in a local region. However, a practical implementation of LIME is not straightforward, and there is research is being done to improve the procedure \citep{laugel:2018}. The current implementations of LIME\footnote{https://github.com/thomasp85/lime} \footnote{https://github.com/goodekat/lime} offer various tuning parameters the user specifies when applying LIME (see Section \ref{background}) that affect the explainer model and ultimately, the explanation. Since the explainer model is an approximation of the complex model and not a direct interpretation, the explanations produced by an explainer model are subject to the quality of the approximation. Thus, in order to achieve accurate explanations, the tuning parameters selected need to be assessed. 
+The concept of LIME is relatively simple: use an interpretable model to approximate a complex model in a local region. However, a practical implementation of LIME is not straightforward, and there is research is being done to improve the procedure \citep{laugel:2018}. The current implementations of LIME\footnote{https://github.com/marcotcr/lime} \citep{pedersen:2020} offer various tuning parameters the user specifies when applying LIME (see Section \ref{background}) that affect the explainer model and ultimately, the explanation. Since the explainer model is an approximation of the complex model and not a direct interpretation, the explanations produced by an explainer model are subject to the quality of the approximation. Thus, in order to achieve accurate explanations, the tuning parameters selected need to be assessed. 
 
 We consider an example where the choice of exponent used to specify the weights is crucial to the quality of the explanation. The plots in Figure \ref{fig:concept-plot-bad} show the same data as \autoref{fig:concept-plot-good}, but the Gower distance metric exponent was decreased to \Sexpr{bad_gower_power} (the default exponent in the \emph{lime} R package). This causes the observations that are further away from the prediction of interest to be given larger weights than before. In \autoref{fig:concept-plot-good}, the explainer model captures the relationship between the black-box predictions in the immediate neighborhood of the prediction of interest. This cannot be said of the explainer model in \autoref{fig:concept-plot-bad}. In addition, the magnitude of the slope (\Sexpr{coefs_data %>% filter(case == "bad", feature == "Feature 2") %>% pull(slope) %>% round(3) %>% abs()}) associated with Feature 2 is larger than that of Feature 1 (\Sexpr{coefs_data %>% filter(case == "bad", feature == "Feature 1") %>% pull(slope) %>% round(3) %>% abs()}). Thus, this explainer model actually provides a misleading explanation that Feature 2 plays a more important role in predicting the observation of interest.
 
-Several sources in the literature discuss the performance of LIME. One of the biggest difficulties with LIME is determining how to specify a local region \citep{molnar:2019} \citet{laugel:2018}. This is due to an unclear definition of what a local region means and how to apply LIME to achieve an appropriate local region as demonstrated by \autoref{fig:concept-plot-bad}. \citet{alvarezmelis:2018} raise a concern pertaining to the robustness of explanations from LIME and other model explainers: they find that even small changes in predictor variables can lead to very different LIME explanations. Additionally, \citet{ribeiro:2016} acknowledge that if a linear models is used as the explainer, LIME relies on a linear approximation of the explainer model to the complex model and state ``if the underlying model is highly non-linear even in the locality of the prediction, there may not be a faithful explanation".
+Several sources in the literature discuss the performance of LIME. One of the biggest difficulties with LIME is determining how to specify a local region \citep{laugel:2018} \citep{molnar:2019}. This is due to an unclear definition of a "local region" and how to apply LIME to achieve an appropriate local region as demonstrated by \autoref{fig:concept-plot-bad}. \citet{alvarezmelis:2018} raise a concern pertaining to the robustness of explanations from LIME and other model explainers: they find that even small changes in predictor variables can lead to very different LIME explanations. Additionally, \citet{ribeiro:2016} acknowledge that if a linear models is used as the explainer, LIME relies on a linear approximation of the explainer model to the complex model and state ``if the underlying model is highly non-linear even in the locality of the prediction, there may not be a faithful explanation".
 
 As a result of the various ways LIME explanations can fail, it is important to assess LIME explanations. We suggest the use of visual diagnostics for assessment. In this paper, we lay out the set of claims about LIME made by \citet{ribeiro:2016} and propose four visualizations for the assessment of these claims: (1) \emph{explanation scatterplot}, (2) \emph{prediction comparison plot}, (3) \emph{feature heatmap}, (4) \emph{assessment metric plot}. While LIME has been implemented for image, tabular, and text data, we will only focus on tabular data. For additional simplicity, we will only discuss classification prediction models with a dichotomous response variable and continuous predictor variables. However, the proposed diagnostics may be extended to a wider range of situations.
 
@@ -381,7 +381,7 @@ The remainder of the paper is structured as follows. Section \ref{background} pr
 
 \section{Background on LIME} \label{background}
 
-LIME was introduced in 2016 by \citet{ribeiro:2016}. The original authors provide an implementation of LIME in a Python package\footnote{https://github.com/marcotcr/lime}. An adaption of the Python package in R is by Thomas Lin-Pedersen\footnote{https://github.com/thomasp85/lime}. In this paper, any details provided about the implementation of LIME are based on the R package. 
+LIME was introduced in 2016 by \citet{ribeiro:2016}. The original authors provide an implementation of LIME in a Python package\footnote{https://github.com/marcotcr/lime}. An adaption of the Python package in R is by Thomas Lin-Pedersen \citep{pedersen:2020}. In this paper, any details provided about the implementation of LIME are based on the R package. 
 
 As described by \citet{laugel:2018}, the general form of the LIME algorithm can be divided into three steps:
 
@@ -538,33 +538,9 @@ plot_grid(sine_plot_obs, sine_plot_pred,
           rel_widths = c(0.4825, 0.5175))
 
 @
-\caption{Plots of $x_2$ versus $x_1$ from the training (left) and testing (right) set of the \data \ introduced in Section \ref{procedure}. The true classification boundary is shown as the solid black line in both plots. The color of the training data points represents the value of the observed response variable ($y$). The color of the testing data points represents the random forest probability that an observation belongs to the category of blue ($\hat{y}$). The \Sexpr{dim(sine_data_test %>% filter(y != rfpred))[1]} cases that are misclassified by the random forest are identified by black circles. The prediction of interest to explain is indicated by a diamond.}
+\caption{Plots of $x_2$ versus $x_1$ from the training (left) and testing (right) sets of the \data \ introduced in Section \ref{diagnostics}. The true classification boundary is shown as the solid black line in both plots. The color of the training data points represents the value of the observed response variable ($y$). The color of the testing data points represents the random forest probability that an observation belongs to the category of blue ($\hat{y}$). The \Sexpr{dim(sine_data_test %>% filter(y != rfpred))[1]} cases that are misclassified by the random forest are identified by black circles. The prediction of interest to explain is indicated by a diamond.}
 \label{fig:sine-plot-data}
 \end{figure*}
-
-In this section, we introduce four visual diagnostic plots for the assessment of LIME. The plots focus on different levels of application of LIME (e.g. on explanation versus a set of explanations) to assess the LIME claims from different perspectives:
-
-\begin{enumerate}
-\item \emph{Explanation Scatterplot} (Section \ref{plot1}): Comparison of the explainer and complex models for an individual prediction of interest.
-\item \emph{Prediction Comparison Plot} (Section \ref{plot2}): Comparison of explainer and complex model predictions for a set of predictions.
-\item \emph{Feature Heatmap} (Section \ref{plot3}): Comparison of features selected by LIME across applications of LIME with different tuning parameters.k
-\item \emph{Assessment Metric Plot}: Comparison of performance metrics for LIME across applications of LIME with different tuning parameters. 
-\end{enumerate}
-
-\paragraph{The \data}
-
-To demonstrate the visualizations, we generate an example dataset that will be referred to as the \data. The \data \ contains \Sexpr{dim(sine_data)[1]} observations with three features and one response variable. The features, $x_1$, $x_2$, and $x_3$, are randomly sampled from Unif(\Sexpr{min}, \Sexpr{max}), Unif(\Sexpr{min}, \Sexpr{max}), and $\mbox{N}(0,1)$ distributions, respectively. A binary response variable $y$ is  created using a rotated sine curve. In particular, let $x'_1=x_1\cos(\theta)-x_2\sin(\theta)$ and $x'_2=x_1\sin(\theta)+x_2\cos(\theta)$ where $\theta=-0.9$. Then $y$ is defined as
-\begin{eqnarray}\label{eq:data}
-  y=\begin{cases}
-  \mbox{blue} & \mbox{ if } x'_2 > \sin\left(x'_1\right) \\
-  \mbox{red} & \mbox{ if } x'_2 \le \sin\left(x'_1\right) \ . %\nolabel
-  \end{cases}
-\end{eqnarray}
-Note that due to the creation of $y$ in this manner, $y$ is dependent on $x_1$ and $x_2$ and independent of $x_3$.
-
-The dataset is divided into a training set of \Sexpr{dim(sine_data_train)[1]} observations and a testing set of \Sexpr{dim(sine_data_test)[1]} observations. A random forest model is fit using the R package \emph{randomForest} (version \Sexpr{packageVersion("randomForest")}) \citep{liaw:2002} with the default settings. The model is applied to the test set to obtain predictions. \autoref{fig:sine-plot-data} shows scatterplots of $x_2$ versus $x_1$ from the training data (left) and the testing data (right). Both plots include the true classification boundary of the rotated sine function plotted as the solid black line. The training data are colored by the observed response variable ($y$), and the testing data are colored by the prediction probabilities from the random forest model ($\hat{y}$). The random forest model misclassifies \Sexpr{dim(sine_data_test %>% filter(y != rfpred))[1]} points on the classification boundary. These are identified by circles in \autoref{fig:sine-plot-data}. 
-
-For the presentation of the explanation scatterplot, we focus on the misclassified point with $(x_1, x_2, x_3)$ coordinates of (\Sexpr{round(sine_poi$x1, 2)}, \Sexpr{round(sine_poi$x2, 2)}, \Sexpr{round(sine_poi$x3, 2)}) indicated by a diamond in \autoref{fig:sine-plot-data}. For the introduction of the other three plots, we use all observations in the \data test data as points of interest.
 
 <<sine-lime>>=
 
@@ -611,11 +587,29 @@ sine_poi_lime_default <- sine_lime_default %>%
 
 @
 
-\kgc{This is where I left off with the editing:} We apply LIME to the \data \ using \emph{lime} with the default settings. The user is asked to specify the number of features shown in the explanations. Here, we set this value to two, because we expect that $x_1$ and $x_2$ will be the main drivers in the prediction. Note that the complexity of an explanation goes hand in hand with the number of features selected to be included in the explanation. Setting the number of features to a small number will make the explanation simpler but not necessarily more correct.
+In this section, we introduce four visual diagnostic plots for the assessment of LIME. The plots focus on different levels of application of LIME (e.g. on explanation versus a set of explanations) to assess the LIME claims from different perspectives:
 
-To demonstrate the proposed diagnostic plots, we applied six different implementations of LIME to the sine data to select the top two features associated with each of the random forest predictions in the testing dataset. This was done using six different sets of tuning parameters via \sout{our} R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid}. \kge{(In this paper, we use a forked version\footnote{https://github.com/goodekat/lime} of the development version of the R package \emph{lime} (\Sexpr{packageVersion("lime")}) \citep{pedersen:2020}. The forked version of \emph{lime} allows us to export internal values of the procedure not already exported by \emph{lime}.)} Quantile bins were used for five of the implementations, and the number of bins for these implementations was varied from 2 to 6. The sixth implementation of LIME used the kernel density estimates. The feature selection method and the computation of the weights were set to the default options in \emph{lime} of forward selection and Gower distance raised to an exponent of 1.
+\begin{enumerate}
+\item \emph{Explanation Scatterplot} (Section \ref{plot1}): Comparison of the explainer and complex models for an individual prediction of interest.
+\item \emph{Prediction Comparison Plot} (Section \ref{plot2}): Comparison of explainer and complex model predictions for a set of predictions.
+\item \emph{Feature Heatmap} (Section \ref{plot3}): Comparison of features selected by LIME across applications of LIME with different tuning parameters.k
+\item \emph{Assessment Metric Plot}: Comparison of performance metrics for LIME across applications of LIME with different tuning parameters. 
+\end{enumerate}
 
-\subsection{Explanation Scatterplots} \label{plot1}
+\paragraph{The \data}
+
+To demonstrate the visualizations, we generate an example dataset that will be referred to as the \data. The \data \ contains \Sexpr{dim(sine_data)[1]} observations with three features and one response variable. The features, $x_1$, $x_2$, and $x_3$, are randomly sampled from Unif(\Sexpr{min}, \Sexpr{max}), Unif(\Sexpr{min}, \Sexpr{max}), and $\mbox{N}(0,1)$ distributions, respectively. A binary response variable $y$ is  created using a rotated sine curve. In particular, let $x'_1=x_1\cos(\theta)-x_2\sin(\theta)$ and $x'_2=x_1\sin(\theta)+x_2\cos(\theta)$ where $\theta=-0.9$. Then $y$ is defined as
+\begin{eqnarray}\label{eq:data}
+  y=\begin{cases}
+  \mbox{blue} & \mbox{ if } x'_2 > \sin\left(x'_1\right) \\
+  \mbox{red} & \mbox{ if } x'_2 \le \sin\left(x'_1\right) \ . %\nolabel
+  \end{cases}
+\end{eqnarray}
+Note that due to the creation of $y$ in this manner, $y$ is dependent on $x_1$ and $x_2$ and independent of $x_3$.
+
+The dataset is divided into a training set of \Sexpr{dim(sine_data_train)[1]} observations and a testing set of \Sexpr{dim(sine_data_test)[1]} observations. A random forest model is fit using the R package \emph{randomForest} (version \Sexpr{packageVersion("randomForest")}) \citep{liaw:2002} with the default settings. The model is applied to the test set to obtain predictions. \autoref{fig:sine-plot-data} shows scatterplots of $x_2$ versus $x_1$ from the training data (left) and the testing data (right). Both plots include the true classification boundary of the rotated sine function plotted as the solid black line. The training data are colored by the observed response variable ($y$), and the testing data are colored by the prediction probabilities from the random forest model ($\hat{y}$). The random forest model misclassifies \Sexpr{dim(sine_data_test %>% filter(y != rfpred))[1]} points on the classification boundary. These are identified by circles in \autoref{fig:sine-plot-data}. 
+
+For the presentation of the explanation scatterplot, we focus on the misclassified point with $(x_1, x_2, x_3)$ coordinates of (\Sexpr{round(sine_poi$x1, 2)}, \Sexpr{round(sine_poi$x2, 2)}, \Sexpr{round(sine_poi$x3, 2)}) indicated by a diamond in \autoref{fig:sine-plot-data}. For the introduction of the other three plots, we use all observations in the \data test data as points of interest.
 
 <<warning = FALSE>>=
 # Obtain the simulated data associated with the poi
@@ -682,7 +676,7 @@ sine_poi_region_perms <- sine_poi_perms %>%
          x1 < sine_poi_bounds %>% filter(feature == "x1") %>% pull(upper))
 @
 
-\begin{figure*}[!htp]
+\begin{figure*}[!tp]
 <<sine-plot1, out.width = '\\textwidth', fig.width = 10, fig.height = 4, warning = FALSE>>=
 
 sine_poi_exp <- sine_poi_lime_default %>% plot_features()
@@ -746,6 +740,10 @@ plot_grid(sine_poi_exp, plot1, align = "h")
 \caption{\kgc{Edit...} (right) The explanation plot depicts the estimated parameters from the explainer model. The lengths of the bars represent the absolute values of the coefficients, and the colors of the bars represent the coefficient values. Since the magnitude of the coefficient associated with $x_2$ is longer than that of $x_1$, the explanation suggests that $x_2$ has more of an effect on the random forest prediction of interest than $x_1$ does. The explainer model comparison plot shows the simulated data colored by the random forest probabilities and sized by the assigned LIME weights. The prediction of interest is shown as the diamond shaped point. The quantile bins associated with $x_1$ and $x_2$ are depicted by the solid lines. The color of the line indicates whether the explainer model supports a prediction of 'blue' (blue line) or supports a prediction of 'red' (red lines). This figure shows that the quantile bins are not flexible enough to capture the relationship between the random forest predictions and the $x_1$ and $x_2$ values.}
 \label{fig:sine-plot-step3ab}
 \end{figure*}
+
+We perform six applications of LIME with different tuning parameters to the random forest predictions from all observations in the sine data test set. To do this, we use the R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid} (\Sexpr{packageVersion("limeaid")}), which applies a forked version\footnote{https://github.com/goodekat/lime} of the development version of the R package \emph{lime} (\Sexpr{packageVersion("lime")}) \citep{pedersen:2020}. The forked version allows us to export internal values from \emph{lime}. The tuning parameters are as follows. For each application, we specify that LIME returns the top two features in the explanation, because we expect $x_1$ and $x_2$ to be the important features. Note that the complexity of an explanation goes hand in hand with the number of features selected to be included in the explanation. Setting the number of features to a small number will make the explanation simpler but not necessarily more correct. A quantile bin based simulation method is used for five of the implementations with the number of bins varying from 2 to 6 by application. The sixth implementation of LIME uses a kernel density simulation method. The default methods for feature selection (forward selection) and the computation of the weights (Gower distance raised to an exponent of 1) are used for all applications.
+
+\subsection{Explanation Scatterplots} \label{plot1}
 
 \autoref{fig:sine-plot-poi} shows the visualization of the explanation produced by \emph{lime} for the prediction of interest. The figure shows that the random forest returned a probability of \Sexpr{sine_poi_lime_default$label_prob[1]} that the observation of interest belongs to category blue {(denoted as the ``label" in the figure). The colored bars indicate the features chosen by LIME and whether they support or contradict a random forest classification of blue. \kgc{Add explanation for bins in the plot.}
 
@@ -953,7 +951,7 @@ plot_grid(heatmap_plot_good, heatmap_plot_bad, heatmap_leg,
 \end{figure}
 
 \begin{figure}[!t]
-<<sine-feature-heatmap, out.width = '0.5\\textwidth', fig.width = 5, fig.height = 5.5>>=
+<<sine-feature-heatmap, out.width = '0.5\\textwidth', fig.width = 4, fig.height = 4>>=
 feature_heatmap(sine_lime_explain$explain,
                 order_method = "PCA") +
   theme_bw(base_family = "Times", base_size = 10) +
