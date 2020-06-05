@@ -84,7 +84,7 @@ In the field of statistics, there are two main uses for models: inference and pr
 
 Throughout this paper, we make a distinction between interpretability and explanability of models. We define {\it interpretability} as the ability to directly use model parameters to understand the relationships in the data captured by the model: e.g., a linear model coefficient associated with a predictor variable indicates the amount the response variable changes based on a change in the predictor variable. In contrast, {\it explanability} is defined as the ability to use the model in an indirect manner to understand the relationships in the data captured by the model: e.g., partial dependence plots depict the marginal relationship between model predictions and predictor variables \citep{friedman:2001}.
 
-Numerous methods have been proposed to provide explanations for black-box model predictions \citep{guidotti:2018, mohseni:2018, molnar:2019}. Some are specific to one type of model (e.g. \citep{bau:2017} and \citep{hara:2016}), and others are model-agnostic (e.g. \citep{greenwell:2018} and \citep{strumbelj:2014}). In this paper, we focus on the model-agnostic method of LIME \citep{ribeiro:2016}.
+Numerous methods have been proposed to provide explanations for black-box model predictions \citep{gilpin:2018, guidotti:2018, ming:2017, mohseni:2018, molnar:2019}. Some are specific to one type of model (e.g. \citep{simonyan:2013} and \citep{welling:2016}), and others are model-agnostic (e.g. \citep{fisher:2018} and \citep{strumbelj:2014}). In this paper, we focus on the model-agnostic method of LIME \citep{ribeiro:2016}.
 
 <<concept-data>>=
 # Simulate example data
@@ -209,7 +209,7 @@ coefs_data <- data.frame(case = c("good", "bad"),
 
 @
 
-\begin{figure*}[!htbp]
+\begin{figure*}[!thp]
 <<concept-plot-good, out.width = '\\textwidth', fig.width = 7.95, fig.height = 3.75, warning = FALSE>>=
 
 # Plot of good explainer model
@@ -460,7 +460,7 @@ sine_poi <- sine_data_test %>% filter(y != rfpred, x1 > 0, x1 < 5, x2 > 5)
 
 @
 
-\begin{figure*}[!t]
+\begin{figure*}[!thp]
 \centering
 <<sine-plot-data, out.width = '\\textwidth', fig.width = 8, fig.height = 3.1>>=
 
@@ -576,10 +576,10 @@ if (!file.exists("../data/sine_lime_explain.rds")) {
 
 <<sine-lime-default>>=
 
-# Extract the explanations from the default lime implementation
+# Extract the explanations from the default lime application
 sine_lime_default <- sine_lime_explain$explain %>% filter(nbins == 4)
 
-# Extract the explanations from the default lime implementation
+# Extract the explanations from the default lime application
 # for the prediction of interest only
 sine_poi_lime_default <- sine_lime_default %>%
   filter(case == sine_poi %>% pull(case)) %>%
@@ -608,7 +608,11 @@ Note that due to the creation of $y$ in this manner, $y$ is dependent on $x_1$ a
 
 The dataset is divided into a training set of \Sexpr{dim(sine_data_train)[1]} observations and a testing set of \Sexpr{dim(sine_data_test)[1]} observations. A random forest model is fit using the R package \emph{randomForest} (version \Sexpr{packageVersion("randomForest")}) \citep{liaw:2002} with the default settings. The model is applied to the test set to obtain predictions. \autoref{fig:sine-plot-data} shows scatterplots of $x_2$ versus $x_1$ from the training data (left) and the testing data (right). Both plots include the true classification boundary of the rotated sine function plotted as the solid black line. The training data are colored by the observed response variable ($y$), and the testing data are colored by the prediction probabilities from the random forest model ($\hat{y}$). The random forest model misclassifies \Sexpr{dim(sine_data_test %>% filter(y != rfpred))[1]} points on the classification boundary. These are identified by circles in \autoref{fig:sine-plot-data}. 
 
-For the presentation of the explanation scatterplot, we focus on the misclassified point with $(x_1, x_2, x_3)$ coordinates of (\Sexpr{round(sine_poi$x1, 2)}, \Sexpr{round(sine_poi$x2, 2)}, \Sexpr{round(sine_poi$x3, 2)}) indicated by a diamond in \autoref{fig:sine-plot-data}. For the introduction of the other three plots, we use all observations in the \data test data as points of interest.
+For the presentation of the explanation scatterplot, we focus on the misclassified point with $(x_1, x_2, x_3)$ coordinates of (\Sexpr{round(sine_poi$x1, 2)}, \Sexpr{round(sine_poi$x2, 2)}, \Sexpr{round(sine_poi$x3, 2)}) indicated by a diamond in \autoref{fig:sine-plot-data}. Misclassified points are often of interest to explain since they may provide information about ways to improve the model. For the introduction of the other three plots, we use all observations in the \data test data as points of interest.
+
+We perform six applications of LIME with different tuning parameters to the random forest predictions from all observations in the sine data test set. To do this, we use the R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid} (\Sexpr{packageVersion("limeaid")}), which applies a forked version\footnote{https://github.com/goodekat/lime} of the development version of the R package \emph{lime} (\Sexpr{packageVersion("lime")}) \citep{pedersen:2020}. The forked version allows us to export internal values from \emph{lime}. The tuning parameters are as follows. For each application, we specify that LIME returns the top two features in the explanation, because we expect $x_1$ and $x_2$ to be the important features. Note that the complexity of an explanation goes hand in hand with the number of features selected to be included in the explanation. Setting the number of features to a small number will make the explanation simpler but not necessarily more correct. A quantile bin based simulation method is used for five of the implementations with the number of bins varying from 2 to 6 by application. The sixth implementation of LIME uses a kernel density simulation method. The default methods for feature selection (forward selection) and the computation of the weights (Gower distance raised to an exponent of 1) are used for all applications.
+
+\subsection{Explanation Scatterplots} \label{exp-scatter}
 
 <<warning = FALSE>>=
 # Obtain the simulated data associated with the poi
@@ -675,7 +679,7 @@ sine_poi_region_perms <- sine_poi_perms %>%
          x1 < sine_poi_bounds %>% filter(feature == "x1") %>% pull(upper))
 @
 
-\begin{figure*}[!tp]
+\begin{figure*}[!thp]
 <<sine-exp-scatter, out.width = '\\textwidth', fig.width = 10, fig.height = 4, warning = FALSE>>=
 
 sine_poi_exp <- sine_poi_lime_default %>% plot_features()
@@ -724,48 +728,42 @@ exp_scatter <- ggplot() +
                         midpoint = 0.5,
                         limits = c(0, 1)) +
   theme_bw(base_family = "Times", base_size = 10) +
-  labs(x = TeX("x'_1"),
-       y = TeX("x'_2"),
+  labs(x = TeX("x_1"),
+       y = TeX("x_2"),
        size = "Weight",
        shape = "",
        fill = "Random \nForest \nProbability \nfor 'blue'",
        color = "Random \nForest \nProbability \nfor 'blue'",
-       title = "Complex and Explainer Model Comparison Plot") + 
+       title = "Explanation Scatterplot") + 
   guides(shape = guide_legend(order = 1)) + 
   theme(aspect.ratio = 1)
 
 plot_grid(sine_poi_exp, exp_scatter, align = "h")
 @
-\caption{(left) Visualization from the \emph{lime} R package of the LIME explanation for the \data individual prediction of interest. The bars represent the explainer model coefficients. (right) \emph{Explanation Scatterplot} The points represent the simulated data colored by the random forest probabilities and sized by the assigned LIME weights. The prediction of interest is shown as the diamond shaped point. The explainer model indicator variables associated with $x_1$ and $x_2$ (quantile bins containing the prediction of interest) are depicted by the solid lines. The color of the lines indicates the explainer model explanation for whether the corresponding feature value supports a prediction of 'blue' (blue lines) or supports a prediction of 'red' (red lines). This figure shows that the quantile bins are not flexible enough to capture the relationship between the random forest predictions and the $x_1$ and $x_2$ values.}
+\caption{(left) Visualization from the \emph{lime} R package of the LIME explanation for the \data \ prediction of interest. The bars represent the explainer model coefficients. (right) \emph{Explanation Scatterplot}. The points represent the simulated data colored by the random forest probabilities and sized by the assigned LIME weights. The prediction of interest is shown as the diamond shaped point. The explainer model indicator variables associated with $x_1$ and $x_2$ (quantile bins containing the prediction of interest) are depicted by the solid lines. The line colors represent the explainer model coefficient signs and indicate whether the feature supports a prediction of `blue' (blue lines) or supports a prediction of `red' (red lines). This figure shows that the quantile bins are not flexible enough to capture the relationship between the random forest predictions and the $x_1$ and $x_2$ values.}
 \label{fig:sine-exp-scatter}
 \end{figure*}
 
-We perform six applications of LIME with different tuning parameters to the random forest predictions from all observations in the sine data test set. To do this, we use the R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid} (\Sexpr{packageVersion("limeaid")}), which applies a forked version\footnote{https://github.com/goodekat/lime} of the development version of the R package \emph{lime} (\Sexpr{packageVersion("lime")}) \citep{pedersen:2020}. The forked version allows us to export internal values from \emph{lime}. The tuning parameters are as follows. For each application, we specify that LIME returns the top two features in the explanation, because we expect $x_1$ and $x_2$ to be the important features. Note that the complexity of an explanation goes hand in hand with the number of features selected to be included in the explanation. Setting the number of features to a small number will make the explanation simpler but not necessarily more correct. A quantile bin based simulation method is used for five of the implementations with the number of bins varying from 2 to 6 by application. The sixth implementation of LIME uses a kernel density simulation method. The default methods for feature selection (forward selection) and the computation of the weights (Gower distance raised to an exponent of 1) are used for all applications.
+The \emph{explanation scatterplot} is a visual diagnostic for assessing the LIME claims of locality and fidelity for an individual explanation by juxtaposing the complex and explainer models in one plot. The format of an explanation scatterplot depends on the LIME simulation method. We introduce the explanation scatterplot here under the \emph{lime} R package default method in which the data are simulated uniformly from four quantile bins. In this scenario, LIME converts continuous predictor variables to indicator variables identifying whether the variable value falls in the same quantile bin as the prediction of interest or not. The indicator variables are used as the explainer model features. The explanation scatterplot achieves a juxtaposition of the complex and explainer models by plotting the LIME simulated data for two features in an explanation colored by the complex predictions overlaid by lines representing boundaries of the indicator variables used to fit the explainer model. The size of the points represents the weight assigned by LIME, and the color of the lines denote whether LIME indicates that a feature supports or contradicts a class prediction. Appendix \ref{exp-scatter_plus} addresses the explanation scatterplot formats in other LIME simulation scenarios.
 
-\subsection{Explanation Scatterplots} \label{exp-scatter}
+To demonstrate an explanation scatterplot, we focus on the misclassified point indicated in Figure \ref{fig:sine-plot-data} by the diamond as the prediction of interest. First, consider the left plot in Figure \ref{fig:sine-exp-scatter}, which shows the \emph{lime} R package visualization of the explanation for the prediction of interest. The figure shows that the random forest returned a probability of \Sexpr{round(sine_poi_lime_default$label_prob[1], 2)} that the observation of interest belongs to category blue {(denoted as the ``label" in the figure).The lengths of the bars represent the explainer model coefficients associated with the indicator variables chosen by LIME as important. The color of the bar denotes the sign of the coefficient and whether the feature supports or contradicts a random forest classification of `blue'. The "explanation fit" value is the deviance ratio from the R package \emph{glmnet} \citep{simon:2011} for a ridge regression model. In other words, this is the $R^2$ value associated with the explainer model. In this case, it is \Sexpr{round(sine_poi_lime_default$model_r2[1], 2)} suggesting that the explainer model is not a good linear fit. However, it is commonly accepted that $R^2$ has limitations for accessing the quality of fit of a model \citep{sapra:2014}, and it should not be the only metric used for assessment of a model.
 
-The \emph{explanation scatterplot} is a visual diagnostic for assessing the LIME claims for an individual explanation by juxtaposing the complex and explainer models in one plot. The format of an explanation scatterplot depends on the LIME simulation method. We introduce the explanation scatterplot here under the default method in the \emph{lime} R package in which the data are simulated uniformly from four quantile bins. In this scenario, LIME converts continuous predictor variables to indicator variables identifying whether the variable value falls in the same quantile bin as the prediction of interest or not, and the indicator variables are used as the explainer model features. The explanation scatterplot achieves a juxtaposition of the complex and explainer models by plotting the LIME simulated data colored by the complex predictions overlaid by lines representing boundaries of the indicator variables used to fit the explainer model. The size of the points represents the weight assigned by LIME, and the color of the lines denote whether LIME indicates that a feature supports or contradicts a class prediction. A scatterplot is created for all pairwise combinations of features included in the LIME explanation. Appendix \ref{exp-scatter_plus} addresses the explanation scatterplot formats in other LIME simulation scenarios.
+The explanation for the prediction of interest depicted in Figure \ref{fig:sine-exp-scatter} can be interpreted as follows. A random forest classification of blue is supported by the prediction of interest having a value of $x_2$ that is greater than \Sexpr{str_split(sine_poi_lime_default$feature_desc[[1]], pattern = " ")[[1]][1]}, but the prediction of interest having a value of $x_1$ that is greater than \Sexpr{str_split(sine_poi_lime_default$feature_desc[[2]], pattern = " ")[[1]][1]} and less than or equal to \Sexpr{str_split(sine_poi_lime_default$feature_desc[[2]], pattern = " ")[[1]][5]} provides support against a classification of blue. Since the weight associated with $x_2$ has a larger magnitude than the weight associated with $x_1$, LIME explains that the $x_1$ and $x_2$ locations of the prediction of interest provide more support for a random forest classification of blue over red. This explanation agrees with the random forest probability of \Sexpr{sine_poi_lime_default$label_prob[1]} for blue. Note that both models classify the observation incorrectly. Based on this plot alone, it is not possible to make an informed assessment of the explanation. 
 
-To demonstrate an explanation scatterplot, we focus on the misclassified point indicated in Figure \ref{fig:sine-plot-data} by the diamond as the prediction of interest. The left plot in Figure \ref{fig:sine-exp-scatter} shows the visualization of the explanation produced by \emph{lime} for the prediction of interest. The figure shows that the random forest returned a probability of \Sexpr{sine_poi_lime_default$label_prob[1]} that the observation of interest belongs to category blue {(denoted as the ``label" in the figure). The colored bars indicate the features chosen by LIME and whether they support or contradict a random forest classification of blue. Note that the features are represented as regions in the figure. These are the indicator variable regions created by LIME. 
+To assess the explanation, we turn to an explanation scatterplot shown as the right plot in Figure \ref{fig:sine-exp-scatter}. The points are the simulated values of $x_2$ versus $x_1$ colored by the random forest predictions and sized by the proximity weight used to fit the ridge regression explainer model. The explainer model is represented by the solid horizontal and vertical lines identifying the boundaries of the quantiles that contain the prediction of interest. The color of the lines indicate whether the explainer model coefficient is positive (blue) or negative (red). Thus, the $x_2$ coefficient is positive, so the $x_2$ value of the prediction of interest supports a random forest prediction of `blue', and the $x_1$ coefficient is negative, so the $x_1$ value of the prediction of interest contradicts a random forest prediction of `blue'. The prediction of interest is represented by the diamond shaped point.
 
-The explanation for the prediction of interest depicted in Figure \ref{fig:sine-exp-scatter} can be interpreted as follows. A random forest classification of blue is supported by the prediction of interest having a value of $x_2$ that is greater than \Sexpr{str_split(sine_poi_lime_default$feature_desc[[1]], pattern = " ")[[1]][1]}, but the prediction of interest having a value of $x_1$ that is greater than \Sexpr{str_split(sine_poi_lime_default$feature_desc[[2]], pattern = " ")[[1]][1]} and less than or equal to \Sexpr{str_split(sine_poi_lime_default$feature_desc[[2]], pattern = " ")[[1]][5]} provides support against a classification of blue. Since the weight associated with $x_2$ has a larger magnitude than the weight associated with $x_1$, LIME explains that the $x_1$ and $x_2$ locations of the prediction of interest provide more support for a random forest classification of blue over red. This explanation agrees with the random forest probability of \Sexpr{sine_poi_lime_default$label_prob[1]} for blue, even though both classify the observation incorrectly.
+By juxtaposing the random forest predictions and the explainer model boundaries, we are able to assess the faithfulness and localness of the explainer model. First consider the claim of localness. The weights remain relatively high  outside of the intersection of the two quantile bins suggesting that the LIME explanation is highly influenced by points outside of the bin containing the prediction of interest. While it is still difficult to say whether or not the claim of localness has been violated, it is possible to say that the weights assigned to the simulated data do not agree with the local region assigned by the intersection of the quantile bins. 
 
-\autoref{fig:sine-exp-scatter} also includes an "explanation fit" value. This value corresponds to the deviance ratio from the R package \emph{glmnet} \citep{simon:2011} for a ridge regression model, or in other words, this is the $R^2$ value associated with the explainer model. In this case, it is \Sexpr{round(sine_poi_lime_default$model_r2[1], 2)} suggesting that the explainer model is not a good linear fit. However, it is commonly accepted that $R^2$ has limitations for accessing the quality of fit of a model \citep{sapra:2014}, and it should not be the only metric used for assessment of a model. Based on this metric or this plot, it is not yet possible to make an informed assessment of the trustworthiness of the explanation.
+Now, consider the claim of faithfulness. Within the intersection of the $x_1$ and $x_2$ quantile bins, there are more random forest probabilities above 0.5. This indicates why the magnitude of the coefficient associated with $x_2$ is larger than that of $x_1$. However, the pattern of the random forest predictions in this plot suggest that better explanations for this prediction exist. One example of a better explanation is to say that the prediction of interest received a random forest prediction greater than 0.5 since the observation of interest falls in the region where $x_1$ is less than 2.5 and $x_2$ is greater 4.5. A more localized explanation is to say that the region around the prediction of interest shows that observations with $-0.3 < x_1 <= 2.5$ and $4.8 < x_2 <= 8.75$ are all assigned probabilities greater than 0.5. The procedure implemented by LIME is not flexible enough to capture either of these explanations.
 
-The plot on the right of Figure \ref{fig:sine-exp-scatter} is the complex and explainer model comparison plot for the prediction of interest from the \data. This figure shows the relationship between the random forest model and the LIME explainer model. The random forest model is represented by the simulated values of $x'_2$ versus $x'_1$ colored by the random forest predictions. The explainer model is represented by the solid horizontal and vertical line identify the boundaries of the quantiles that contain the prediction of interest. The color of the lines represents whether the coefficient of the corresponding indicator variable in the explainer model supports a random forest prediction of 'blue' (blue lines) or not (red lines). Additionally, the size of the simulated data points represents the proximity weight used to fit the ridge regression explainer model. The prediction of interest is represented by the diamond shaped point.
+The explanation scatterplot shows issues with a definition of locality and an oversimplification of the random forest model. LIME does provide an explanation for the prediction of interest, which makes sense based on the quantile bins used. However, the explanation scatterplot identifies that better explanations for the prediction of interest exist. It is difficult to assess linearity from an explanation scatterplot, but a residual plot of the explainer model could be used to check the linearity claim. See Appendix \ref{residual-plot} for the residual plot associated with the explanation considered in Figure \ref{fig:sine-exp-scatter} and shows a violation of the linearity claim.
 
-By juxtaposing the random forest predictions and the explainer model boundaries, we are able to assess the faithfulness and localness of the explainer model. First consider the claim of localness. The weights remain relatively high  outside of the intersection of the two quantile bins suggesting that the LIME explanation is highly influenced by points outside of the bin containing the prediction of interest. While it is still difficult to say whether or not the claim of localness has been violated, it is possible to say that the weights assigned to the simulated data do not agree with the local region assigned by the intersection of the quantile bins. Next, let us consider the claim of faithfulness. 
-
-Within the intersection of the $x'_1$ and $x'_2$ quantile bins, there appears to be more random forest probabilities above 0.5. This indicates why the magnitude of the coefficient associated with $x_2$ is larger than that of $x_1$. However, the pattern of the random forest predictions in this plot suggest that a better explanations for this prediction exist. One example of a better explanation would be to say that the prediction of interest received a random forest prediction greater than 0.5 since the observation of interest falls in the region where $x_1$ is less than 2.5 and $x_2$ is greater 4.5. Another more localized explanation would be to say that  the region around the prediction of interest shows that observations with $-0.3 < x_1 <= 2.5$ and $4.8 < x_2 <= 8.75$ are all assigned probabilities greater than 0.5. The procedure implemented by LIME is not flexible enough to capture either of these explanations.
-
-The explanation scatterplot shows issues with a definition of locality and an oversimplification of the random forest model. LIME does provide an explanation for the prediction of interest, which makes sense based on the quantile bins used. However, the visualization of the complex and explainer model comparison plot solidifies the understanding that better explanations for the prediction of interest exist.
-
-The \data \ explanation only includes two features. In situations were more than two features are included in a LIME explanation, the explanation scatterplots can be extended to a generalized scatterplot matrix \kgc{(reference)} that includes all pairwise combinations of features. Generalized scatterplot matrices (and scatterplot matrices in general) fail to provide helpful information when the number of features becomes large \kgc{(reference)}. It is common in machine learning prediction problems for there to be a large number of features, and therefore, a generalized scatterplot matrix of explanation scatterplots would be ineffective. However, in the application of LIME, the user selects the number of features to return in the explanation (as previously mentioned). \citet{pedersen:2020} encourages users to select less than 10 features to include in the explanation \kgc{(need to check how to cite vignettes: https://cran.r-project.org/web/packages/lime/vignettes/Understanding\_lime.html)}. As a result, specifying a small number of features to include a LIME explanation leads to the feasibility of using generalized scatterplot matrices of explanation scatterplots to assess individual LIME explanations.
+The \data \ explanation only includes two features. In situations were more than two features are included in a LIME explanation, the explanation scatterplots can be extended to a generalized scatterplot matrix \kgc{(reference)} that includes all pairwise combinations of features. Generalized scatterplot matrices (and scatterplot matrices in general) fail to provide helpful information when the number of features becomes large \kgc{(reference)}. It is common for machine learning models to have a large number of features, and therefore, a generalized scatterplot matrix of explanation scatterplots for all features would be ineffective. However, in the application of LIME, the user selects the number of features to return in the explanation (as previously mentioned). \citet{pedersen:2020} encourage users to select less than 10 features to include in the explanation\footnote{https://cran.r-project.org/web/packages/lime/vignettes/Understanding\_lime.html}. As a result, specifying a small number of features to include in a LIME explanation makes it feasible to use generalized scatterplot matrices of explanation scatterplots.
 
 \subsection{Feature Heatmap} \label{feat-heat}
 
-\begin{figure}[!b]
-<<concept-heatmap, out.width = '0.5\\textwidth', fig.width = 6, fig.height = 3>>=
+\begin{figure}[!thp]
+<<concept-feat-heat, out.width = '0.48\\textwidth', fig.width = 6, fig.height = 3>>=
 # Specify the number of cases and LIME input options
 ncases = 10
 ninputs = 5
@@ -795,9 +793,10 @@ heatmap_plot_good <- ggplot(data = heatmap_data_good,
                                           fill = feature,
                                           color = feature)) +
   geom_tile() +
-  labs(x = "Implementation Method",
+  labs(x = "Tuning Parameter",
        y = "Case",
        fill = "Feature",
+       color = "Feature",
        title = "Situation 1: \nConsistent Explanations") +
   theme_bw(base_family = "Times", base_size = 12) +
   scale_fill_grey() +
@@ -820,9 +819,10 @@ heatmap_plot_bad <- ggplot(data = heatmap_data_bad,
                                           fill = feature,
                                           color = feature)) +
   geom_tile() +
-  labs(x = "Implementation Method",
+  labs(x = "Tuning Parameter",
        y = "Case",
        fill = "Feature",
+       color = "Feature",
        title = "Situation 2: \nInconsistent Explanations") +
   theme_bw(base_family = "Times", base_size = 12) +
   scale_fill_grey() + 
@@ -837,12 +837,12 @@ plot_grid(heatmap_plot_good, heatmap_plot_bad, heatmap_leg,
           rel_widths = c(0.45, 0.45, 0.1))
 
 @
-\caption{Two hypothetical examples of feature heatmaps showing the top feature chosen for 10 cases across 5 different implementations of LIME (sets of tuning parameters). The color of the cell indicates the feature chosen by LIME. The plots represent two possible situations that may arise when applying LIME to a set of predictions.}
-\label{fig:concept-heatmap}
-\end{figure}
+\caption{Hypothetical examples of feature heatmaps in two possible situations. The heatmaps show the top feature chosen for 10 cases across 5 different sets of LIME tuning parameters. The color of the cell indicates the feature chosen by LIME.}
+\label{fig:concept-feat-heat}
 
-\begin{figure}[!t]
-<<sine-feat-heat, out.width = '0.5\\textwidth', fig.width = 4, fig.height = 4>>=
+\vspace*{\floatsep}
+
+<<sine-feat-heat, out.width = '0.45\\textwidth', fig.width = 4, fig.height = 4>>=
 feature_heatmap(sine_lime_explain$explain,
                 order_method = "PCA") +
   theme_bw(base_family = "Times", base_size = 10) +
@@ -851,24 +851,22 @@ feature_heatmap(sine_lime_explain$explain,
         axis.ticks.y = element_blank()) +
   labs(y = "Case")
 @
-\caption{Feature heatmap of the various LIME implementations applied to the \data. The cases from the test set are plotted on the y-axis, and the implementation methods are included on the x-axis. The colors of the tiles indicate the feature selected by LIME for the corresponding case and implementation method. The top faceted row includes the first features selected by LIME, and the bottom faceted row includes the second features selected by LIME. The faceted columns separate the kernel density implementation method from the quantile bin implementations. The vertical striping seen in the plot indicates that LIME is not consistent in selecting features across implementation methods.}
+\caption{\emph{Feature Heatmap}. An example feature heatmap of the explanations from the applications of LIME with different tuning parameters to the \data. The cases from the test set are plotted on the y-axis, and the tuning parameters (simulation methods in this example) are included on the x-axis. The colors of the tiles indicate the feature selected by LIME for the corresponding case and tuning parameter. The top facet includes the first features selected by LIME, and the second most important features are included in the bottom facet. The column facets separate the kernel density method from the quantile bin methods. The vertical striping seen in the plot indicates that the LIME explanations are not consistent across tuning parameters.}
 \label{fig:sine-feat-heat}
 \end{figure}
 
-Explanations produced by LIME are likely to be affected by the choice of tuning parameters. An example of this was shown by Figures \ref{fig:concept-plot-good} and \ref{fig:concept-plot-bad} where the method used to weight the observations influenced the explanation. As of the time of writing this manuscript, there are no recommendations or procedures provided for how to determine which method to use besides for the default settings in \emph{lime} \kgc{(confirm this)}. In order to compare the explanations produced by LIME using different tuning parameters, we view an overview of all the explanations in the \emph{feature heatmap} visual diagnostic plot. 
+Explanations produced by LIME are likely to be affected by the choice of tuning parameters. An example of this was shown by Figures \ref{fig:concept-plot-good} and \ref{fig:concept-plot-bad} where the method used to weight the observations influenced the explanation. As of the time of writing this manuscript, we have encountered no recommendations for how to determine which method to use besides for the default settings in \emph{lime} \kgc{(confirm this)}. In order to compare the explanations produced by LIME using different tuning parameters, we visualize an overview the explanations in the \emph{feature heatmap} diagnostic plot. 
 
-The feature heatmap uses colors to identify the features selected by LIME for sets of predictions and tuning parameters faceted by the position of importance assigned by LIME. That is, for LIME applied for $t$ sets of tuning parameters to $n$ cases to select the $f$ top features, create $f$ heatmaps (one for each of the positions of importance) with the cases on the y-axis, the tuning parameters on the x-axis, and the cells colored by the feature chosen for the corresponding case and tuning parameter. This plot is used assess the locality of the explanations and to compare results from different input options.
+The feature heatmap uses colors to identify the features selected by LIME across tuning parameters for sets of explanations (referred to as cases here) faceted by the position of feature importance assigned by LIME. That is, for LIME applied with $t$ sets of tuning parameters to $n$ cases to select the $f$ top features, create $f$ heatmaps (one for each of the positions of importance determined by the magnitude of the explainer model coefficients) with the cases on the y-axis, the tuning parameters on the x-axis, and the cells colored by the feature chosen for the corresponding case and tuning parameter. This plot is used assess the locality of the explanations and to compare results from different input options.
 
-Two hypothetical examples of feature heatmaps are included in \autoref{fig:concept-heatmap}. The plots were created with the assumption that LIME was applied to select the top feature out of $p=8$ features for $n=10$ cases with $t=5$ sets of tuning parameters. If LIME produces local explanations, the top features selected by LIME will vary for predictions located in different regions of the feature space (unless a feature or several features are the deterministic features throughout the entire feature space). Additionally, if the tuning parameters did not affect the feature selected by LIME, the selected feature would be the same across all tuning parameters for a prediction.
+Two hypothetical examples of feature heatmaps are included in \autoref{fig:concept-feat-heat}. The plots were created with the assumption that LIME was applied to select the top feature out of $p=8$ features for $n=10$ cases with $t=5$ sets of tuning parameters. Situation 1 shows an example where the features selected are consistent across tuning parameters within a case but vary across cases within a tuning parameter. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 shows an example where the features selected vary across tuning parameters within a case but are consistent across cases within a tuning parameter. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations are not local because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
 
-The plots in \autoref{fig:concept-heatmap} depict two different situations that may arise when applying LIME. Situation 1 shows an example where the features selected across implementation methods within a case are consistent, and the features selected by vary across cases. This is the ideal situation, because regardless which implementation method is used, the LIME explanations do not vary, and the explanations appear to be local since the features vary between cases. Situation 2 shows an example where the features selected across implementation methods within a case vary, but the features selected within an implementation method across cases are the same. This situation \sout{is not ideal, because it} indicates that the features selected by LIME are dependent on the implementation method used, and the explanations are not local because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
-
-\autoref{fig:sine-feat-heat} shows the feature heatmap for the LIME implementations applied to the \data. The top row of the plot contains the features selected as the most important by LIME, and the bottom row contains the second most important feature selected by LIME. For the quantile bin implementations, the original features prior to the interpretability transformation are plotted  since it is obvious that different features would be selected when the sizes of the bins change from one implementation to the next. This figure shows a clear difference in the explanations produced by LIME for the kernel density and two quantile bin methods and the other quantile bin methods. For both the kernel density and two quantile bin implementations, LIME selects $x_1$ as the most important feature and $x_2$ as the second most important feature across all cases in the test set. There is more variability in the features selected by LIME for the three to six quantile bin implementations. For these implementations, there is a mix of horizontal and vertical stripes, which suggests that LIME is not consistently providing the sample explanation across implementation methods. It is also interesting, that the implementations of 3 and 5 bins leads to the selection of the random noise variable of $x_3$ as an important variable in many predictions, which should not be the case.
+\autoref{fig:sine-feat-heat} shows the feature heatmap for the LIME applications to the 100 observations in the \data \ test set. The most important (top facet) and second most important (bottom facet) features are shown in this plot. For the quantile bins, the original features prior to the indicator variable transformation are included since it is obvious that different features would be selected when the sizes of the bins change. This figure shows that for the kernel density and 2 quantile bin implementations, LIME selects $x_1$ as the most important feature and $x_2$ as the second most important feature across all cases in the test set. These explanations are not local. There is variability in the features selected by LIME for 3 to 6 quantile bins. For these tuning parameters, there is a mix of horizontal and vertical stripes, which suggests a dependence on tuning parameters. Note that the explanations from 3 and 5 quantile bins include the selection of the random noise variable ($x_3$) as an important variable in many predictions, which should not be the case. The pattern seen in the explanations for 3 to 6 quantile bins may suggest local explanations, but the dependence on tuning parameter makes it unclear which set of explanations to use.
 
 \subsection{Assessment Metric Plot} \label{assess-metric}
 
-\begin{figure}[!t]
-<<sine-assess-metric, out.width = '0.5\\textwidth', fig.width = 4.5, fig.height = 4, warning = FALSE>>=
+\begin{figure}[!thp]
+<<sine-assess-metric, out.width = '0.49\\textwidth', fig.width = 4.5, fig.height = 4, warning = FALSE>>=
 
 # Create the metric plot
 metric_plot(sine_lime_explain$explain) +
@@ -876,14 +874,13 @@ metric_plot(sine_lime_explain$explain) +
   scale_color_gradient(low = "grey10", high = "grey90")
 
 @
-\caption{Example of a metric comparison plot using the \data. Each row of the plot corresponds to one of three metrics: average fidelity, average $R^2$, or MSEE. The tuning parameters from the different LIME implementations are plotted on the x-axis, and the metric values are shown on the y-axis. The points are colored by rank within a metric indicating best to worst (dark to light). The kernel density simulation methods performs well according to all three metrics.}
+\caption{Example of a metric comparison plot using the \data. Each row of the plot corresponds to one of three metrics: average fidelity, average $R^2$, or MSEE. The LIME tuning parameters are plotted on the x-axis, and the metric values are shown on the y-axis. The points are colored by rank within a metric indicating best to worst (dark to light). The kernel density simulation methods performs well according to all three metrics.}
 \label{fig:sine-assess-metric}
 \end{figure}
 
-The feature heatmap for the \data \ in the previous section showed an example inconsistent LIME explanations
-across tuning parameter applications. As a result, it is necessary to choose tuning parameters that produce reliable explanations. One way to do this is to apply LIME using different implementations, and compute assessment metrics to determine the optimal tuning parameters. We will discuss three metrics that could be used for this purpose and present a comparison of the metrics in a plot.
+The feature heatmap for the \data \ in the previous section shows an example of inconsistent LIME explanations across tuning parameters. In this situation, the user must determine which set of explanations to trust. One way to do this is to compute assessment metrics for each set of explanations to identify the optimal tuning parameters. We discuss three metrics for this purpose and present a visual comparison in an \emph{assessment metric plot}.
 
-Each metric presented below is computed on a set of LIME explanations associted with a set predictions of interest obtained using the the same tuning parameters. 
+Each metric presented below is computed on a set of LIME explanations associated with a set predictions of interest obtained using the the same tuning parameters. Here we provide a high level description of the metrics. Notation and formulas for these metrics are included in Appendix \ref{metric-details}.
 
 \begin{itemize}
 \item \emph{Average $R^2$}: A metric for the assessment of the model fit and linearity assumption computed as the average of ridge regression explainer models $R^2$ values (deviance ratios from the R package \emph{glmnet}). 
@@ -893,21 +890,11 @@ Each metric presented below is computed on a set of LIME explanations associted 
 \item \emph{Mean Squared Explanation Error (MSEE)}: Measures the faithfulness of the explainer model to the complex model by comparing their predictions similar to the average fidelity, but only the observation of interest is used to compute the average squared deviation over the observations in the test set.
 \end{itemize}
 
-Notation and formulas for these metrics are included in Appendix \ref{metric-details}.
+\autoref{fig:sine-assess-metric} shows these metrics computed for each of the different tuning parameter applications of LIME to the \data. The simulation methods are listed on the x-axis. The plot is faceted by metric, and the metric values are plotted on the y-axis. The colors of the points represent the rank of the simulation methods performance based on a particular metric (darker indicates a better metric value and lighter indicates a worse metric value). Higher average $R^2$ values are better, and lower average fidelity and MSEE values are better. 
 
-\kgc{This is where I left off...}
+All three metrics suggest that the kernel density implementation performed well, but the metrics disagree for the quantile bins methods. Average $R^2$ values and average fidelity rank the performance of the number of quantile bins the same (2 quantile bins perform the best and 6 quantile bins perform the worst). In fact, these two metrics appear to have an inverse relationship in this example. MSEE provides different ranks of the simulation methods. MSEE suggests that 6 quantile bins perform the best, and 2 quantile bins perform the worst. This is the opposite of average $R^2$ and average fidelity. Since average fidelity and MSEE are similar metrics, it would be expected that they would agree, but that is so in this example. This may be due to the MSEE only taking into account the prediction of interest and not the full simulated dataset. The contradiction between metrics makes it difficult to identify which simulation method explanations to trust. 
 
-\kgc{***Right now, I have not included any variability in these plots. I could add standard deviation bars or change these to box plot.}
-
-In \autoref{fig:sine-assess-metric}, the average fidelity is lowest for the kernel density simulation method increases as the number of quantile bins increase. This would suggest that the LIME implementation using the kernel density estimate provides the best local approximation to the random forest model on average. Note that the points in the plot are colored such that darker indicates a better metric value and lighter indicates a worse metric value.
-
-The 6 quantile bin simulation method has the lowest MSEE followed closely by the kernel density method, which suggests that these methods have explainer models that best approximate the complex model for the prediction of interest on average. The MSEE increases as the number of quantile bins increases.
-
-The average $R^2$ value is highest for the kernel density simulation method and decreases as the number of quantile bins increase. This metric agrees with the average fidelity, and it suggests that the the kernel density method leads to the best fitting explainer models on average.
-
-For the \data, the metrics of average fidelity and average $R^2$ are in perfect agreement \hh{what do you mean by perfect agreement? and how do you use the fidelity measure?} with which simulation methods lead to the recommended LIME methods. The MSEE is in agreement \hh{with ? } in terms of the kernel density method performing well in terms of faithfulness, but it orders the quantile bin methods in the opposite order from the average fidelity and $R^2$ values. This may be due to the MSEE only taking into account the prediction of interest and not the full simulated dataset.
-
-The kernel density method performed well in regards to all three metrics. Recall that \autoref{fig:sine-feature-heatmap} indicated that the LIME kernel density method selected the same feature across all cases in the test dataset for both the first and second features. It appears that a global trend may be the best explanation for this example, which may be reasonable considering that we know that both $x_1$ and $x_2$ are the two features that should be the features used by the random forest to distinguish between response categories.
+Recall that \autoref{fig:sine-feature-heatmap} indicated that the LIME kernel density method selected the same feature across all cases in the test dataset for both the first and second features. It appears that a global trend may be the best explanation for this example, which may be reasonable considering that we know that both $x_1$ and $x_2$ are the two features that should be the features used by the random forest to distinguish between response categories. At this point, the use of explanation scatterplots for individual predictions of interest may provide better insight into a selection of tuning parameters to use. 
 
 \section{Application to Bullet Matching Data} \label{application}
 
@@ -915,9 +902,9 @@ The \data \ is a relatively simple problem where the true decision boundary can 
 
 \subsection{Bullet Matching Data}
 
-\begin{figure}[!htp]
+\begin{figure}[!thp]
 \centering
-\includegraphics[width=3in]{./figure-static/bullets.png}
+\includegraphics[width=2.5in]{./figure-static/bullets.png}
 \caption{(Top left) Traditionally rifled gun barrel. Grooves and lands alternate to give bullets a spin during the firing process.
 Barrel create markings (striations) on a bullet when fired.
 (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Zoomed in image of a land engraved area showing striations (vertical lines).}
@@ -964,7 +951,7 @@ bullet_features_ordered <- bullet_features_ordered %>%
 
 The random forest model trained in \citet{hare:2016} is available as object rtrees from the \emph{bulletxtrctr} R package. rtrees is trained on a set of scans obtained from one set of bullets of the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009} and based on \Sexpr{dim(bullet_train)[1]} land-to-land comparisons.
 
-\begin{figure*}[!htp]
+\begin{figure*}[!thp]
 <<bullet-plot-rfpcp, out.width = '\\textwidth', warning = FALSE>>=
 
 # Create (or load) the parallel coordinate plot
@@ -1133,7 +1120,7 @@ bullet_explain <- bullet_explain_noperms %>%
 
 @
 
-\begin{figure*}[!th]
+\begin{figure*}[!thp]
 <<bullet-feature-heatmap, out.width = '\\textwidth', fig.width = 18, fig.height = 10.5>>=
 
 # Create a feature heatmap
@@ -1141,8 +1128,8 @@ feature_heatmap(bullet_explain %>%
                   mutate(label = as.factor(label)),
                 facet_var = na.omit(bullet_test$samesource),
                 order_method = "PCA") +
-  scale_fill_gretchenalbrecht(palette = "last_rays",
-                              discrete = TRUE) +
+  scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
+  scale_color_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
   theme_bw(base_family = "Times", base_size = 10) +
   theme(axis.text.y = element_blank(),
         axis.ticks.y = element_blank()) +
@@ -1161,7 +1148,7 @@ To get an overview of the LIME explanations from the 36 implementations, we cons
 
 First of all, the density simulation methods produced the same explanations for almost all cases and LIME implementation methods. As a result, the LIME explanations for the density implementation methods are global and not local. Second, within a bin based simulation method, the features selected by LIME for an observation often vary based on the number of bins used but do not appear to vary based on the Gower power used. Especially with the equal bin explanations, there are vertical stripes that suggest a dependence of the LIME explanations on the number of bins used. The vertical stripes are not as apparent with the quantile bins. Lastly, there are clear differences between the LIME explanations for the cases that are matches and those that are not matches which are produced by the bin based simulation methods. This provides evidence that suggests that the features which the random forests uses to classify a match are different from the features used by the random forest to classify a non-match. The most important insight \autoref{fig:bullet-feature-heatmap} highlights is the dependence of the explanations on the LIME implementation method for many of the observations in the test data.
 
-\begin{figure*}[!t]
+\begin{figure*}[!thp]
 <<bullet-assess-metric, out.width = '\\textwidth', warning = FALSE, fig.width = 10, fig.height = 4>>=
 
 # Create a metric comparison plot
@@ -1291,7 +1278,7 @@ pf2_kd <- plot_features(bullet_explain_perms[16:18,]) +
   scale_fill_manual(values = c("darkorange", "grey50"))
 @
 
-\begin{figure*}[!htbp]
+\begin{figure*}[!thp]
 <<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 12, fig.height = 6.25, message = FALSE>>=
 # Join the plots
 plot_grid(pf2_3qb, pf2_3eb, pf2_kd,
@@ -1401,7 +1388,35 @@ Figure ... provides example explanation scatterplots for each feature in the def
 
 \kgc{Need to updated limeaid to create this plot and then add figure here.}
 
-\section{Details on Assessment Metrics} \ref{metric-details}
+\section{Explainer Model Residual Plot} \label{residual-plot}
+
+In order to assess the claim of linearity for the \data \ prediction of interest discussed in Section \ref{exp-scatter}, we use one of the most basic diagnostics in a statistician's tool box and draw a residual plot for the explainer model. This is shown in Figure \ref{fig:sine-plot-resids} with the explainer model residuals on the y-axis and explainer model predictions on the x-axis. The points along the x-axes have been jittered to ease the effect of the over-plotted points in the visualization. There is a clear increasing trend in the residuals as the explainer model predictions increase. This is a clear violation of the linearity assumption with the ridge regression model.
+
+\begin{figure}[!thp]
+<<sine-plot-resids, out.width = '0.5\\textwidth', fig.width = 4, fig.height = 3.25, warning = FALSE>>=
+
+# Calculate the residuals from the explainer model
+y <- sine_poi_perms$rfpred
+sine_poi_explainer <-
+  function(x1, x2) sine_b0 + (sine_b1 * x1) + (sine_b2 * x2)
+sine_poi_perms <- sine_poi_perms %>%
+  mutate(exppred = sine_poi_explainer(x1num, x2num)) %>%
+  mutate(resid = exppred - rfpred)
+
+# Create the residual plot
+ggplot(sine_poi_perms, aes(x = exppred, y = resid)) +
+  geom_jitter(alpha = 0.5, width = 0.02) +
+  geom_hline(yintercept = 0) +
+  theme_bw(base_family = "Times", base_size = 10) +
+  labs(x = "Explainer Model Predictions",
+       y = "Explainer Model Residuals",
+       title = "Explainer Model Residual Plot")
+@
+\caption{Residual plot of the explainer model associated with \data \ prediction of interest from Section \ref{exp-scatter}. The residuals are plotted against the predicted values. The points are jittered in the x-direction to alleviate the over-plotting of points. There is an upward trend in the residuals as the explainer model predictions increase, which suggests a violation of the linearity assumption.}
+\label{fig:sine-plot-resids}
+\end{figure}
+
+\section{Details on Assessment Metrics} \label{metric-details}
 
 \kgc{Placing the notation definitions here for now - need to make adjustments as necessary:} \kge{We first introduce notation for the scenario of tabular data with a binary response variable and continuous features. Let $\textbf{X}$ be an $n$ by $p$ data matrix with $p$ features and $n$ observations, and let $x_i\in\textbf{X}$ be a real-valued vector such that $x_i\in\mathbb{R}^p$ for $i=1,2,...,n$. Furthermore, let $y$ be a response variable of length $n$ with elements $y_i\in\{0, 1\}$ for $i=1,2,...,n$. Suppose that $f$ is a classification model where $f:\mathbb{R}^p\rightarrow[0,1]$ that is applied to $\textbf{X}$ and $y$. Let the vector of predictions made by $f$ applied to $\textbf{X}$ be denoted as $\hat{y}$. Note that $\hat{y}_i=f(x_i)\in\hat{y}$ for $i=1,..,n$. For both bin based methods, the interpretability transformation converts the generated observations to indicator variables, where a 1 indicates that the feature value for an observation is in the same bin as the feature value for the case of interest. That is
   $$z'_{i,j}=T\left(x'_{i,j}\right) = I\left[x'_{i,j} \mbox{ and } x^*_{i,j}\in b_{j,k} \right]$$
@@ -1424,8 +1439,6 @@ That is, let $$MSEE=\frac{1}{n}\sum_{i=1}^n\left(f\left(x^*\right)-g\left(z^*\ri
 % {\textbf{Author Name.} This is sample author biography text this is sample author biography text}
 % \end{biography}
 
-% \newpage
-% 
 % \textsc{\textbf{Ideas for describing proposed plots}}
 % 
 % \begin{itemize}
@@ -1462,27 +1475,6 @@ That is, let $$MSEE=\frac{1}{n}\sum_{i=1}^n\left(f\left(x^*\right)-g\left(z^*\ri
 % \item \hh{Try to give each of the diagnostics a name.}
 % \item \kgc{check that I am always using present tense}
 % \item \kgc{check that I am consistent in my use of the term black-box model}
-% \end{itemize}
-% 
-% \textsc{\textbf{Ideas for Publishing}}
-% 
-% \begin{itemize}
-% \item longer review article (emph on CS method in ML - we're translating the content into a stats language) (talk to Maitra and Wendy)
-% \item review article would need a more extensive lit review:
-% \begin{itemize}
-% \item who has looked at LIME and found it not great
-% \item who is using LIME for applications
-% \item papers using LIME
-% \end{itemize}
-% \item the diagnostics plots could get put in a rapid research paper via DS journal
-% \item could consider JOSS for publication of the limeaid package
-% \item implement a hierarchical ordering method for the feature heatmap
-% \end{itemize}
-% 
-% \textsc{\textbf{Other Ideas}}
-% 
-% \begin{itemize}
-% \item Consider creating a plot to show the decay of the distance by Gower exponent in terms of standard deviations in the appendix.
 % \end{itemize}
 
 \end{document}
