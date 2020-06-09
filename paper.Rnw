@@ -842,13 +842,14 @@ plot_grid(heatmap_plot_good, heatmap_plot_bad, heatmap_leg,
 
 \vspace*{\floatsep}
 
-<<sine-feat-heat, out.width = '0.45\\textwidth', fig.width = 4, fig.height = 4>>=
-feature_heatmap(sine_lime_explain$explain,
+<<sine-feat-heat, out.width = '0.45\\textwidth', fig.width = 4, fig.height = 3.5>>=
+plot_feature_heatmap(sine_lime_explain$explain,
                 order_method = "PCA") +
   theme_bw(base_family = "Times", base_size = 10) +
   theme(legend.position = "bottom",
         axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) +
+        axis.ticks.y = element_blank(),
+        strip.background = element_rect(color = "white", fill = "white")) +
   labs(y = "Case")
 @
 \caption{\emph{Feature Heatmap}. An example feature heatmap of the explanations from the applications of LIME with different tuning parameters to the \data. The cases from the test set are plotted on the y-axis, and the tuning parameter values (simulation methods here) are included on the x-axis. The colors of the tiles indicate the feature selected by LIME for the corresponding case and tuning parameter value. The plot is faceted by the first features selected by LIME (top facet) and the second most important features (bottom facet). The column facets separate the kernel density method from the quantile bin methods. The vertical striping indicates that the LIME explanations are not consistent across tuning parameters.}
@@ -866,12 +867,12 @@ Two hypothetical examples of feature heatmaps are included in \autoref{fig:conce
 \subsection{Assessment Metric Plot} \label{assess-metric}
 
 \begin{figure}[!thp]
-<<sine-assess-metric, out.width = '0.49\\textwidth', fig.width = 4.5, fig.height = 4, warning = FALSE>>=
+<<sine-assess-metric, out.width = '0.49\\textwidth', fig.width = 4.5, fig.height = 3.75, warning = FALSE>>=
 
 # Create the metric plot
-metric_plot(sine_lime_explain$explain) +
-  theme_bw(base_family = "Times") +
-  scale_color_gradient(low = "grey10", high = "grey90")
+plot_metrics(sine_lime_explain$explain, rank_legend = "discrete") +
+  theme_bw(base_family = "Times") + 
+  theme(strip.background = element_rect(color = "white", fill = "white"))
 
 @
 \caption{\emph{Assessment metric plot}. The assessment metrics computed on the applications of LIME to the \data \ test set are included in this example assessment metric plot. Each horizontal facet corresponds to one of three metrics: average $R^2$, average fidelity, or MSEE. The LIME tuning parameter (simulation methods in this example) is plotted on the x-axis, and the metric values are shown on the y-axis. The points are colored by rank (within a metric) indicating best to worst (dark to light). The kernel density simulation methods performs well according to all three metrics.}
@@ -1127,19 +1128,24 @@ First of all, the density simulation methods produced the same explanations for 
 <<bullet-feature-heatmap, out.width = '\\textwidth', fig.width = 18, fig.height = 10.5>>=
 
 # Create a feature heatmap
-feature_heatmap(bullet_explain %>%
+plot_feature_heatmap(bullet_explain %>%
                   mutate(label = as.factor(label)),
                 facet_var = na.omit(bullet_test$samesource),
                 order_method = "PCA") +
   scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
-  scale_color_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
-  theme_bw(base_family = "Times", base_size = 10) +
+  scale_color_gretchenalbrecht(palette = "last_rays", discrete = TRUE, reverse = TRUE) +
+  theme_bw(base_family = "Times", base_size = 16) +
   theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank()) +
-  labs(y = "Case")
+        axis.ticks.y = element_blank(),
+        strip.background = element_rect(color = "white", fill = "white"),
+        strip.text.y.right = element_text(angle = 0), 
+        legend.position = "bottom",
+        axis.text.x = element_text(angle = 45, hjust = 1)) +
+  guides(fill = guide_legend(nrow = 1)) + 
+  labs(y = "Case", color = "Complex Model Feature", fill = "Complex Model Feature")
 
 @
-\caption{Feature heatmap of the 36 LIME applications to the bullet comparison data test set. In addition to faceting the results by simulation method and order a feature was selected by LIME as done in \autoref{fig:sine-feature-heatmap}, this plot has been faceted by the Gower power and whether the the observation is from a match (TRUE) or non-match (FALSE). This plot shows several key insights about the LIME explanations. First, the features selected by LIME for the density simulation methods are mostly the same for all tuning parameters and all cases. Second, the features selected by LIME for the bin based methods are affected by the number of bins but not the Gower power. Third, the explanations produced by LIME using bin based methods result in different important features for the matches and non-matches. \kgc{***Need to rotate the facet labels, so I can make the text bigger.}}
+\caption{Feature heatmap of the 36 LIME applications to the bullet comparison data test set. In addition to faceting the results by simulation method and order a feature was selected by LIME as done in \autoref{fig:sine-feature-heatmap}, this plot has been faceted by the Gower power and whether the the observation is from a match (TRUE) or non-match (FALSE). This plot shows several key insights about the LIME explanations. First, the features selected by LIME for the density simulation methods are mostly the same for all tuning parameters and all cases. Second, the features selected by LIME for the bin based methods are affected by the number of bins but not the Gower power. Third, the explanations produced by LIME using bin based methods result in different important features for the matches and non-matches.}
 \label{fig:bullet-feature-heatmap}
 
 \vspace*{\floatsep}
@@ -1147,13 +1153,11 @@ feature_heatmap(bullet_explain %>%
 <<bullet-assess-metric, out.width = '\\textwidth', warning = FALSE, fig.width = 10, fig.height = 4>>=
 
 # Create a metric comparison plot
-metric_plot(bullet_explain %>% mutate(label = as.factor(label))) +
+plot_metrics(bullet_explain %>% mutate(label = as.factor(label)), add_lines = TRUE) +
   theme_bw(base_family = "Times") +
-  scale_color_gradient(low = "grey10", high = "grey90") +
-  labs(color = "Rank \n(within \na metric)")
-
+  theme(strip.background = element_rect(color = "white", fill = "white"))
 @
-\caption{Plot of LIME assessment metrics for the 36 different applications of LIME applied to the bullet comparison data test set. The shape of the points represents the power used for the Gower distance calculation, and the color of the points represents the rank associated with that observation within a metric. The density simulation methods perform well for all metrics, but the bin based metrics often do not agree in terms of performance across metrics.}
+\caption{Plot of LIME assessment metrics for the 36 different applications of LIME applied to the bullet comparison data test set. The shape of the points represents the power used for the Gower distance calculation, and the color of the points represents the rank associated with that observation within a metric. The density simulation methods perform well for all metrics, but the bin based metrics often do not agree in terms of performance across metrics. \kgc{Something is wrong here. Right now, there are repetitions of some tuning parameter combinations.}}
 \label{fig:bullet-assess-metric}
 \end{figure*}
 
@@ -1175,7 +1179,7 @@ bullet_explain_perms <- bullet_explain_perms %>%
                        paste(case, "(non-match)"),
                        paste(case, "(match)")))
 
-eoi1_3qb <- eoi_plot(bullet_explain_perms[1:3,], alpha = 0.9, weights = FALSE) +
+eoi1_3qb <- plot_explain_scatter(bullet_explain_perms[1:3,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1189,7 +1193,7 @@ eoi1_3qb <- eoi_plot(bullet_explain_perms[1:3,], alpha = 0.9, weights = FALSE) +
         strip.background = element_rect(color = "white",
                                         fill = "white"))
 
-eoi2_3qb <- eoi_plot(bullet_explain_perms[4:6,], alpha = 0.9, weights = FALSE) +
+eoi2_3qb <- plot_explain_scatter(bullet_explain_perms[4:6,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1203,7 +1207,7 @@ eoi2_3qb <- eoi_plot(bullet_explain_perms[4:6,], alpha = 0.9, weights = FALSE) +
         strip.background = element_rect(color = "white",
                                         fill = "white"))
 
-eoi1_3eb <- eoi_plot(bullet_explain_perms[7:9,], alpha = 0.9, weights = FALSE) +
+eoi1_3eb <- plot_explain_scatter(bullet_explain_perms[7:9,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1217,7 +1221,7 @@ eoi1_3eb <- eoi_plot(bullet_explain_perms[7:9,], alpha = 0.9, weights = FALSE) +
         strip.background = element_rect(color = "white",
                                         fill = "white"))
 
-eoi2_3eb <- eoi_plot(bullet_explain_perms[10:12,], alpha = 0.9, weights = FALSE) +
+eoi2_3eb <- plot_explain_scatter(bullet_explain_perms[10:12,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1231,7 +1235,7 @@ eoi2_3eb <- eoi_plot(bullet_explain_perms[10:12,], alpha = 0.9, weights = FALSE)
         strip.background = element_rect(color = "white",
                                         fill = "white"))
 
-eoi1_kd <- eoi_plot(bullet_explain_perms[13:15,], alpha = 0.9, weights = FALSE) +
+eoi1_kd <- plot_explain_scatter(bullet_explain_perms[13:15,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1245,7 +1249,7 @@ eoi1_kd <- eoi_plot(bullet_explain_perms[13:15,], alpha = 0.9, weights = FALSE) 
         strip.background = element_rect(color = "white",
                                         fill = "white"))
 
-eoi2_kd <- eoi_plot(bullet_explain_perms[16:18,], alpha = 0.9, weights = FALSE) +
+eoi2_kd <- plot_explain_scatter(bullet_explain_perms[16:18,], alpha = 0.9, weights = FALSE) +
   scale_color_gradient2(low = "grey45",
                         high = "darkorange",
                         midpoint = 0.5,
