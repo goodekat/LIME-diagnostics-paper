@@ -6,7 +6,4 @@ Repository for short and sweet ASA data science journal paper on diagnostics for
 
 Explanation scatterplot:
 
-- add bin indicator variable lines
-- change name of function to explain_scatter
-- add line legend
 - extend to the density simulation case

@@ -1111,11 +1111,23 @@ poi_cases_no_perms <- bullet_explain_noperms %>%
 bullet_explain <- bullet_explain_noperms %>%
   anti_join(poi_cases_no_perms,
             by = c("implementation", "case")) %>%
-  bind_rows(bullet_explain_perms %>%
-              select(-perms_raw, -perms_numerified,
-                     -perms_pred_simple, -perms_pred_complex,
-                     -weights))
-
+  bind_rows(
+    bullet_explain_perms %>%
+      mutate(
+        implementation = fct_recode(
+          implementation,
+          "2" = "1",
+          "7" = "2",
+          "31" = "3",
+          "32" = "4"
+        )
+      ) %>%
+      select(
+        -perms_raw,
+        -perms_numerified,-perms_pred_simple,
+        -perms_pred_complex,-weights
+      )
+  )
 @
 
 \subsection{LIME Assessment Visualizations}
@@ -1153,11 +1165,13 @@ plot_feature_heatmap(bullet_explain %>%
 <<bullet-assess-metric, out.width = '\\textwidth', warning = FALSE, fig.width = 10, fig.height = 4>>=
 
 # Create a metric comparison plot
-plot_metrics(bullet_explain %>% mutate(label = as.factor(label)), add_lines = TRUE) +
+plot_metrics(bullet_explain %>% 
+               mutate(label = as.factor(label)), 
+             add_lines = TRUE) +
   theme_bw(base_family = "Times") +
   theme(strip.background = element_rect(color = "white", fill = "white"))
 @
-\caption{Plot of LIME assessment metrics for the 36 different applications of LIME applied to the bullet comparison data test set. The shape of the points represents the power used for the Gower distance calculation, and the color of the points represents the rank associated with that observation within a metric. The density simulation methods perform well for all metrics, but the bin based metrics often do not agree in terms of performance across metrics. \kgc{Something is wrong here. Right now, there are repetitions of some tuning parameter combinations.}}
+\caption{Plot of LIME assessment metrics for the 36 different applications of LIME applied to the bullet comparison data test set. The shape of the points represents the power used for the Gower distance calculation, and the color of the points represents the rank associated with that observation within a metric. The density simulation methods perform well for all metrics, but the bin based metrics often do not agree in terms of performance across metrics.}
 \label{fig:bullet-assess-metric}
 \end{figure*}
 
@@ -1180,10 +1194,7 @@ bullet_explain_perms <- bullet_explain_perms %>%
                        paste(case, "(match)")))
 
 eoi1_3qb <- plot_explain_scatter(bullet_explain_perms[1:3,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1194,10 +1205,7 @@ eoi1_3qb <- plot_explain_scatter(bullet_explain_perms[1:3,], alpha = 0.9, weight
                                         fill = "white"))
 
 eoi2_3qb <- plot_explain_scatter(bullet_explain_perms[4:6,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1208,10 +1216,7 @@ eoi2_3qb <- plot_explain_scatter(bullet_explain_perms[4:6,], alpha = 0.9, weight
                                         fill = "white"))
 
 eoi1_3eb <- plot_explain_scatter(bullet_explain_perms[7:9,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1222,10 +1227,7 @@ eoi1_3eb <- plot_explain_scatter(bullet_explain_perms[7:9,], alpha = 0.9, weight
                                         fill = "white"))
 
 eoi2_3eb <- plot_explain_scatter(bullet_explain_perms[10:12,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1236,10 +1238,7 @@ eoi2_3eb <- plot_explain_scatter(bullet_explain_perms[10:12,], alpha = 0.9, weig
                                         fill = "white"))
 
 eoi1_kd <- plot_explain_scatter(bullet_explain_perms[13:15,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey50",
                         high = "darkorange",
                         midpoint = 0.5,
@@ -1250,10 +1249,7 @@ eoi1_kd <- plot_explain_scatter(bullet_explain_perms[13:15,], alpha = 0.9, weigh
                                         fill = "white"))
 
 eoi2_kd <- plot_explain_scatter(bullet_explain_perms[16:18,], alpha = 0.9, weights = FALSE) +
-  scale_color_gradient2(low = "grey45",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+  scale_color_manual(values = c("grey50", "darkorange")) +
   scale_fill_gradient2(low = "grey45",
                         high = "darkorange",
                         midpoint = 0.5,
