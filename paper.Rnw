@@ -684,57 +684,18 @@ sine_poi_region_perms <- sine_poi_perms %>%
 
 sine_poi_exp <- sine_poi_lime_default %>% plot_features()
 
-exp_scatter <- ggplot() +
-  geom_point(data = sine_poi_perms,
-             mapping = aes(x = x1,
-                           y = x2,
-                           color = rfpred,
-                           size = weights),
-             alpha = 0.8,
-             shape = 20) +
-  scale_size(range = c(0.1, 3)) +
-  geom_rect(data = sine_poi_bounds %>% filter(feature == "x1"),
-            mapping = aes(xmin = lower,
-                          xmax = upper,
-                          ymin = -Inf,
-                          ymax = Inf),
-            alpha = 0.25,
-            fill = "grey90",
-            color = "firebrick") +
-  geom_rect(data = sine_poi_bounds %>%
-              filter(feature == "x2"),
-            mapping = aes(xmin = -Inf,
-                          xmax = Inf,
-                          ymin = lower,
-                          ymax = upper,
-                          color = coef),
-            alpha = 0.25,
-            fill = "grey90",
-            color = "steelblue") +
-  geom_point(data = sine_poi %>%
-               mutate(shape = "Prediction \nof Interest"),
-             mapping = aes(x = x1, y = x2, shape = shape, fill = rfprob_blue),
-             size = 7,
-             alpha = 0.8) +
-  scale_shape_manual(values = 23) +
-  scale_fill_gradient2(low = sinecolor_red,
-                        mid = '#f7f7f7',
-                        high = sinecolor_blue,
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
-  scale_color_gradient2(low = sinecolor_red,
-                        mid = '#f7f7f7',
-                        high = sinecolor_blue,
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
-  theme_bw(base_family = "Times", base_size = 10) +
+exp_scatter <- 
+  plot_explain_scatter(sine_poi_lime_default) +
+  facet_grid(switch = "both") +
   labs(x = TeX("x_1"),
        y = TeX("x_2"),
        size = "Weight",
        shape = "",
        fill = "Random \nForest \nProbability \nfor 'blue'",
        color = "Random \nForest \nProbability \nfor 'blue'",
+       linetype = "",
        title = "Explanation Scatterplot") +
+  theme_bw(base_family = "Times", base_size = 10) +
   guides(shape = guide_legend(order = 1)) +
   theme(aspect.ratio = 1)
 
@@ -1189,75 +1150,141 @@ While the scatterplots provide visual explanations for the LIME explanations, so
 
 <<bullet-eoi-plots, message = FALSE>>=
 bullet_explain_perms <- bullet_explain_perms %>%
-  mutate(case = ifelse(case == bullet_poi_nonmatch,
-                       paste(case, "(non-match)"),
-                       paste(case, "(match)")))
+  mutate(case = ifelse(
+    case == bullet_poi_nonmatch,
+    paste(case, "(non-match)"),
+    paste(case, "(match)")
+  ))
 
-eoi1_3qb <- plot_explain_scatter(bullet_explain_perms[1:3,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi1_3qb <-
+  plot_explain_scatter(bullet_explain_perms[1:3, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  ) + 
+  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
 
-eoi2_3qb <- plot_explain_scatter(bullet_explain_perms[4:6,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi2_3qb <-
+  plot_explain_scatter(bullet_explain_perms[4:6, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  ) + 
+  guides(linetype = guide_legend(override.aes = list(color = c("grey50", "darkorange"))))
 
-eoi1_3eb <- plot_explain_scatter(bullet_explain_perms[7:9,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi1_3eb <-
+  plot_explain_scatter(bullet_explain_perms[7:9, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  ) + 
+  guides(linetype = guide_legend(override.aes = list(color = c("grey50", "darkorange"))))
 
-eoi2_3eb <- plot_explain_scatter(bullet_explain_perms[10:12,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi2_3eb <-
+  plot_explain_scatter(bullet_explain_perms[10:12, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  ) + 
+  guides(linetype = guide_legend(override.aes = list(color = c("grey50", "darkorange"))))
 
-eoi1_kd <- plot_explain_scatter(bullet_explain_perms[13:15,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey50",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi1_kd <-
+  plot_explain_scatter(bullet_explain_perms[13:15, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  )
 
-eoi2_kd <- plot_explain_scatter(bullet_explain_perms[16:18,], alpha = 0.9, weights = FALSE) +
-  scale_color_manual(values = c("grey50", "darkorange")) +
-  scale_fill_gradient2(low = "grey45",
-                        high = "darkorange",
-                        midpoint = 0.5,
-                        limits = c(0, 1)) +
+eoi2_kd <-
+  plot_explain_scatter(bullet_explain_perms[16:18, ], alpha = 0.9, weights = TRUE) +
+  scale_color_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  scale_fill_gradient2(
+    low = "grey45",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
   theme_bw(base_family = "Times", base_size = 8) +
-  theme(strip.placement = "outside",
-        strip.background = element_rect(color = "white",
-                                        fill = "white"))
+  theme(
+    strip.placement = "outside",
+    strip.background = element_rect(color = "white",
+                                    fill = "white")
+  )
 
 pf1_3qb <- plot_features(bullet_explain_perms[1:3,]) +
   scale_fill_manual(values = c("darkorange", "grey50"))
@@ -1274,7 +1301,7 @@ pf2_kd <- plot_features(bullet_explain_perms[16:18,]) +
 @
 
 \begin{figure*}[!thp]
-<<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 12, fig.height = 6.25, message = FALSE>>=
+<<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 15, fig.height = 7.8125, message = FALSE>>=
 # Join the plots
 plot_grid(pf2_3qb, pf2_3eb, pf2_kd,
           eoi2_3qb, eoi2_3eb, eoi2_kd,
@@ -1286,7 +1313,7 @@ plot_grid(pf2_3qb, pf2_3eb, pf2_kd,
 
 \vspace*{\floatsep}
 
-<<bullet-eois-match, out.width = '\\textwidth', fig.width = 12, fig.height = 6.25, message = FALSE>>=
+<<bullet-eois-match, out.width = '\\textwidth', fig.width = 15, fig.height = 7.8125, message = FALSE>>=
 # Join the plots
 plot_grid(pf1_3qb, pf1_3eb, pf1_kd,
           eoi1_3qb, eoi1_3eb, eoi1_kd,
