@@ -2,10 +2,8 @@
 
 Repository for short and sweet ASA data science journal paper on diagnostics for LIME
 
-## Changes to make to limeaid
+## To Do
 
-Explanation scatterplot:
-
-- figure out issue with legend ordering and factor levels within a legend object
-- try moving supports/contradicts legend to the bottom of the figure
-- extend to the density simulation case
+- Extend to the explanation scatter plot to the density simulation case
+- Update paper as necessary with the new plot
+- Final round of proof reading

@@ -682,7 +682,7 @@ sine_poi_region_perms <- sine_poi_perms %>%
 \begin{figure*}[!thp]
 <<sine-exp-scatter, out.width = '\\textwidth', fig.width = 10, fig.height = 3.9, warning = FALSE>>=
 
-sine_poi_exp <- sine_poi_lime_default %>% plot_features()
+sine_poi_exp <- sine_poi_lime_default %>% plot_features() + theme(text = element_text(family = "Times", size = 10))
 
 exp_scatter <- 
   plot_explain_scatter(sine_poi_lime_default) +
@@ -899,7 +899,7 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.25in]{./figure-static/bullets.png}
+\includegraphics[width=2in]{./figure-static/bullets.png}
 \caption{(Top left) Traditionally rifled gun barrel. The grooves and lands alternate to give bullets a spin during the firing process, which create markings (striations) on a bullet when fired. (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Close up of a land engraved area showing striations (vertical lines).}
 \label{fig:bullet}
 
@@ -933,8 +933,8 @@ if (file.exists("./figure-static/bullet_pcp.png")) {
                             "Training Set" = "1",
                             "Testing Set" = "2"),
            samesource = fct_recode(factor(samesource),
-                                  "Same Source = TRUE" = "TRUE",
-                                  "Same Source = FALSE" = "FALSE")) %>%
+                                  "Match" = "TRUE",
+                                  "Non-Match" = "FALSE")) %>%
     rename("CCF" = "ccf", "CMS" = "cms", "Matches" = "matches",
            "Mismatches" = "mismatches", "Non-CMS" = "non_cms",
            "Rough Correlation" = "rough_cor", "Distance Std Dev" = "sd_D",
@@ -965,7 +965,7 @@ if (file.exists("./figure-static/bullet_pcp.png")) {
 }
 
 @
-\caption{Parallel coordinate plots of the \citet{hare:2016} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by same source (right column) and different source (left column) The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to a comparison, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
+\caption{Parallel coordinate plots of the \citet{hare:2016} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
 \label{fig:bullet-plot-rfpcp}
 \end{figure*}
 
@@ -1093,32 +1093,58 @@ bullet_explain <- bullet_explain_noperms %>%
 
 \subsection{LIME Assessment Visualizations}
 
-To get an overview of the LIME explanations from the 36 applications, we consider a feature heatmap (\autoref{fig:bullet-feature-heatmap}). The plot is faceted vertically by simulation method and the Gower power and horizontally by the order the feature was chosen and whether the observation is a known same source or different source comparison. \kgc{This is where I left off...} This plot highlights several key features of the LIME explanations from the bullet matching dataset.
+To get an overview of the LIME explanations from the 36 applications, we consider a feature heatmap (\autoref{fig:bullet-feature-heatmap}). In addition to facets for simulation method and order of feature selected by LIME, this plot includes a vertical facet for Gower power and a horizontal facet for whether the observation is a known match or non-match. This plot highlights several key features of the LIME explanations from the bullet matching dataset.
 
-First of all, the density simulation methods produced the same explanations for almost all cases and LIME tuning parameters. As a result, the LIME explanations for the density methods are global and not local. Second, within a bin based simulation method, the features selected by LIME for an observation often vary based on the number of bins used but do not appear to vary based on the Gower power used. Especially with the equal bin explanations, there are vertical stripes that suggest a dependence of the LIME explanations on the number of bins used. The vertical stripes are not as apparent with the quantile bins. Lastly, there are clear differences between the LIME explanations for the cases that are matches and those that are not matches which are produced by the bin based simulation methods. This provides evidence that suggests that the features which the random forests uses to classify a match are different from the features used by the random forest to classify a non-match. The most important insight \autoref{fig:bullet-feature-heatmap} highlights is the dependence of the explanations on the LIME tuning parameter for many of the observations in the test data.
+First, the density simulation methods produce the same explanations for almost all cases and LIME tuning parameters suggesting the LIME explanations are global and not local. Second, within a bin based simulation method, the features selected by LIME for an observation often vary by the number of bins but do not appear to vary by the Gower power. With the equal bins, there are vertical stripes that suggest a dependence of the LIME explanations on the number of bins. The vertical stripes are not as apparent with the quantile bins. Lastly, there are clear differences between the LIME explanations produced by the bin based simulation methods for the matches and non-matches. This suggests that the features the random forest uses to classify a match or non-match are different. 
 
 \begin{figure*}[!thp]
-<<bullet-feature-heatmap, out.width = '\\textwidth', fig.width = 18, fig.height = 10.5>>=
-
+<<bullet-feature-heatmap, out.width = '\\textwidth', fig.width = 18, fig.height = 12>>=
 # Create a feature heatmap
-plot_feature_heatmap(bullet_explain %>%
-                  mutate(label = as.factor(label)),
-                facet_var = na.omit(bullet_test$samesource),
-                order_method = "PCA") +
+plot_feature_heatmap(
+  bullet_explain %>%
+    mutate(
+      label = as.factor(label),
+      feature = fct_recode(
+        feature,
+        "Rough Correlation" = "rough_cor",
+        "Consecutively Matching Striae" = "cms",
+        "Distance" = "D",
+        "Matches" = "matches",
+        "Mismatches" = "mismatches",
+        "Non-Consecutively Matching Striae" = "non_cms",
+        "Cross Correlation Function" = "ccf",
+        "Sum of Peaks" = "sum_peaks",
+        "Distance Standard Deviation" = "sd_D"
+      )
+    ),
+  facet_var = bullet_test %>%
+    mutate(samesource = fct_recode(
+      factor(samesource),
+      "Match" = "TRUE",
+      "Non-Match" = "FALSE"
+    )) %>%
+    pull(samesource) %>%
+    na.omit(),
+  order_method = "PCA"
+) +
   scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
-  scale_color_gretchenalbrecht(palette = "last_rays", discrete = TRUE, reverse = TRUE) +
+  scale_color_gretchenalbrecht(palette = "last_rays",
+                               discrete = TRUE,
+                               reverse = TRUE) +
   theme_bw(base_family = "Times", base_size = 16) +
-  theme(axis.text.y = element_blank(),
-        axis.ticks.y = element_blank(),
-        strip.background = element_rect(color = "white", fill = "white"),
-        strip.text.y.right = element_text(angle = 0), 
-        legend.position = "bottom",
-        axis.text.x = element_text(angle = 45, hjust = 1)) +
-  guides(fill = guide_legend(nrow = 1)) + 
+  theme(
+    axis.text.y = element_blank(),
+    axis.ticks.y = element_blank(),
+    strip.background = element_rect(color = "white", fill = "white"),
+    strip.text.y.right = element_text(angle = 0),
+    legend.position = "bottom",
+    axis.text.x = element_text(angle = 45, hjust = 1)
+  ) +
+  guides(fill = guide_legend(nrow = 3)) +
   labs(y = "Case", color = "Complex Model Feature", fill = "Complex Model Feature")
 
 @
-\caption{Feature heatmap of the 36 LIME applications to the bullet comparison data test set. In addition to faceting the results by simulation method and order a feature was selected by LIME as done in \autoref{fig:sine-feature-heatmap}, this plot has been faceted by the Gower power and whether the the observation is from a match (TRUE) or non-match (FALSE). This plot shows several key insights about the LIME explanations. First, the features selected by LIME for the density simulation methods are mostly the same for all tuning parameters and all cases. Second, the features selected by LIME for the bin based methods are affected by the number of bins but not the Gower power. Third, the explanations produced by LIME using bin based methods result in different important features for the matches and non-matches.}
+\caption{Feature heatmap of the 36 LIME applications to the bullet comparison data test set. In addition to faceting the results by simulation method and LIME feature selection order, facets for the Gower power and whether the observation is a match or non-match are included. The vertical stripes of features selected indicate a dependence between the LIME explanations and tuning parameters.}
 \label{fig:bullet-feature-heatmap}
 
 \vspace*{\floatsep}
@@ -1132,21 +1158,17 @@ plot_metrics(bullet_explain %>%
   theme_bw(base_family = "Times") +
   theme(strip.background = element_rect(color = "white", fill = "white"))
 @
-\caption{Plot of LIME assessment metrics for the 36 different applications of LIME applied to the bullet comparison data test set. The shape of the points represents the power used for the Gower distance calculation, and the color of the points represents the rank associated with that observation within a metric. The density simulation methods perform well for all metrics, but the bin based metrics often do not agree in terms of performance across metrics.}
+\caption{Plot of LIME assessment metrics for the applications of LIME on the bullet comparison data test set. The density simulation methods perform well for all metrics. The bin based metrics often do not agree in terms of performance across metrics.}
 \label{fig:bullet-assess-metric}
 \end{figure*}
 
-To try to identify the set of LIME tuning parameters with the most trustworthy set of explanations, we created an assessment metric plot shown in \autoref{fig:bullet-assess-metric}. The three metrics of average fidelity, average $R^2$, and MSEE were computed for each of the simulation methods and Gower power used to implement LIME. The plot is faceted by the simulation method, and the shape of a point represents the Gower power. The color of a point represents the rank within a metric. That is, the darker a point, the better performance of that method based on the metric.
+To try to identify a set of LIME tuning parameters with the most trustworthy set of explanations, an assessment metric plot is considered (\autoref{fig:bullet-assess-metric}). All density simulation methods performed well based on the three metrics. This is an interesting result, since \autoref{fig:bullet-feature-heatmap} shows that the density methods results in global explanations. The metric values for the bin based methods do not agree across metrics. For example, 2 and 3 quantile bins performed well according to the average $R^2$ but poorly according to MSEE. As a result, with the bin based methods, it is difficult to know which method to recommend. The applications using a power of 0.5 perform the best or as well as the other powers across all simulation methods suggesting that the power that leads to a more global explanation is preferred by LIME.
 
-The density simulation methods performed well across all tuning parameters. This is an interesting result, since \autoref{fig:bullet-feature-heatmap} shows that the density methods results in global explanations. The metric values for the bin based methods do not agree across metrics. For example, 2 and 3 quantile bins performed well according to the average $R^2$ but poorly according to MSEE. As a result, with the bin based methods, it is difficult to know which method to recommend. When considering the metrics across the Gower power used, the applications using a power of 0.5 perform best or as well as the other powers in across all simulation methods. This suggests that the power that leads to a more global explanation is preferred by LIME in this example.
+Perhaps we can say that the kernel density method, 3 equal bins, or 3 quantile bins are some of the better performing methods, but unfortunately, \autoref{fig:bullet-assess-metric} leaves us without a clear indication of which set of explanations to use to explain the random forest. To better understand the explanations provided by these three methods, we take a closer look at explanations from these methods for two observations of interest, which will be referred to as case M (a known match) and case NM (a known non-match).
 
-Unfortunately, \autoref{fig:bullet-feature-heatmap} leaves us without a clear indication of which set of explanations to use to explain the random forest. Perhaps we can say that the kernel density method, 3 equal bins, and 3 quantile bins are some of the best performing methods. To better understand the explanations provided by these three methods, we take a closer look at explanations from these methods for two observations of interest where one is a known non-match (case \Sexpr{bullet_poi_nonmatch}) and the other is a known match (case \Sexpr{bullet_poi_match}).
+Figure \ref{fig:bullet-eois} include the explanation plots (from \emph{lime}) and explanation scatterplots for cases M and NM. Plots for 3 equal bins and 3 quantile bins are included. The scatterplots provide several insights into the LIME explanations. Here we focus on the explanation for case NM with 3 quantile bins, but similar statements can be made about the other plots.
 
-Figures \ref{fig:bullet-eois-nonmatch} and \ref{fig:bullet-eois-match} contain plots that provide this closer look for the known non-match and match, respectively. The top row of plots in each figure are the explanation plots from \emph{lime}. The bottom row of plots show scatterplots of the features selected by LIME colored by the random forest model prediction. The location of the prediction of interest is indicated on the scatterplots by a diamond, and black solid lines are included on the plots representing the bin divisions for applications using bins. The bottom row plots are created using \emph{limeaid}. The plots within a column are associated with one of the three simulation methods (kernel density, 3 equal bins, or 3 quantile bins).
-
-The scatterplots provide a visualization that helps to explain the LIME explanation. For example, consider the explanation for case \Sexpr{bullet_poi_nonmatch} when 3 quantile bins were used. The explanation plot from \emph{lime} shows that case \Sexpr{bullet_poi_nonmatch} having an observed CCF value greater than 0.320 supports a random forest prediction in favor of a match. The scatter plots show that many of the simulated values with CCF greater then 0.320 have random forest predictions greater than 0.5. Additionally, the LIME explanation indicates that a value of matches less than or equal to 1.66 contradicts a prediction in favor of a match. The scatter plots shows that almost all simulated values with a value of matches less than or equal to 1.66 have random forest predictions close to 0. Similar statements can be made about the 3 equal bin explanation for this case and the bin based methods for the known match observation explanations.
-
-While the scatterplots provide visual explanations for the LIME explanations, some of them indicate that LIME falls short of a good explanation of the random forest predictions. Again, consider the explanation for case 325 when 3 quantile bins were used. From looking at the scatter plot of CCF versus matches, a better explanation for the random forest prediction would be to say that because the prediction of interest has a value of CCF less than 0.8 (approximately) and a value of matches less than 7 (approximately), the random forest is providing a prediction that supports a non-match. The relationship between ccf and rough correlation does not provide much evidence to support the random forest prediction one way or the other due to the mixture of random forest predictions ranging from 0 to 1 in most regressions, but there is a pentagon shaped region at the bottom of the scatter plot of matches versus rough correlation that the prediction of interest falls in that supports the random forest prediction of a non-match.
+The explanation plot from \emph{lime} for case NM with 3 quantile bins shows that an observed CCF value greater than 0.320 supports a random forest prediction in favor of a match, and the scatter plots show that many of the simulated values with CCF greater then 0.320 have random forest predictions greater than 0.5. Additionally, the LIME explanation indicates that a value of matches less than or equal to 1.66 contradicts a prediction in favor of a match, and the scatter plots show that almost all simulated values with a value of matches less than or equal to 1.66 have random forest predictions close to 0. While the LIME explanation makes sense based on the observations made from the explanation scatter plot, the plot also indicates that LIME falls short of providing a good explanation of the random forest prediction for case NM. Based on the scatter plot of CCF versus matches, a better explanation would be that because case NM has a value of CCF less than 0.8 and a value of matches less than 7, the random forest provides a prediction supporting a non-match. The relationship between CCF and rough correlation does not provide much evidence to support the random forest prediction one way or the other, but there is a pentagon shaped region at the bottom of the scatter plot of matches versus rough correlation with mostly predictions close to 0 that case NM falls and supports the random forest prediction of a non-match.
 
 <<bullet-eoi-plots, message = FALSE>>=
 bullet_explain_perms <- bullet_explain_perms %>%
@@ -1154,7 +1176,7 @@ bullet_explain_perms <- bullet_explain_perms %>%
     case == bullet_poi_nonmatch,
     paste(case, "(non-match)"),
     paste(case, "(match)")
-  ))
+  )) 
 
 eoi1_3qb <-
   plot_explain_scatter(bullet_explain_perms[1:3, ], alpha = 0.9, weights = TRUE) +
@@ -1170,7 +1192,7 @@ eoi1_3qb <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = "Times", base_size = 8) +
+  theme_bw(base_family = "Times", base_size = 10) +
   theme(
     strip.placement = "outside",
     strip.background = element_rect(color = "white",
@@ -1192,7 +1214,7 @@ eoi2_3qb <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = "Times", base_size = 8) +
+  theme_bw(base_family = "Times", base_size = 10) +
   theme(
     strip.placement = "outside",
     strip.background = element_rect(color = "white",
@@ -1214,7 +1236,7 @@ eoi1_3eb <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = "Times", base_size = 8) +
+  theme_bw(base_family = "Times", base_size = 10) +
   theme(
     strip.placement = "outside",
     strip.background = element_rect(color = "white",
@@ -1236,7 +1258,7 @@ eoi2_3eb <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = "Times", base_size = 8) +
+  theme_bw(base_family = "Times", base_size = 10) +
   theme(
     strip.placement = "outside",
     strip.background = element_rect(color = "white",
@@ -1244,147 +1266,114 @@ eoi2_3eb <-
   ) + 
   guides(linetype = guide_legend(override.aes = list(color = c("grey50", "darkorange"))))
 
-eoi1_kd <-
-  plot_explain_scatter(bullet_explain_perms[13:15, ], alpha = 0.9, weights = TRUE) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = "Times", base_size = 8) +
-  theme(
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white",
-                                    fill = "white")
-  )
-
-eoi2_kd <-
-  plot_explain_scatter(bullet_explain_perms[16:18, ], alpha = 0.9, weights = TRUE) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey45",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = "Times", base_size = 8) +
-  theme(
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white",
-                                    fill = "white")
-  )
+# eoi1_kd <-
+#   plot_explain_scatter(bullet_explain_perms[13:15, ], alpha = 0.9, weights = TRUE) +
+#   scale_color_gradient2(
+#     low = "grey50",
+#     high = "darkorange",
+#     midpoint = 0.5,
+#     limits = c(0, 1)
+#   ) +
+#   scale_fill_gradient2(
+#     low = "grey50",
+#     high = "darkorange",
+#     midpoint = 0.5,
+#     limits = c(0, 1)
+#   ) +
+#   theme_bw(base_family = "Times", base_size = 8) +
+#   theme(
+#     strip.placement = "outside",
+#     strip.background = element_rect(color = "white",
+#                                     fill = "white")
+#   )
+# 
+# eoi2_kd <-
+#   plot_explain_scatter(bullet_explain_perms[16:18, ], alpha = 0.9, weights = TRUE) +
+#   scale_color_gradient2(
+#     low = "grey50",
+#     high = "darkorange",
+#     midpoint = 0.5,
+#     limits = c(0, 1)
+#   ) +
+#   scale_fill_gradient2(
+#     low = "grey45",
+#     high = "darkorange",
+#     midpoint = 0.5,
+#     limits = c(0, 1)
+#   ) +
+#   theme_bw(base_family = "Times", base_size = 8) +
+#   theme(
+#     strip.placement = "outside",
+#     strip.background = element_rect(color = "white",
+#                                     fill = "white")
+#   )
 
 pf1_3qb <- plot_features(bullet_explain_perms[1:3,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
+  scale_fill_manual(values = c("darkorange", "grey50")) +
+  theme(text = element_text(family = "Times", size = 10))
 pf2_3qb <- plot_features(bullet_explain_perms[4:6,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
+  scale_fill_manual(values = c("darkorange", "grey50")) + 
+  theme(text = element_text(family = "Times", size = 10))
 pf1_3eb <- plot_features(bullet_explain_perms[7:9,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
+  scale_fill_manual(values = c("darkorange", "grey50")) +
+  theme(text = element_text(family = "Times", size = 10))
 pf2_3eb <- plot_features(bullet_explain_perms[10:12,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
-pf1_kd <- plot_features(bullet_explain_perms[13:15,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
-pf2_kd <- plot_features(bullet_explain_perms[16:18,]) +
-  scale_fill_manual(values = c("darkorange", "grey50"))
+  scale_fill_manual(values = c("darkorange", "grey50")) +
+  theme(text = element_text(family = "Times", size = 10))
+# pf1_kd <- plot_features(bullet_explain_perms[13:15,]) +
+#   scale_fill_manual(values = c("darkorange", "grey50"))
+# pf2_kd <- plot_features(bullet_explain_perms[16:18,]) +
+#   scale_fill_manual(values = c("darkorange", "grey50"))
 @
 
 \begin{figure*}[!thp]
-<<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 15, fig.height = 7.8125, message = FALSE>>=
+<<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 12, fig.height = 17, fig.align = "center", out.width="90%", message = FALSE>>=
 # Join the plots
-plot_grid(pf2_3qb, pf2_3eb, pf2_kd,
-          eoi2_3qb, eoi2_3eb, eoi2_kd,
-          nrow = 2,
-          rel_heights = c(0.45, 0.55))
+plot_grid(
+  pf2_3qb,
+  pf2_3eb,
+  eoi2_3qb,
+  eoi2_3eb,
+  pf1_3qb,
+  pf1_3eb,
+  eoi1_3qb,
+  eoi1_3eb,
+  nrow = 4,
+  rel_heights = c(0.2, 0.3, 0.2, 0.3)
+)
 @
-\caption{Plots of LIME explanations for one case in the test data that is a known non-match. Each column contains plots associated with a different application (3 quantile bins, 3 equal bins, or kernel density). The top row of plots are the explanation plots from \emph{lime}. The bottom row shows scatter plots of the simulated data associated with the prediction of interest. The features plotted are those chosen by LIME in the explanations, and the points are colored by the the random forest predictions. Lines showing the divisions created in the feature space by the bin based LIME methods are included as solid black lines. The scatter plots can be used to better understand the LIME explanation and assess if it is a good explanation.}
-\label{fig:bullet-eois-nonmatch}
-
-\vspace*{\floatsep}
-
-<<bullet-eois-match, out.width = '\\textwidth', fig.width = 15, fig.height = 7.8125, message = FALSE>>=
-# Join the plots
-plot_grid(pf1_3qb, pf1_3eb, pf1_kd,
-          eoi1_3qb, eoi1_3eb, eoi1_kd,
-          nrow = 2,
-          rel_heights = c(0.45, 0.55))
-@
-\caption{Plots with the same structure as \ref{fig:bullet-eois-match} but for an observation from the test data that is a known match.}
-\label{fig:bullet-eois-match}
+\caption{Plots of LIME explanations and explanation scatterplots for one case M and NM in the bullet test data. The first column contains plots associated with 3 quantile bins and the second with 3 equally spaced bins. The plots provide insights into the LIME explanations and allow for the assessment of the explanation quality.}
+\label{fig:bullet-eois}
 \end{figure*}
 
-The scatter plots of the kernel density applications for both the match and non-match case show that almost all of the simulated values have random forest predictions less than 0.5, which provide evidence in favor of a non-match. It appears that simulation method is not providing enough values to cover the feature space that hit regions where the random forest provides predictions above 0.5. The training data has a much smaller amount of matches (\Sexpr{sum(bullet_train$samesource)}) than non-matches (\Sexpr{sum(bullet_train$samesource == FALSE)}), and this simulation method is clearly affected by this imbalance in the two classification categories. Furthermore, this may be the cause of the minimal amount of variability in the LIME explanations across all of the cases in the test data.
-
-Without applying multiple applications LIME to the bullet test data or viewing diagnostic plots of the LIME explanations, it may be very possible to formulate reasons why the LIME explanations make sense. However, the sequence of plots in this section (Figures \ref{fig:bullet-feature-heatmap}, \ref{fig:bullet-lime-expls}, \ref{fig:bullet-assess-metric}, \ref{fig:bullet-eois-match}, and \ref{fig:bullet-eois-nonmatch}) suggest that we should be cautious to trust any of these LIME explanations. While some of them provide an explanation that may be reasonable, there could be better explanations (as seen in the 3 quantile bin case of \autoref{fig:bullet-eois-match}), and some of them provide explanations that make no sense (as seen in \autoref{fig:bullet-lime-expls}). It appears that either LIME needs to be further tuned to provide trustworthy and good explanations, or a different approach may provide better insight. As glimpsed with the scatter plots in Figures \ref{fig:bullet-eois-match} and \ref{fig:bullet-eois-nonmatch}, the more traditional approach to explanation random forest predictions by plotting the random forest predictions over the feature space (partial dependence plots), could provide better insight into the complex model with no need to assess the explanation method if the sampling method is well chosen.
+Without applying LIME with multiple tuning parameters to the bullet test data or viewing diagnostic plots of the LIME explanations, it may be very possible to formulate reasons why the LIME explanations make sense. However, the sequence of plots in this section (Figures \ref{fig:bullet-feature-heatmap}, \ref{fig:bullet-assess-metric}, and \ref{fig:bullet-eois}) suggest that we should be cautious to trust any of these LIME explanations. It appears that either LIME needs to be further tuned to provide trustworthy and good explanations, or a different approach may provide better insight. 
 
 \section{Discussion} \label{discussion}
-\hh{The discussion should not have subsection ... but we can keep them for now for structural purposes.}
 
-This paper highlights that while an explainer model is meant to provide clarity, it actually adds another layer of complexity to predictive models by requiring yet another model that needs to be assessed. Without an assessment of the explainer model, LIME is a black-box procedure of its own. \hh{XXX what is the implication? bring it to a punch: asking the user to trust into explainer  ...} We suggest the use of visual diagnostics to counteract the black-box nature of LIME and provide three diagnostic plots. %Here we discuss the limitations and possible extensions of the diagnostic plots and concerns about LIME raise by applications of the diagnostics plots in this paper.
+%\hh{The discussion should not have subsection ... but we can keep them for now for structural purposes.} \kg{Okay. I took them out.}
 
-\subsection{Diagnostic Plot Limitations and Possible Extensions} \label{limit-exten}
+This paper highlights that while an explainer model is meant to provide clarity, it actually adds another layer of complexity to predictive models by requiring yet another model that needs to be assessed. Without an assessment of the explainer model, LIME is a black-box procedure of its own requiring blind trust in the explainer model. %\hh{XXX what is the implication? bring it to a punch: asking the user to trust into explainer...}
+We suggest the use of visual diagnostics to counteract the black-box nature of LIME and provide three diagnostic plots.
 
-The largest limitation to visualizations is the dimensionality of the data shown, both in the number of dimensions or features as well as the number of observations. 
-Fortunately, in the situation of LIME, both of these aspects are rather well controlled: 
-LIME relies heavily on simulations to generate data scenarios that are close to the data observed but exhibits variability.
-Effects from overplotting should be relatively mild, because output from simulations is shown, which is expected to be (relatively) continuous. In that respect, the diagnostics shown for the \data\ and  in the bullet example  are representative of what is expected.
-But in cases where overplotting does become problematic, the user could either simply reduce the size of the simulations or use some well-studied binning techniques in the visualizations, as discussed in \citet{Carr:1987hi} \hh{reference to Millions book}
-
-
-
-% talking points: 
-% We acknowledge that not all prediction problems will produce trends as easy to interpret as the visualizations we have shown in the section, but we still believe that visualizations of the procedure can provide insight into the quality of the LIME explanation. We hope these figures will provide a starting point (if not an ending point) for the assessment of a single LIME explanation. Perhaps the inability to interpret a plot is itself telling, or the act of creating extensions of these visualizations to work with a different scenarios will lead to an understanding of the trustworthiness of the explanation.
-
-%\hh{In terms of limitations of the visualizations: first two features span the x and y axis, additional features can be used for faceting. four features is completely feasible, beyond that the visualization might not work as well. The number of bins should be in the single digits. A large number of small multiples \citep{Becker:1996gy} needs a strong signal in the data to be effective - otherwise the visualization might be affected by change blindness \citep{simonsChangeBlindness1997, review19}. }
-
-%The \data \ provide a \kge{neat} \kge{very clean} example of how to use the proposed visualizations to assess a single LIME explanation \kge{with two features. Once the number of features is greater than 3, adjustments will need to be made to the plots. In this case, multiple plots will be required to visualize the majority of the steps in the LIME procedure. Reasonable extensions would be scatterplot matrices or the use of faceting. \hh{XXX this is too vague: when do you use scatterplot matrices, what is the advantage of faceting. Make your solutions more concrete by discussing them as well as their limitations. }
-
-%\hh{Both large number of observations and large number of features make visual assessments harder:} \kgc{I've decided to not discuss a large amount of data, because that really isn't a problem due to the size of the simulated dataset being chosen by the user, and there is not a need to go above 5000. Whereas, it is reasonable to expect that a user may select more than two features.} \hh{That the size of the data is chosen by the user is actually a good point to make. }
-
-%\hh{the number of features can also be controlled by the user - lime is interested in a small number of features, as earlier mentioned, using faceting or scatterplot matrices we are able to deal with high single digits, low double digits of features. The limiting factors are screen space and cognitive load. }
-
-%In situations with large amounts of data, it may become difficult to see the trends if the training or testing data due to over plotting. However, consider that the number of observations in the simulated data is chosen by the user, which allows the user to select a number that is large enough to get a visual of the full range of the observed data without running into issues of over plotting.
-
-%Another possibly problematic situation is when it is of interest to include more than two features in the LIME explanation. In this situation, multiple plots will be required to visualize the LIME procedure, and if the number of features is really large, the number of plots may become too large to interpret well. However, if too many \hh{XXX what is too many? make this less abstract and give concrete suggestions on how to go beyond two dimensions.} features are chosen to be included in the LIME explanation, the explanation may no longer interpretable. It seems reasonable that the number of features to focus on in an explanation should be low enough that scatter plot matrices of the \sout{our} \hh{XXX not 'our' - that creates boundaries. you want the readers to use these plots as well.} diagnostic plots could be created.} \kgc{I decided I also didn't want to get into the discuss of "too many" features here.}}
-
-% Add a discussion on using our visualizations in situations without tabular data or a dichotomous response variable.
-
-\subsection{Concerns about LIME} \label{concerns}
-
-The visualizations are intended to provide insight on how LIME works, assess the ability of the explainer model to capture the complex predictive model, and compare LIME explanations produced by different tuning parameters. While the visualizations accomplish these tasks, they also expose examples of the failings of LIME. To address the discovered failings of LIME, we will reconsider each of the claims about the performance of LIME made by \citep{ribeiro:2016} (interpretability, faithfulness, linearity, and localness) in light of the insights gained from the diagnostic visualizations.
+The visualizations are intended to provide insight on how LIME works, assess the ability of the explainer model to capture the complex predictive model, and compare LIME explanations produced by different tuning parameters. While the visualizations accomplish these tasks, they also expose examples of the failings of LIME. To address the discovered failings of LIME, we will reconsider each of the claims about the performance of LIME made by \citet{ribeiro:2016} in light of the insights gained from the diagnostic visualizations.
 
 As previously discussed, the \textbf{interpretability} of the LIME explanations can be controlled by the complexity of the explainer model. For example, the number of bins selected for simulation can control the interpretability of the explanations. If too many bins are selected, the bin range that is reported in the LIME explanation will be too small to be meaningful in the context of the feature. An appropriate choice of the number of bins will keep the bin range meaningful. Thus, the claim of interpretability does not need to be assessed using the visualizations. However, diagnostic visualizations do present a different perspective on the meaning of interpretability.
 
-Even though an explanation will be interpretable as long as the complexity of the explainer model is appropriately chosen, the presentation of a LIME explanation in the key visual used by \citep{ribeiro:2016} (shown in \autoref{fig:sine-plot-poi}) could lead to an over simplified interpretation of the explainer model. Without a solid understanding of the details behind the fitting of the explainer model, the deeper meaning of the bars in the figure is lost.
+Even though an explanation will be interpretable as long as the complexity of the explainer model is appropriately chosen, a lack of understanding of the process used to create the explanation could lead to an incorrect interpretation of the explanation. For example, the visualization of a LIME explanation available from the \emph{lime} R package \citep{pedersen:2020} (shown in Figures \ref{fig:sine-exp-scatter} and \ref{fig:bullet-eois}) is a major simplification of the explainer model, which could lead to under-interpreted or misinterpreted LIME explanation. Supplementing \citet{pedersen:2020}'s compact visualization of the explanation with an explanation scatterplot that shows a more detailed visualization of the explainer model (such as Figures \ref{fig:sine-exp-scatter} and \ref{fig:bullet-eois}) promotes a full interpretation of the explanation.
 
-It is customary to interpret this plot by stating that the direction of the bar supports or contradicts the classification in a certain category, and the length of the bar signifies the importance of the involvement of a feature in the prediction. While these interpretations are correct, the lengths of the bars represent the coefficients of the ridge regression model used as the explainer model, which contain more meaning than just the direction of support and importance of a feature. The bars indicate how much the average complex model prediction estimated by the linear explainer model changes based on a change in the feature. Furthermore, this interpretation changes depending on whether a bin based or density simulation method was used (i.e the change in the average complex model prediction between an observation in the same bin as the case of interest and an observation not in the same bin versus the change in the mean complex model prediction for a change in the feature by one standardized unit).
+Even with an explainer model that is interpreted correctly, the interpretation is worthless if the explainer model is not \textbf{faithful} to the complex model. This claim can be assessed using the diagnostic plots suggested in this paper. Many of the visualizations in this paper highlight problems with the faithfulness of the explainer models. The explanation scatterplots allow for a comparison of the explainer model to the complex model. The examples in this paper show cases where the explainer model bins do not accurately capture the classification boundaries near the predictions of interest of the random forest models by oversimplifying the model (Figures \ref{fig:sine-exp-scatter} and \ref{fig:bullet-eois}). Using less bins would clearly not help improve the faithfulness of the explainer model in these examples, and while an increase in bins would lead to a finer resolution of the random forest classification boundaries, interpretability of the explainer model would quickly be lost. Perhaps this could be improved by allowing the bin creation to account for the relationships between the features and response variable or a different number of bins for each feature.
 
-Thus, even though an explainer model may be interpretable, the explanation it produces may be under-interpreted or misinterpreted without an understanding of the process that produced the explanation. Supplementing \citep{ribeiro:2016}'s compact visualization of the explanation with visualizations of the explanation that depict the simulated data and the explainer model (such as Figures \ref{fig:sine-plot-step3ab} and \ref{fig:bullet-eois-match}) promotes a full interpretation of the explanation. This is done by providing reminders of the meaning of the lengths of the bars in addition to a visual connection between complex model predictions and the estimated coefficients of the explainer model.
+In addition to assessing faithfulness by visually comparing the complex and explainer model, we propose a visual comparison of two faithfulness metrics (MSEE and average fidelity). The examples of faithfulness metric comparisons in this paper (Figures \ref{fig:sine-assess-metric} and \ref{fig:bullet-assess-metric}) both produced confusing results. The density based simulation methods resulted in the best or close to the best performance even though the feature heatmaps (Figures \ref{fig:sine-feat-heat} and \ref{fig:bullet-feature-heatmap}) showed that the density simulation methods produced global explanations with no variation in features selected by LIME. For the bin based simulation methods, the two metrics often did not agree or contradicted one another, which makes it difficult to decide on a recommendation of a set of tuning parameters that produces the explanations with the most faithful explainer model.
 
-Even with an explainer model that is interpreted correctly, the interpretation is worthless if the explainer model is not \textbf{faithful} to the complex model. This claim can be easily assessed using the diagnostic plots suggested in this paper. Many of the visualizations in this paper highlight problems with the faithfulness of the explainer models.
+The metric comparison plot also includes a comparison of average $R^2$ values, which is a metric that can be used to assess the claim of \textbf{linearity}. Most of the average $R^2$ values in the examples from this paper are below 0.5 suggesting a poor linear fit of the explainer models. The poor linear fit of the explainer model was also seen with the residual plot (\autoref{fig:sine-plot-resids}).
 
-The visualizations that incorporate the bins along with the complex model predictions (Figures \ref{fig:fig:sine-plot-step1ab}, \ref{ fig:sine-plot-step1c}, \ref{fig:sine-plot-step3ab}, \ref{fig:sine-plot-compare-bins}, \ref{fig:bullet-eois-match}, and \ref{fig:bullet-eois-nonmatch}) highlight issues that accompany the choice to use bin based simulation methods. These visualizations allow for a comparison of the size of the bins to the complex model's decision boundaries. All of the examples in this paper show cases where the bins do not accurately capture the classification boundaries near the predictions of interest of the random forest models by oversimplifying the model. Using less bins would clearly not help improve the faithfulness of the explainer model in these examples, and while an increase in bins would lead to a finer resolution of the random forest classification boundaries, interpretability of the explainer model would quickly be lost. The bins used by LIME are not flexible enough to capture the different sized division boundaries of the random forests shown in this paper. Perhaps this could be improved by allowing the bin creation to account for the relationships between the features and response variable or a different number of bins for each feature.
-
-The figures referenced in the previous paragraph from the \data \ example are all based on the application of LIME using a set of tuning parameters. From the use of the feature heatmap, we found that different sets of tuning parameters can produce different explanations. It makes sense that one set of tuning parameters could lead to a more faithful explainer model than another. As a result, we proposed a visual comparison of two faithfulness metrics (MSEE and average fidelity). The examples of faithfulness metric comparisons in this paper (Figures \ref{fig:sine-assess-metric} and \ref{fig:bullet-assess-metric}) both produced confusing results. In both examples, the density based simulation methods resulted in the best or close to the best performance even though the feature heatmaps (Figures \ref{fig:sine-feature-heatmap} and \ref{fig:bullet-feature-heatmap}) showed that the density simulation methods produced global explanations with no variation in features selected by LIME. For the bin based simulation methods, the two metrics often did not agree or contradicted one another, which makes it difficult to decide on a recommendation of a set of tuning parameters that produces the explanations with the most faithful explainer model.
-
-The metric comparison plot also includes a comparison of average $R^2$ values, which is a metric that can be used to assess the claim of \textbf{linearity}. Most of the average $R^2$ values in the examples from this paper are below 0.5 suggesting a poor linear fit of the explainer models. The poor linear fit of the explainer model was also seen with the residual plot (\autoref{fig:sine-plot-step2cd}).
-
-The final claim, \textbf{localness}, is also addressed by the feature heatmap and metric comparison plot. As stated, the feature heatmap revealed that the density simulation methods in the examples of this paper resulted in global explanations where the same features were repeatedly chosen across all (or almost all) observations in the set of explanations. This finding agrees with that of \citep{laugel:2019} who also found LIME produced global explanations with the normal approximation simulation method. For the bin based simulation methods in the bullet data example, the feature heatmap showed that the features chosen for the explanations varied between the two classification categories (match versus non-match). This is an interesting finding that suggests that different features can play a role in the predictions of observations in different response categories, but the patterns of features selected by LIME within a classification category do not vary. Again, this is a suggestion of global explanations. Furthermore, while the metric comparison plot in the bullet example did not provide agreement between metrics on a best bin based method, all metrics agree that a Gower power of 0.5 for computing the model weights associated with distance of a simulated data point from the prediction of interest was best. This suggests that a less local explanation provided a better explanation of the performance of the random forest.
+The final claim, \textbf{localness}, is addressed by the feature heatmap and metric comparison plot. As stated, the feature heatmap revealed that the density simulation methods in the examples of this paper resulted in global explanations where the same features were repeatedly chosen across all (or almost all) observations in the set of explanations. This finding agrees with that of \citep{laugel:2018} who found LIME produced global explanations with the normal approximation simulation method. For the bin based simulation methods in the bullet data example, the feature heatmap showed that the features chosen for the explanations varied between the two classification categories (match versus non-match). This is an interesting finding that suggests that different features can play a role in the predictions of observations in different response categories, but the patterns of features selected by LIME within a classification category do not vary. Again, this is a suggestion of global explanations. Furthermore, while the metric comparison plot in the bullet example did not provide agreement between metrics on a best bin based method, all metrics agree that a Gower power of 0.5 for computing the model weights associated with distance of a simulated data point from the prediction of interest was best. This suggests that a less local explanation provided a better explanation of the performance of the random forest.
 
 Some of the visualizations in the paper generalize easily to any application of LIME such as the feature heatmap and metric plot. Other plots such as the visualizations of the LIME procedure would require extensions such as the use of scatterplot matrices to compare explanations with more than two features. The addition of interactivity to the diagnostic plots would provide additional enhancement of the assessment process. For example, a diagnostic plot that provides a summary of multiple LIME explanations, such as the feature heatmap, could be displayed and clicked on to reveal more detailed figures associated with individual predictions of interest, such as plots of the simulated data and explainer model.
 
-While it would be ideal if LIME could be used as a method to provide easily understandable explanations for black-box models as \citep{ribeiro:2016} claim, that dream is not yet a reality. The examples using diagnostic plots to assess LIME in this paper show frequent issues with LIME. The practice of assessing the performance of methods has once again shown its importance. We hope that our plots provide motivation to assess LIME explanations, to not blindly use the default settings (even if it is not clear which tuning parameters to use), and perhaps to encourage work on improving LIME, so that it can be a lime and not a lemon.
+The largest limitation to the diagnostic visualizations is the dimensionality of the data shown, both in the number of dimensions or features as well as the number of observations. Fortunately, in the situation of LIME, both of these aspects are rather well controlled: LIME relies heavily on simulations to generate data scenarios that are close to the data observed but exhibits variability. Effects from overplotting should be relatively mild, because output from simulations is shown, which is expected to be (relatively) continuous \kgc{What do you mean by continuous here?}. In that respect, the diagnostics shown for the \data\ and in the bullet example are representative of what is expected. But in cases where overplotting does become problematic, the user could either simply reduce the size of the simulations or use some well-studied binning techniques in the visualizations, as discussed in \citet{carr:1987} \hh{reference to Millions book}
+
+While it would be ideal if LIME could be used as a method to provide easily understandable explanations for black-box models as \citep{ribeiro:2016} claim, that dream is not yet a reality. The examples using diagnostic plots to assess LIME in this paper show frequent issues with LIME. We hope that our plots provide motivation to assess LIME explanations, to not blindly use the default settings (even if it is not clear which tuning parameters to use), and to encourage work on improving LIME, so that it can be a lime and not a lemon.
 
 \section*{Acknowledgments}
 
@@ -1410,15 +1399,36 @@ The following supporting information is available as part of the online article:
 
 \section{LIME Tuning Parameter Options} \label{lime-details}
 
+The following tuning parameters for the LIME algorithm are available in the \emph{lime} R package.
+
+\begin{itemize}
+
+\item Data simulation methods:
+
+\begin{itemize}
+\item Equally spaced bins: observations are uniformly sampled from equally spaced bins (number of bins may be specified)
+\item Quantile bins: observations are uniformly sampled from quantile bins (number of bins may be specified)
+\item Normal density approximation: observations are sampled from a normal distribution with mean and standard deviation computed from the corresponding feature
+\item Kernel density approximation: observations are sampled from an kernel density approximation of the corresponding feature
+\end{itemize}
+
+\item Number of observations to simulate
+
+\item Distance metric for determining proximity to the prediction of interest: Gower distance (where the power may be specified) or exponential kernel (where the kernel width may be specified)
+
+\item Number of features to return in an explanation
+
+\item Feature selection method for determining the features to return in an explanation: forward selection applied to a ridge regression, heighest weights in ridge regression, LASSO, classification/regression tree splits
+
+\end{itemize}
+
 \section{Explanation Scatterplots Under Other Simulation Scenarios} \label{exp-scatter_plus}
 
 Section \ref{exp-scatter} introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: four quantile bins. The structure of an explanation scatterplot remains the same for if any bin based simulation method is used to create the simulated data (any number of quantile or equally spaced bins). However, if the kernel density or normal approximation simulation methods are used as the simulation method, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
 
 When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
 
-Figure ... provides example explanation scatterplots for each feature in the default LIME explanation for the \data individual prediction of interest indicated in Figure \ref{fig:sine-plot-data}.
-
-\kgc{Need to updated limeaid to create this plot and then add figure here.}
+Figure ... provides example explanation scatterplots for each feature in the default LIME explanation for the \data \ prediction of interest indicated in Figure \ref{fig:sine-plot-data}. \kgc{Need to updated limeaid to create this plot and then add figure here.}
 
 \section{Explainer Model Residual Plot} \label{residual-plot}
 
@@ -1450,17 +1460,27 @@ ggplot(sine_poi_perms, aes(x = exppred, y = resid)) +
 
 \section{Details on Assessment Metrics} \label{metric-details}
 
-\kgc{Placing the notation definitions here for now - need to make adjustments as necessary:} \kge{We first introduce notation for the scenario of tabular data with a binary response variable and continuous features. Let $\textbf{X}$ be an $n$ by $p$ data matrix with $p$ features and $n$ observations, and let $x_i\in\textbf{X}$ be a real-valued vector such that $x_i\in\mathbb{R}^p$ for $i=1,2,...,n$. Furthermore, let $y$ be a response variable of length $n$ with elements $y_i\in\{0, 1\}$ for $i=1,2,...,n$. Suppose that $f$ is a classification model where $f:\mathbb{R}^p\rightarrow[0,1]$ that is applied to $\textbf{X}$ and $y$. Let the vector of predictions made by $f$ applied to $\textbf{X}$ be denoted as $\hat{y}$. Note that $\hat{y}_i=f(x_i)\in\hat{y}$ for $i=1,..,n$. For both bin based methods, the interpretability transformation converts the generated observations to indicator variables, where a 1 indicates that the feature value for an observation is in the same bin as the feature value for the case of interest. That is
-  $$z'_{i,j}=T\left(x'_{i,j}\right) = I\left[x'_{i,j} \mbox{ and } x^*_{i,j}\in b_{j,k} \right]$$
-for $i=1,..,m$ and $j=1,..,p$ where $b_{j,k}$ is bin $k$ for feature $j$. Let observation $z'_i$ have weight $\omega_{x^*}(\textbf{x}'_i) = Gower(x^*, x'_i)^c$, where $Gower$ represents the computation of the Gower similarity and $c$ is some constant. This denotes a proximity measure between $x^*$ and $x'_i$ for each $i\in 1,...,m$. If the exponential kernel is used, the weights are computed after the interpretability transformation such that $z'_i$ has weight $\omega_{z^*}(\textbf{z}'_i)$.}
+Suppose $f$ is a complex model, and let $\textbf{X}$ be a matrix of observed data with $K$ features and $E$ observations where $x_e$ is an observed feature vector for observation $e$. Let $f(x_e)$ be the complex model prediction for observation $e$. It is of interest to explain the predictions made by $f$ applied to $X$ using LIME. 
 
-\citet{ribeiro:2016} present \hh{the following metric as a measure of fidelity:}
-$$\mathcal{L}(f, g, \omega_{x^*}) = \sum_{i=1}^{m}\omega_{x^*}(x_i)\left(f(x_i)-g\left(z_i'\right)\right)^2,$$
-\hh{where  ... }
+For $x_e$ and set of tuning parameters $t$, let $\textbf{X}_{e,t}'$ be the LIME simulated dataset with $K$ features and $S$ observations such that $x'_{e,t,s}$ is the feature vector for simulated data observation $s$. Let $\textbf{Z}'_{e,t}$ be the matrix of interpretability transformed simulated data with $K$ features and $S$ observations such that $z'_{e,t,s}$ is the interpretability transformed feature vector for observation/explanation $e$, tuning parameter $t$, and simulated data observation $s$. Note that $z_{e,t}$ will represent the interpretability transformed version of $x_e$.
 
-This metric is computed as $$\mathcal{L}(f, g, \omega_{x^*}) = \sum_{i=1}^{m}\omega_{x^*}(x_i)\left(f(x_i)-g\left(z_i'\right)\right)^2.$$ Smaller values of $\mathcal{L}$ indicate a better local approximation of the explainer model to the complex model.
+Next, let $\omega_t$ represent a proximity distance metric. Then $\omega_t\left(x_e, x'_{e,t,s}\right)$ is the weight assigned to $x'_{e,t,s}$, which is the proximity between $x_e$ and $x'_{e,t,s}$. Allow $g_{e,t}$ to be the explainer model for an explanation $e$ and tuning parameter $t$. Thus, $g_{e,t}\left(z'_{e,s,t}\right)$ is the explainer model prediction for the interpretability transformed simulated data observation $s$. 
 
-That is, let $$MSEE=\frac{1}{n}\sum_{i=1}^n\left(f\left(x^*\right)-g\left(z^*\right)\right)^2.$$ Again, smaller values of MSEE would suggest a better approximation of the explainer model.
+For a set of $E$ explanations and a set of tuning parameters $t$, we define the assessment metrics as follows:\\
+\\
+\emph{Average $R^2$} is denoted as $R^2_{\mbox{ave}}$ and computed as
+
+  $$R^2_{\mbox{ave}} = \frac{1}{E}\sum_{e=1}^E R_{e,t}^2$$
+
+where $R_{e,t}^2$ is the $R^2$ value for $g_{e,t}$.\\
+\\
+\emph{Average fidelity} is denoted by $\mathcal{L}_{\mbox{ave}}$ and computed as
+
+\begin{eqnarray*} \mathcal{L}_{\mbox{ave}} & = & \frac{1}{E}\sum_{e=1}^E\mathcal{L}(f, \ g_{e,t}, \ \pi_{t}) \\ & = & \frac{1}{E}\sum_{e=1}^E\sum_{s=1}^{S}\omega_{t}\left(x_e, x'_{e,t,s}\right)\left(f\left(x'_{e,t,s}\right)-g_{e,t}\left(z_{e,t,s}'\right)\right)^2. \end{eqnarray*}\\
+\\
+\emph{Mean squared explanation error} is denoted by MSEE and computed as
+
+$$MSEE=\frac{1}{E}\sum_{e=1}^E\left(f\left(x_e\right)-g_{e,t}\left(z_{e,t}\right)\right)^2.$$
 
 \bibliography{references}
 
@@ -1504,7 +1524,6 @@ That is, let $$MSEE=\frac{1}{n}\sum_{i=1}^n\left(f\left(x^*\right)-g\left(z^*\ri
 % \item \hh{avoid the use of implicit references like `this' and `that'. Make the reference explicit by adding what you are referring to, such as `this method', `that procedure'}
 % \item \hh{make sure to use exact phrases. things like `LIME was developed in 2016' is factually questionable - but we know LIME was introduced in 2016. Also `the authors were interested in ...' implies that you know their intent. It's better to not guess any intent but stick to what we know.}
 % \item \hh{`our` diagnostics ... you are using `our` quite often. It is good to claim work, but it is not good to claim things that we want others to use, because that is by definition excluding everybody but you. It's better to re-phrase with a focus on what you did. We introduce, we suggest, etc.}
-% \item \hh{Try to give each of the diagnostics a name.}
 % \item \kgc{check that I am always using present tense}
 % \item \kgc{check that I am consistent in my use of the term black-box model}
 % \end{itemize}
