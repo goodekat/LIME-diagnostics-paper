@@ -584,7 +584,6 @@ sine_lime_default <- sine_lime_explain$explain %>% filter(nbins == 4)
 sine_poi_lime_default <- sine_lime_default %>%
   filter(case == sine_poi %>% pull(case)) %>%
   mutate(case = c("Prediction of Interest", "Prediction of Interest"))
-
 @
 
 In this section, we introduce three visual diagnostic plots for the assessment of LIME. The plots focus on different levels of application of LIME (e.g. on explanation versus a set of explanations) to assess the LIME claims from different perspectives:
@@ -1428,14 +1427,29 @@ Section \ref{exp-scatter} introduces explanation scatterplots under the default 
 
 When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
 
-Figure ... provides example explanation scatterplots for each feature in the default LIME explanation for the \data \ prediction of interest indicated in Figure \ref{fig:sine-plot-data}. \kgc{Need to updated limeaid to create this plot and then add figure here.}
+Figure \ref{fig:sine-expl-scat-density} provides example explanation scatterplots for each feature in the default LIME explanation obtained using the kernel density simulation method for the \data \ prediction of interest.
+
+\begin{figure*}[!thp]
+<<sine-expl-scat-density, out.width = '\\textwidth', fig.width = 12, fig.height = 4.5, fig.align = "center">>=
+plot_explain_scatter(
+  sine_lime_explain$explain %>%
+    filter(sim_method == "kernel_density", case == sine_poi %>% pull(case)),
+  alpha = 0.75, title.opt = FALSE
+) + 
+  theme_bw(base_family = "Times") +
+  theme(strip.background = element_rect(fill = "white", color = "white"),
+        strip.placement = "outside")
+@
+\caption{Explanation scatterplots for the \data \ prediction of interest with the kernel density simulation method.}
+\label{fig:sine-expl-scat-density}
+\end{figure*}
 
 \section{Explainer Model Residual Plot} \label{residual-plot}
 
 In order to assess the claim of linearity for the \data \ prediction of interest discussed in Section \ref{exp-scatter}, we use one of the most basic diagnostics in a statistician's tool box and draw a residual plot for the explainer model. This is shown in Figure \ref{fig:sine-plot-resids} with the explainer model residuals on the y-axis and explainer model predictions on the x-axis. The points along the x-axes have been jittered to ease the effect of the over-plotted points in the visualization. There is a clear increasing trend in the residuals as the explainer model predictions increase. This is a clear violation of the linearity assumption with the ridge regression model.
 
 \begin{figure}[!thp]
-<<sine-plot-resids, out.width = '0.5\\textwidth', fig.width = 4, fig.height = 3.25, warning = FALSE>>=
+<<sine-plot-resids, out.width = '0.5\\textwidth', fig.width = 5, fig.height = 4, warning = FALSE>>=
 
 # Calculate the residuals from the explainer model
 y <- sine_poi_perms$rfpred
