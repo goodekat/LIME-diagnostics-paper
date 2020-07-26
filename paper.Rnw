@@ -1090,7 +1090,7 @@ bullet_explain <- bullet_explain_noperms %>%
   )
 @
 
-\subsection{LIME Assessment Visualizations}
+\subsection{LIME Assessment Visualizations} \label{bullet-assess-ex}
 
 To get an overview of the LIME explanations from the 36 applications, we consider a feature heatmap (\autoref{fig:bullet-feature-heatmap}). In addition to facets for simulation method and order of feature selected by LIME, this plot includes a vertical facet for Gower power and a horizontal facet for whether the observation is a known match or non-match. This plot highlights several key features of the LIME explanations from the bullet matching dataset.
 
@@ -1165,7 +1165,7 @@ To try to identify a set of LIME tuning parameters with the most trustworthy set
 
 Perhaps we can say that the kernel density method, 3 equal bins, or 3 quantile bins are some of the better performing methods, but unfortunately, \autoref{fig:bullet-assess-metric} leaves us without a clear indication of which set of explanations to use to explain the random forest. To better understand the explanations provided by these three methods, we take a closer look at explanations from these methods for two observations of interest, which will be referred to as case M (a known match) and case NM (a known non-match).
 
-Figure \ref{fig:bullet-eois} include the explanation plots (from \emph{lime}) and explanation scatterplots for cases M and NM. Plots for 3 equal bins and 3 quantile bins are included. The scatterplots provide several insights into the LIME explanations. Here we focus on the explanation for case NM with 3 quantile bins, but similar statements can be made about the other plots.
+Figure \ref{fig:bullet-eois} include the explanation plots (from \emph{lime}) and explanation scatterplots for cases M and NM. Plots for 3 equal bins and 3 quantile bins are included. Plots for the kernel density simulation method are included in Figure \ref{fig:bullet-expl-scat-density}. The scatterplots provide several insights into the LIME explanations. Here we focus on the explanation for case NM with 3 quantile bins, but similar statements can be made about the other plots.
 
 The explanation plot from \emph{lime} for case NM with 3 quantile bins shows that an observed CCF value greater than 0.320 supports a random forest prediction in favor of a match, and the scatter plots show that many of the simulated values with CCF greater then 0.320 have random forest predictions greater than 0.5. Additionally, the LIME explanation indicates that a value of matches less than or equal to 1.66 contradicts a prediction in favor of a match, and the scatter plots show that almost all simulated values with a value of matches less than or equal to 1.66 have random forest predictions close to 0. While the LIME explanation makes sense based on the observations made from the explanation scatter plot, the plot also indicates that LIME falls short of providing a good explanation of the random forest prediction for case NM. Based on the scatter plot of CCF versus matches, a better explanation would be that because case NM has a value of CCF less than 0.8 and a value of matches less than 7, the random forest provides a prediction supporting a non-match. The relationship between CCF and rough correlation does not provide much evidence to support the random forest prediction one way or the other, but there is a pentagon shaped region at the bottom of the scatter plot of matches versus rough correlation with mostly predictions close to 0 that case NM falls and supports the random forest prediction of a non-match.
 
@@ -1326,7 +1326,7 @@ pf2_3eb <- plot_features(bullet_explain_perms[10:12,]) +
 @
 
 \begin{figure*}[!thp]
-<<bullet-eois-nonmatch, out.width = '\\textwidth', fig.width = 12, fig.height = 17, fig.align = "center", out.width="90%", message = FALSE>>=
+<<bullet-eois, out.width = '\\textwidth', fig.width = 12, fig.height = 17, fig.align = "center", out.width="90%", message = FALSE>>=
 # Join the plots
 plot_grid(
   pf2_3qb,
@@ -1417,7 +1417,7 @@ The following tuning parameters for the LIME algorithm are available in the \emp
 
 \item Number of features to return in an explanation
 
-\item Feature selection method for determining the features to return in an explanation: forward selection applied to a ridge regression, heighest weights in ridge regression, LASSO, classification/regression tree splits
+\item Feature selection method for determining the features to return in an explanation: forward selection applied to a ridge regression, highest weights in ridge regression, LASSO, classification/regression tree splits
 
 \end{itemize}
 
@@ -1425,8 +1425,7 @@ The following tuning parameters for the LIME algorithm are available in the \emp
 
 Section \ref{exp-scatter} introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: four quantile bins. The structure of an explanation scatterplot remains the same for if any bin based simulation method is used to create the simulated data (any number of quantile or equally spaced bins). However, if the kernel density or normal approximation simulation methods are used as the simulation method, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
 
-When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. %The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. 
-An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
+When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
 
 Figure \ref{fig:sine-expl-scat-density} provides example explanation scatterplots for each feature in the default LIME explanation obtained using the kernel density simulation method for the \data \ prediction of interest.
 
@@ -1445,31 +1444,33 @@ plot_explain_scatter(
 \label{fig:sine-expl-scat-density}
 \end{figure*}
 
-% \begin{figure*}[!thp]
-% <<bullet-expl-scat-density, out.width = '\\textwidth', fig.width = 12, fig.height = 8, fig.align = "center">>=
-% bullet_es_NM <- 
-%   plot_explain_scatter(
-%   bullet_explain_perms[13:15, ] %>% mutate(case = "M"),
-%   alpha = 0.75, title.opt = TRUE
-% ) + 
-%   theme_bw(base_family = "Times") +
-%   theme(strip.background = element_rect(fill = "white", color = "white"),
-%         strip.placement = "outside")
-% 
-% bullet_es_M <- 
-%   plot_explain_scatter(
-%   bullet_explain_perms[16:18, ] %>% mutate(case = "NM"),
-%   alpha = 0.75, title.opt = TRUE
-% ) + 
-%   theme_bw(base_family = "Times") +
-%   theme(strip.background = element_rect(fill = "white", color = "white"),
-%         strip.placement = "outside")
-% 
-% plot_grid(bullet_es_NM, bullet_es_M, nrow = 2)
-% @
-% \caption{}
-% \label{fig:bullet-expl-scat-density}
-% \end{figure*}
+Figure \ref{fig:bullet-expl-scat-density} includes explanation scatterplots for the explanations generated using kernel density simulation for the bullet example cases M and NM discussed in Section \ref{bullet-assess-ex}.
+
+\begin{figure*}[!thp]
+<<bullet-expl-scat-density, out.width = '\\textwidth', fig.width = 12, fig.height = 9, fig.align = "center">>=
+bullet_es_NM <-
+  plot_explain_scatter(
+  bullet_explain_perms[13:15, ] %>% mutate(case = "M"),
+  alpha = 0.75, title.opt = TRUE
+) +
+  theme_bw(base_family = "Times") +
+  theme(strip.background = element_rect(fill = "white", color = "white"),
+        strip.placement = "outside")
+
+bullet_es_M <-
+  plot_explain_scatter(
+  bullet_explain_perms[16:18, ] %>% mutate(case = "NM"),
+  alpha = 0.75, title.opt = TRUE
+) +
+  theme_bw(base_family = "Times") +
+  theme(strip.background = element_rect(fill = "white", color = "white"),
+        strip.placement = "outside")
+
+plot_grid(bullet_es_NM, bullet_es_M, nrow = 2)
+@
+\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M and NM of the bullet comparison.}
+\label{fig:bullet-expl-scat-density}
+\end{figure*}
 
 \section{Explainer Model Residual Plot} \label{residual-plot}
 
