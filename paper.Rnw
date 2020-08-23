@@ -614,7 +614,7 @@ For the presentation of the explanation scatterplot, we focus on the misclassifi
 \hh{All runs of LIME in this paper are executed in}
 a forked version\footnote{https://github.com/goodekat/lime} of the development version of the R package \emph{lime} (\Sexpr{packageVersion("lime")}) \citep{pedersen:2020}. 
 The forked version \hh{is functionally indistinguishable from Pedersen's implementation but it} allows us to export internal values \hh{relevant for an assessment of the explainer}. 
-The R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid} (\Sexpr{packageVersion("limeaid")}) implements diagnostic plots based on the output of the altered version of `lime`.
+The R package \emph{limeaid} \footnote{Available on GitHub at https://github.com/goodekat/limeaid} (\Sexpr{packageVersion("limeaid")}) implements diagnostic plots based on the output of the altered version of \emph{lime}.
 
 
 
