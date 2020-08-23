@@ -7,11 +7,27 @@
   isbn={9780387329062}
 }
 
-@article{alvarezmelis:2018, 
+@conference{alvarezmelis:2018, 
   author = {Alvarez-Melis, David and Jaakkola, Tommi S}, 
   title = {On the Robustness of Interpretability Methods}, 
   eprint = {1806.08049},
-  year = {2018}
+  crossref={icml:18},
+  year = {2018},
+  doi={10.1109/ICRA.2019.8794437},
+  url={https://arxiv.org/abs/1806.08049}
+}
+
+
+@proceedings{icml:18,
+  editor =       {Been Kim and Kush R. Varshney and Adrian Weller},
+  title =        "2018 ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
+  booktitle =    "2018 ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
+  publisher =    {ICML},
+  venue =        {Stockholm Sweden},
+  month =        jul,
+  year =         {2018},
+  doi =         {},
+  
 }
 
 @article{bau:2017, 
@@ -55,8 +71,6 @@
   rating = {0},
   date-added = {2020-07-15T13:35:24GMT},
   date-modified = {2020-07-15T13:35:49GMT},
-  url = {http://www.tandfonline.com/doi/abs/10.1080/01621459.1987.10478445},
-  uri = {\url{papers3://publication/doi/10.1080/01621459.1987.10478445}}
 }
 
 @article{emerson:2013,
@@ -73,12 +87,14 @@
 }
 
 @article{fisher:2018, 
-  author = {Fisher, Aaron and Rudin, Cynthia and Dominici, Francesca}, 
-  title = {{Model Class Reliance: Variable Importance Measures for any    
-  Machine Learning Model Class, from the “Rashomon” Perspective}}, 
-  eprint = {1801.01489v1}, 
-  url = {https://arxiv.org/pdf/1801.01489v1.pdf}, 
-  year = {2018}
+  author  = {Aaron Fisher and Cynthia Rudin and Francesca Dominici},
+  title   = {All Models are Wrong, but Many are Useful: Learning a Variable's Importance by Studying an Entire Class of Prediction Models Simultaneously},
+  journal = {Journal of Machine Learning Research},
+  year    = {2019},
+  volume  = {20},
+  number  = {177},
+  pages   = {1-81},
+  url     = {http://jmlr.org/papers/v20/18-760.html}
 }
 
 @article{friedman:2001, 
@@ -94,16 +110,30 @@
   publisher = "The Institute of Mathematical Statistics"
 }
 
-@inproceeedings{gilpin:2018,
+@conference{gilpin:2018,
   author = {Gilpin, Leilani H and Bau, David and Yuan, Ben Z and Bajwa,
   Ayesha and Specter, Michael and Kagal, Lalana}, 
   title = {{Explaining Explanations: An Overview of Interpretability of Machine Learning}}, 
-  booktitle={{2018 IEEE 5th International Conference on Data Science and Advanced Analytics (DSAA)}},
+  crossref =  {dsaa:18},
   eprint = {1806.00069}, 
   year = {2018},
   publisher={IEEE},
+  pages={80--89},
   doi={10.1109/ICRA.2019.8794437}
 }
+
+
+@proceedings{dsaa:18,
+  editor =       {Francesco Bonchi and Foster Provost},
+  title =        "2018 IEEE 5th International Conference on Data Science and Advanced Analytics (DSAA)",
+  booktitle =    "2018 IEEE 5th International Conference on Data Science and Advanced Analytics (DSAA)",
+  publisher =    {IEEE},
+  venue =        {Turin Italy},
+  month =        oct,
+  year =         {2018},
+  doi =         {10.1109/DSAA.2018.00018},
+}
+
 
 
 
@@ -241,22 +271,23 @@
   year = {2019}
 }
 
-@article{nrc:2009, 
+@misc{nrc:2009, 
   author = {{Committee on Identifying the Needs of the
   Forensic Sciences, National Research Council}}, 
-  title = {Strengthening Forensic Science in the United States: 
-  A Path Forward}, 
-  journal = {National Academies Press},
+  title = {{Strengthening Forensic Science in the United States: 
+  A Path Forward}}, 
+  publisher = {National Academies Press},
+  howpublished={\url{https://www.ncjrs.gov/pdffiles1/nij/grants/228091.pdf}},
   year = {2009}
 }
 
-@online{pcast:2016,
+@misc{pcast:2016,
   title = {Report on Forensic Science in Criminal Courts: Ensuring
   Scientific Validity of Feature-Comparison Methods},
   author = {{President's Council of Advisors on Science and Technology}},
   year = {2016},
-  url = {https://obamawhitehouse.archives.gov/sites/default/files/microsites/ostp/PCAST/pcast_forensic_science_report_final.pdf},
-  urldate = {2016-09-24}
+  howpublished = {\url{https://obamawhitehouse.archives.gov/sites/default/files/microsites/ostp/PCAST/pcast_forensic_science_report_final.pdf}},
+  urldate = {2020-08-23}
 }
 
 @manual{pedersen:2020,
