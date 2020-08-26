@@ -1,41 +1,21 @@
-@book{gold,
-  author={Antony R. Unwin and Martin Theus and Heike Hofmann},
-  title={Graphics of Large Datasets: Visualizing a Million},
-  publisher={Springer},
-  address={New York},
-  year={2006},
-  isbn={9780387329062}
-}
-
 @conference{alvarezmelis:2018, 
   author = {Alvarez-Melis, David and Jaakkola, Tommi S}, 
   title = {On the Robustness of Interpretability Methods}, 
   eprint = {1806.08049},
-  crossref={icml:18},
+  crossref = {icml:18},
   year = {2018},
-  doi={10.1109/ICRA.2019.8794437},
-  url={https://arxiv.org/abs/1806.08049}
-}
-
-
-@proceedings{icml:18,
-  editor =       {Been Kim and Kush R. Varshney and Adrian Weller},
-  title =        "2018 ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
-  booktitle =    "2018 ICML Workshop on Human Interpretability in Machine Learning (WHI 2018)",
-  publisher =    {ICML},
-  venue =        {Stockholm Sweden},
-  month =        jul,
-  year =         {2018},
-  doi =         {},
-  
+  doi = {10.1109/ICRA.2019.8794437},
+  url = {https://arxiv.org/abs/1806.08049}
 }
 
 @article{bau:2017, 
-  author = {Bau, David and Zhou, Bolei and Khosla, Aditya and Oliva, 
-  Aude and Torralba, Antonio}, 
-  title = {Network Dissection: Quantifying Interpretability of Deep
-  Visual Representations}, 
-  eprint = {1704.05796},
+  author = {Bau, David and Zhou, Bolei and Khosla, Aditya and Oliva, Aude and 
+  Torralba, Antonio}, 
+  title = {{Network Dissection: Quantifying Interpretability of Deep Visual
+  Representations}}, 
+  doi = {10.1109/cvpr.2017.354}, 
+  pages = {3319--3327}, 
+  journal = {2017 IEEE Conference on Computer Vision and Pattern Recognition (CVPR)}, 
   year = {2017}
 }
 
@@ -74,7 +54,7 @@
 }
 
 @article{emerson:2013,
-  author = {Emerson, John W. and Green, Walton A. and Schloerke, Barret and Crowley, 
+  author = {Emerson, John W. and Green, Walton A. and Schloerke, Barret and Crowley,
   Jason and Cook, Dianne and Hofmann, Heike and Wickham, Hadley}, 
   title = {{The Generalized Pairs Plot}}, 
   issn = {1061-8600},   
@@ -87,14 +67,15 @@
 }
 
 @article{fisher:2018, 
-  author  = {Aaron Fisher and Cynthia Rudin and Francesca Dominici},
-  title   = {All Models are Wrong, but Many are Useful: Learning a Variable's Importance by Studying an Entire Class of Prediction Models Simultaneously},
+  author = {Aaron Fisher and Cynthia Rudin and Francesca Dominici},
+  title = {All Models are Wrong, but Many are Useful: Learning a Variable's
+  Importance by Studying an Entire Class of Prediction Models Simultaneously},
   journal = {Journal of Machine Learning Research},
-  year    = {2019},
-  volume  = {20},
-  number  = {177},
-  pages   = {1-81},
-  url     = {http://jmlr.org/papers/v20/18-760.html}
+  year = {2019},
+  volume = {20},
+  number = {177},
+  pages = {1-81},
+  url = {http://jmlr.org/papers/v20/18-760.html}
 }
 
 @article{friedman:2001, 
@@ -113,48 +94,63 @@
 @conference{gilpin:2018,
   author = {Gilpin, Leilani H and Bau, David and Yuan, Ben Z and Bajwa,
   Ayesha and Specter, Michael and Kagal, Lalana}, 
-  title = {{Explaining Explanations: An Overview of Interpretability of Machine Learning}}, 
+  title = {{Explaining Explanations: An Overview of Interpretability of 
+  Machine Learning}}, 
   crossref =  {dsaa:18},
   eprint = {1806.00069}, 
   year = {2018},
-  publisher={IEEE},
-  pages={80--89},
-  doi={10.1109/ICRA.2019.8794437}
+  publisher = {IEEE},
+  pages = {80--89},
+  doi = {10.1109/ICRA.2019.8794437}
 }
 
+@proceedings{icml:18,
+  editor = {Been Kim and Kush R. Varshney and Adrian Weller},
+  title = "2018 ICML Workshop on Human Interpretability in Machine 
+  Learning (WHI 2018)",
+  booktitle = "2018 ICML Workshop on Human Interpretability in Machine
+  Learning (WHI 2018)",
+  publisher = {ICML},
+  venue = {Stockholm Sweden},
+  month = jul,
+  year = {2018},
+  doi = {}
+}
 
 @proceedings{dsaa:18,
-  editor =       {Francesco Bonchi and Foster Provost},
-  title =        "2018 IEEE 5th International Conference on Data Science and Advanced Analytics (DSAA)",
-  booktitle =    "2018 IEEE 5th International Conference on Data Science and Advanced Analytics (DSAA)",
-  publisher =    {IEEE},
-  venue =        {Turin Italy},
-  month =        oct,
-  year =         {2018},
-  doi =         {10.1109/DSAA.2018.00018},
+  editor = {Francesco Bonchi and Foster Provost},
+  title = "2018 IEEE 5th International Conference on Data Science and
+  Advanced Analytics (DSAA)",
+  booktitle = "2018 IEEE 5th International Conference on Data Science 
+  and Advanced Analytics (DSAA)",
+  publisher = {IEEE},
+  venue = {Turin Italy},
+  month = oct,
+  year = {2018},
+  doi = {10.1109/DSAA.2018.00018}
 }
 
 @Manual{goode:2020,
-    title = {limeaid: Diagnose LIME Explanations},
-    author = {Katherine Goode},
-    year = {2020},
-    note = {R package version 0.0.1},
-    howpublished={\url{https://github.com/goodekat/limeaid}}
-  }
+  title = {limeaid: Diagnose LIME Explanations},
+  author = {Katherine Goode},
+  year = {2020},
+  note = {R package version 0.0.1},
+  howpublished = {\url{https://github.com/goodekat/limeaid}}
+}
 
 @article{goodman:2016, 
   title = {European Union regulations on algorithmic decision-making and
   a "right to explanation"}, 
   author = {Goodman, Bryce and Flaxman, Seth},
-  volume={38}, 
-  url={https://www.aaai.org/ojs/index.php/aimagazine/article/view/2741}, 
-  DOI={10.1609/aimag.v38i3.2741}, 
-  number={3}, 
-  journal={AI Magazine},
+  volume = {38}, 
+  url = {https://www.aaai.org/ojs/index.php/aimagazine/article/view/2741}, 
+  DOI = {10.1609/aimag.v38i3.2741}, 
+  number = {3}, 
+  journal = {AI Magazine},
   doi = {10.1609/aimag.v38i3.2741}, 
   arxiv = {1606.08813}, 
   year = {2017},
-  pages={50--57}
+  pages = {50--57}
 }
 
 @article{gower:1971, 
@@ -172,9 +168,9 @@
 @article{guidotti:2018, 
   author = {Guidotti, Riccardo and Monreale, Anna and Ruggieri, Salvatore 
   and Turini, Franco and Pedreschi, Dino and Giannotti, Fosca}, 
-  title = {A Survey Of Methods For Explaining Black Box Models}, 
-  doi={10.1145/3236009},
-  journal={ACM Computing Surveys},
+  title = {{A Survey Of Methods For Explaining Black Box Models}}, 
+  doi = {10.1145/3236009},
+  journal = {ACM Computing Surveys},
   volume = 51,
   number = 5,
   year = {2018}
@@ -182,9 +178,9 @@
 
 @article{hamby:2009, 
   author = {Hamby, James E. and Brundage, David J. and Thorpe, James W.},
-  title = {The Identification of Bullets Fired from 10 Consecutively
+  title = {{The Identification of Bullets Fired from 10 Consecutively
   Rifled 9mm Ruger Pistol Barrels: A Research Project Involving 507
-  Participants from 20 Countries},
+  Participants from 20 Countries}},
   pages = {99--110}, 
   number = {2}, 
   volume = {41}, 
@@ -194,28 +190,27 @@
 }
 
 @article{hare:2016,
-author = "Hare, Eric and Hofmann, Heike and Carriquiry, Alicia",
-doi = "10.1214/17-AOAS1080",
-fjournal = "The Annals of Applied Statistics",
-journal = "Annals of Applied Statistics",
-month = "12",
-number = "4",
-pages = "2332--2356",
-publisher = "The Institute of Mathematical Statistics",
-title = "Automatic matching of bullet land impressions",
-doi = {10.1214/17-AOAS1080},
-volume = "11",
-year = "2017"
+  author = "Hare, Eric and Hofmann, Heike and Carriquiry, Alicia",
+  doi = "10.1214/17-AOAS1080",
+  fjournal = "The Annals of Applied Statistics",
+  journal = "Annals of Applied Statistics",
+  month = "12",
+  number = "4",
+  pages = "2332--2356",
+  publisher = "The Institute of Mathematical Statistics",
+  title = "Automatic matching of bullet land impressions",
+  doi = {10.1214/17-AOAS1080},
+  volume = "11",
+  year = "2017"
 }
 
-
 @article{hummel:1996,
-   author =  {J\"urgen Hummel},
-   title =   {Linked Bar Charts: Analysing Categorical Data Graphically.},
-   year =    1996,
-   pages =   {23-33},
-   journal = {Computational Statistics},
-   volume =  11,
+ author = {J\"urgen Hummel},
+ title = {Linked Bar Charts: Analysing Categorical Data Graphically.},
+ year = 1996,
+ pages = {23-33},
+ journal = {Computational Statistics},
+ volume = 11
 }
 
 @article{jensen:2011,
@@ -239,7 +234,7 @@ year = "2017"
             Christophe Marsala and
             Marcin Detyniecki},
   title = {Defining Locality for Surrogates in Post-hoc Interpretablity},
-  crossref={icml:18},
+  crossref = {icml:18},
   volume = {abs/1806.07498},
   year = {2018},
   url = {http://arxiv.org/abs/1806.07498},
@@ -419,6 +414,15 @@ year = "2017"
   doi = "https://doi.org/10.1016/B978-0-12-387691-1.00002-8",
   url = "http://www.sciencedirect.com/science/article/pii/B9780123876911000028",
   author = "John Sweller"
+}
+
+@book{unwin:2006,
+  author = {Antony R. Unwin and Martin Theus and Heike Hofmann},
+  title = {Graphics of Large Datasets: Visualizing a Million},
+  publisher = {Springer},
+  address = {New York},
+  year = {2006},
+  isbn = {9780387329062}
 }
 
 @incollection{urbanek:2008, 
