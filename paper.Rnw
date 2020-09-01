@@ -32,10 +32,10 @@
 \authormark{Goode and Hofmann}
 \address[1]{\orgdiv{Department of Statistics}, \orgname{Iowa State University}, \orgaddress{\state{Iowa}, \country{United States}}}
 \address[2]{\orgdiv{Center for Statistics and Applications in Forensic Evidence (CSAFE)}, \orgname{Iowa State University}, \orgaddress{\state{Iowa}, \country{United States}}}
-\corres{*Corresponding author. \email{kgoode@iastate.edu}}
+\corres{*Katherine Goode, Department of Statistics, Iowa State University, Ames, IA. \email{kgoode@iastate.edu}}
 
 % Abstract and keywords
-\abstract[Summary]{The importance of providing explanations for predictions made by black-box models has led to the development of model explainer methods such as LIME (local interpretable model-agnostic explanations) \citep{ribeiro:2016}. LIME uses a surrogate model to explain the relationship between predictor variables and predictions from a black-box model in a local region around a prediction of interest. However, the quality of the resulting explanations relies on how well the explainer model captures the black-box model in a specified local region. Here we introduce three visual diagnostics to assess the quality of LIME explanations: (1) explanation scatterplots, (2) assessment metric plots, and (3) feature heatmaps. We apply the visual diagnostics to a forensics bullet matching dataset to show examples where LIME explanations depend on the tuning parameter values and the explainer model oversimplifies the black-box model. Our examples raise concerns about claims made of LIME \citep{ribeiro:2016} that are similar to other criticisms in the literature \citep{alvarezmelis:2018, laugel:2018, molnar:2019}.}
+\abstract[Abstract]{The importance of providing explanations for predictions made by black-box models has led to the development of model explainer methods such as LIME (local interpretable model-agnostic explanations). LIME uses a surrogate model to explain the relationship between predictor variables and predictions from a black-box model in a local region around a prediction of interest. However, the quality of the resulting explanations relies on how well the explainer model captures the black-box model in a specified local region. Here we introduce three visual diagnostics to assess the quality of LIME explanations: (1) explanation scatterplots, (2) assessment metric plots, and (3) feature heatmaps. We apply the visual diagnostics to a forensics bullet matching dataset to show examples where LIME explanations depend on the tuning parameter values and the explainer model oversimplifies the black-box model. Our examples raise concerns about claims made of LIME that are similar to other criticisms in the literature.}
 \keywords{LIME, black-box models, interpretability, diagnostics}
 
 % Citation information
@@ -52,14 +52,18 @@
 
 # Specify global options
 knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
   echo = FALSE,
   fig.keep = 'high',
-  message = FALSE,
-  dev = "tiff",
-  fig.align = 'center'
+  fig.align = 'center',
+  dev = c("cairo_pdf", "cairo_ps"),
+  dev.args = list(fallback_resolution = 800),
+  dpi = 800
 )
 
 # Load packages
+library(Cairo)
 library(caret)
 library(cowplot)
 library(dplyr)
@@ -270,7 +274,7 @@ ggplot() +
        fill = "",
        alpha = "Weight",
        size = "Weight") +
-  theme_linedraw(base_family = "Times", base_size = 10) +
+  theme_linedraw(base_family = "Times", base_size = 8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.text.x = element_blank(),
@@ -343,7 +347,7 @@ ggplot() +
        fill = "",
        alpha = "Weight",
        size = "Weight") +
-  theme_linedraw(base_family = "Times", base_size = 10) +
+  theme_linedraw(base_family = "Times", base_size = 8) +
   theme(panel.grid.major = element_blank(),
         panel.grid.minor = element_blank(),
         axis.text.x = element_blank(),
@@ -482,7 +486,7 @@ sine_plot_obs <- ggplot(sine_data_train, aes(x = x1, y = x2, color = y)) +
   geom_path(data = sinefun_data, aes(x = x, y = y),
             color = "black") +
   scale_colour_manual(values = c(sinecolor_blue, sinecolor_red)) +
-  theme_bw(base_family = "Times", base_size = 10) +
+  theme_bw(base_family = "Times", base_size = 8) +
   labs(x = TeX("$x_1$"),
        y = TeX("$x_2$"),
        color = TeX("y"),
@@ -522,7 +526,7 @@ sine_plot_pred <- ggplot() +
                         high = sinecolor_blue,
                         midpoint = 0.5) +
   scale_shape_manual(values = 23) +
-  theme_bw(base_family = "Times", base_size = 10) +
+  theme_bw(base_family = "Times", base_size = 8) +
   labs(x = TeX("$x_1$"),
        y = TeX("$x_2$"),
        color = "Random \nForest \nProbability \nfor 'blue'",
@@ -680,7 +684,10 @@ sine_poi_region_perms <- sine_poi_perms %>%
 \begin{figure*}[!thp]
 <<sine-exp-scatter, out.width = '6.5in', fig.width = 12, fig.height = 4.68, warning = FALSE>>=
 
-sine_poi_exp <- sine_poi_lime_default %>% plot_features() + theme(text = element_text(family = "Times", size = 10))
+sine_poi_exp <- 
+  sine_poi_lime_default %>% 
+  plot_features() + 
+  theme(text = element_text(family = "Times", size = 12))
 
 exp_scatter <- 
   plot_explain_scatter(sine_poi_lime_default, alpha = 0.4) +
@@ -693,7 +700,7 @@ exp_scatter <-
        color = "Random \nForest \nProbability \nfor 'blue'",
        linetype = "",
        title = "Explanation Scatterplot") +
-  theme_bw(base_family = "Times", base_size = 10) +
+  theme_bw(base_family = "Times", base_size = 12) +
   guides(shape = guide_legend(order = 1),
          size = guide_legend(nrow = 2, byrow = T)) +
   theme(aspect.ratio = 1) 
@@ -813,7 +820,7 @@ plot_grid(heatmap_plot_good, heatmap_plot_bad, heatmap_leg,
 <<sine-feat-heat, out.width = '3.125in', fig.width = 4, fig.height = 4.5>>=
 plot_feature_heatmap(sine_lime_explain$explain,
                 order_method = "PCA") +
-  theme_bw(base_family = "Times", base_size = 10) +
+  theme_bw(base_family = "Times", base_size = 12) +
   theme(legend.position = "bottom",
         axis.text.y = element_blank(),
         axis.ticks.y = element_blank(),
@@ -1289,7 +1296,7 @@ pf2_3eb <- plot_features(bullet_explain_perms[10:12,]) +
 @
 
 \begin{figure*}[!thp]
-<<bullet-eois, out.width = '6.5in', fig.width = 12, fig.height = 17, out.width="90%", message = FALSE>>=
+<<bullet-eois, out.width = '6.25in', fig.width = 12, fig.height = 17, message = FALSE>>=
 # Join the plots
 plot_grid(
   pf2_3qb,
