@@ -51,9 +51,13 @@
 <<setup, echo = FALSE, include = FALSE>>=
 
 # Specify global options
-knitr::opts_chunk$set(echo = FALSE,
-                      fig.keep = 'high',
-                      message = FALSE)
+knitr::opts_chunk$set(
+  echo = FALSE,
+  fig.keep = 'high',
+  message = FALSE,
+  dev = "tiff",
+  fig.align = 'center'
+)
 
 # Load packages
 library(caret)
@@ -213,7 +217,7 @@ coefs_data <- data.frame(case = c("good", "bad"),
 @
 
 \begin{figure*}[!thp]
-<<concept-plot-good, out.width = '\\textwidth', fig.width = 7.95, fig.height = 3.75, warning = FALSE>>=
+<<concept-plot-good, out.width = '6.5in', fig.width = 7.95, fig.height = 3.75, warning = FALSE>>=
 
 # Plot of good explainer model
 ggplot() +
@@ -286,7 +290,7 @@ ggplot() +
 
 \vspace*{\floatsep}
  
-<<concept-plot-bad, out.width = '\\textwidth', fig.width = 7.95, fig.height = 3.75, warning = FALSE>>=
+<<concept-plot-bad, out.width = '6.5in', fig.width = 7.95, fig.height = 3.75, warning = FALSE>>=
 
 # Plot of good explainer model
 ggplot() +
@@ -457,7 +461,7 @@ sine_poi <- sine_data_test %>% filter(y != rfpred, x1 > 0, x1 < 5, x2 > 5)
 
 \begin{figure*}[!thp]
 \centering
-<<sine-plot-data, out.width = '\\textwidth', fig.width = 8, fig.height = 3.1>>=
+<<sine-plot-data, out.width = '6.5in', fig.width = 8, fig.height = 3.1>>=
 
 # Create points representing the rotated since curve
 sinefun_data <- data.frame(xnew = seq(min(sine_data$x1new),
@@ -674,7 +678,7 @@ sine_poi_region_perms <- sine_poi_perms %>%
 @
 
 \begin{figure*}[!thp]
-<<sine-exp-scatter, out.width = '\\textwidth', fig.width = 12, fig.height = 4.68, warning = FALSE>>=
+<<sine-exp-scatter, out.width = '6.5in', fig.width = 12, fig.height = 4.68, warning = FALSE>>=
 
 sine_poi_exp <- sine_poi_lime_default %>% plot_features() + theme(text = element_text(family = "Times", size = 10))
 
@@ -727,7 +731,7 @@ This example explanation only includes two features. In situations where more th
 \subsection{Feature Heatmap} \label{feat-heat}
 
 \begin{figure}[!thp]
-<<concept-feat-heat, out.width = '0.48\\textwidth', fig.width = 6, fig.height = 3>>=
+<<concept-feat-heat, out.width = '3.125in', fig.width = 6, fig.height = 3>>=
 # Specify the number of cases and LIME input options
 ncases = 10
 ninputs = 5
@@ -806,7 +810,7 @@ plot_grid(heatmap_plot_good, heatmap_plot_bad, heatmap_leg,
 
 \vspace*{\floatsep}
 
-<<sine-feat-heat, out.width = '0.45\\textwidth', fig.width = 4, fig.height = 4.5>>=
+<<sine-feat-heat, out.width = '3.125in', fig.width = 4, fig.height = 4.5>>=
 plot_feature_heatmap(sine_lime_explain$explain,
                 order_method = "PCA") +
   theme_bw(base_family = "Times", base_size = 10) +
@@ -831,7 +835,7 @@ Two hypothetical examples of feature heatmaps are included in \autoref{fig:conce
 \subsection{Assessment Metric Plot} \label{assess-metric}
 
 \begin{figure}[!thp]
-<<sine-assess-metric, out.width = '0.49\\textwidth', fig.width = 4.5, fig.height = 3.75, warning = FALSE>>=
+<<sine-assess-metric, out.width = '3.25in', fig.width = 4.5, fig.height = 3.75, warning = FALSE>>=
 
 # Create the metric plot
 plot_metrics(sine_lime_explain$explain, rank_legend = "discrete") +
@@ -902,13 +906,13 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2in]{./figure-static/bullets.png}
+\includegraphics[width=2.75in]{./figure-static/bullets.png}
 \caption{(Top left) Traditionally rifled gun barrel. The grooves and lands alternate to give bullets a spin during the firing process, which create markings (striations) on a bullet when fired. (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Close up of a land engraved area showing striations (vertical lines).}
 \label{fig:bullet}
 
 \vspace*{\floatsep}
 
-\includegraphics[width=3.25in]{./figure-static/signatures.png}
+\includegraphics[width=3.125in]{./figure-static/signatures.png}
 \caption{Example bullet signatures. The bullet signatures correspond to the same land and therefore have very similar patterns. The \citet{hare:2016} random forest is fit using various features that measure the similarity between two such signatures.}
 \label{fig:signatures}
 \end{figure}
@@ -916,7 +920,7 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 \subsection{Application of LIME to Bullet Matching Data}
 
 \begin{figure*}[!thp]
-<<bullet-plot-rfpcp, out.width = '\\textwidth', warning = FALSE>>=
+<<bullet-plot-rfpcp, out.width = '6.5in', warning = FALSE>>=
 
 # Create (or load) the parallel coordinate plot
 if (file.exists("./figure-static/bullet_pcp.png")) {
@@ -1102,7 +1106,7 @@ To get an overview of the LIME explanations from the 36 applications, we conside
 First, the density simulation methods produce the same explanations for almost all cases and LIME tuning parameter values suggesting the LIME explanations are global and not local. Second, within a bin based simulation method, the features selected by LIME for an observation often vary by the number of bins but do not appear to vary by the Gower power. With the equal bins, there are vertical stripes that suggest a dependence of the LIME explanations on the number of bins. The vertical stripes are not as apparent with the quantile bins. Lastly, there are clear differences between the LIME explanations produced by the bin based simulation methods for the matches and non-matches. This suggests that the features the random forest uses to classify a match or non-match are different. 
 
 \begin{figure*}[!thp]
-<<bullet-feature-heatmap, out.width = '\\textwidth', fig.width = 18, fig.height = 12>>=
+<<bullet-feature-heatmap, out.width = '6.5in', fig.width = 18, fig.height = 12>>=
 # Create a feature heatmap
 plot_feature_heatmap(
   bullet_explain %>%
@@ -1153,7 +1157,7 @@ plot_feature_heatmap(
 
 \vspace*{\floatsep}
 
-<<bullet-assess-metric, out.width = '\\textwidth', warning = FALSE, fig.width = 10, fig.height = 4>>=
+<<bullet-assess-metric, out.width = '6.5in', warning = FALSE, fig.width = 10, fig.height = 4>>=
 
 # Create a metric comparison plot
 plot_metrics(bullet_explain %>% 
@@ -1285,7 +1289,7 @@ pf2_3eb <- plot_features(bullet_explain_perms[10:12,]) +
 @
 
 \begin{figure*}[!thp]
-<<bullet-eois, out.width = '\\textwidth', fig.width = 12, fig.height = 17, fig.align = "center", out.width="90%", message = FALSE>>=
+<<bullet-eois, out.width = '6.5in', fig.width = 12, fig.height = 17, out.width="90%", message = FALSE>>=
 # Join the plots
 plot_grid(
   pf2_3qb,
@@ -1390,7 +1394,7 @@ When the kernel density or normal approximation simulation methods are applied, 
 Figure \ref{fig:sine-expl-scat-density} provides example explanation scatterplots for each feature in the default LIME explanation obtained using the kernel density simulation method for the \data \ prediction of interest. Figure \ref{fig:bullet-expl-scat-density} includes explanation scatterplots for the explanations generated using kernel density simulation for the bullet example cases M and NM discussed in Section \ref{bullet-assess-ex}.
 
 \begin{figure*}[!thp]
-<<sine-expl-scat-density, out.width = '\\textwidth', fig.width = 12, fig.height = 4.5, fig.align = "center">>=
+<<sine-expl-scat-density, out.width = '6.5in', fig.width = 12, fig.height = 4.5, fig.align = "center">>=
 plot_explain_scatter(
   sine_lime_explain$explain %>%
     filter(sim_method == "kernel_density", case == sine_poi %>% pull(case)),
@@ -1405,7 +1409,7 @@ plot_explain_scatter(
 \end{figure*}
 
 \begin{figure*}[!thp]
-<<bullet-expl-scat-density, out.width = '\\textwidth', fig.width = 12, fig.height = 9, fig.align = "center">>=
+<<bullet-expl-scat-density, out.width = '6.5in', fig.width = 12, fig.height = 9, fig.align = "center">>=
 bullet_es_NM <-
   plot_explain_scatter(
   bullet_explain_perms[13:15, ] %>% mutate(case = "M"),
@@ -1435,7 +1439,7 @@ plot_grid(bullet_es_NM, bullet_es_M, nrow = 2)
 In order to assess the claim of linearity for the \data \ prediction of interest discussed in Section \ref{exp-scatter}, we use one of the most basic diagnostics in a statistician's tool box and draw a residual plot for the explainer model. This is shown in Figure \ref{fig:sine-plot-resids} with the explainer model residuals on the y-axis and explainer model predictions on the x-axis. The points along the x-axis have been jittered to ease the effect of the over-plotted points in the visualization. There is a clear increasing trend in the residuals as the explainer model predictions increase. This is a clear violation of the linearity assumption with the ridge regression model.
 
 \begin{figure}[!thp]
-<<sine-plot-resids, out.width = '0.5\\textwidth', fig.width = 5, fig.height = 4, warning = FALSE>>=
+<<sine-plot-resids, out.width = '3.125in', fig.width = 5, fig.height = 4, warning = FALSE>>=
 
 # Calculate the residuals from the explainer model
 y <- sine_poi_perms$rfpred
