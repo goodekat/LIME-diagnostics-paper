@@ -1,6 +1,4 @@
----
-title: LIME Diagnostics Paper
----
+# LIME Diagnostics Paper
 
 Research paper on visual diagnostic tools for LIME
 
