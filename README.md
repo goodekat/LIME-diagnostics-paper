@@ -5,7 +5,7 @@ Research paper on visual diagnostic tools for LIME
 ### Instructions for Knitting Paper
 
 1.  Pull repo from GitHub
-2.  Install goodekat/lime and goodekat/limeaid
+2.  Install R packages goodekat/lime and goodekat/limeaid R from GitHub using devtools
 3.  Make sure the data folder has all up to date versions of these files
     (see note below about where to obtain these files)
       - hamby173and252\_train.csv
