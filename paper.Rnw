@@ -1068,31 +1068,48 @@ In current practice, forensic firearm examiners evaluate whether two bullets are
 
 In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes \Sexpr{dim(bullet_train)[1]} land-to-land comparisons.
 
-<<converting-static-figs-to-eps>>=
-
-# Convert the bullet figure to eps (if needed)
-if (!file.exists("./figure-static/figure-08.eps")) {
-  bullets <- image_read("./figure-static/figure-08.png")
-  image_write(bullets, path = "./figure-static/figure-08.eps", format = "eps")
-}
-
-# Convert the signature figure to eps (if needed)
-if (!file.exists("./figure-static/figure-09.eps")) {
-  signatures <- image_read("./figure-static/figure-09.png")
-  image_write(signatures, path = "./figure-static/figure-09.eps", format = "eps")
-}
-
-@
-
 \begin{figure}[!t]
 \centering
-\includegraphics[width=2.25in]{./figure-static/figure-08.eps}
+<<figure-08, out.width = '2.25in', fig.width = 6, fig.height = 3, warning = FALSE>>=
+
+# Convert the bullet figure to eps (if needed)
+if (!file.exists("./figure-static/figure-08-1.eps")) {
+  bullets <- image_read("./figure-static/figure-08-1.png")
+  image_write(bullets, path = "./figure-static/figure-08-1.eps", format = "eps")
+}
+
+# Load and print the plot
+knitr::include_graphics("./figure-static/figure-08-1.eps")
+
+@
 \caption{(Top left) Traditionally rifled gun barrel. The grooves and lands alternate to give bullets a spin during the firing process, which create markings (striations) on a bullet when fired. (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Close up of a land engraved area showing striations (vertical lines).}
 \label{fig:figure-08}
 
 \vspace*{\floatsep}
 
-\includegraphics[width=2.25in]{./figure-static/figure-09.eps}
+<<figure-09, out.width = '3.125in', fig.width = 6, fig.height = 3, warning = FALSE>>=
+
+# Specify the figure size (for determining font size)
+f9_ow = 3.125
+f9_fw = 6
+f9_fs = fs * (f9_fw / f9_ow)
+
+# Load the signatures data
+signatures <- readRDS("../data/signatures.rds")
+
+# Create plot of the signatures
+signatures %>%
+  mutate(land = c("Signature 1", "Signature 2")[as.factor(source)]) %>%
+  ggplot(aes(x = x/1000)) + 
+  geom_line(aes(y = sig), colour = "grey30") +
+  facet_grid(land~.) +
+  ylim(c(-4,6)) +
+  theme_bw(base_family = "Times", base_size = f9_fs) +
+  theme(strip.background = element_blank()) +
+  ylab("Surface measurement (in microns)") +
+  xlab("Relative Location (in millimeters)") 
+
+@
 \caption{Example bullet signatures. The bullet signatures correspond to the same land and therefore have very similar patterns. The \citet{hare:2016} random forest is fit using various features that measure the similarity between two such signatures.}
 \label{fig:figure-09}
 \end{figure}
@@ -1104,12 +1121,7 @@ if (!file.exists("./figure-static/figure-09.eps")) {
 
 
 # Create (or load) the parallel coordinate plot
-if (file.exists("./figure-static/figure-10.eps")) {
-
-  # Load and print the plot
-  knitr::include_graphics("./figure-static/figure-10.eps")
-
-} else {
+if (!file.exists("./figure-static/figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
   f10_ow = 6.5
@@ -1175,10 +1187,20 @@ if (file.exists("./figure-static/figure-10.eps")) {
     units = "in",
     dpi = 1200
   )
+  
+}
 
+# Create (or load) the parallel coordinate plot
+if (file.exists("./figure-static/figure-10-1.eps")) {
+  
+  # Load and print the plot
+  knitr::include_graphics("./figure-static/figure-10-1.eps")
+  
+} else {
+  
   # Load the figure and then save as an eps file
-  bullet_pcp <- image_read("./figure-static/figure-10.png")
-  image_write(bullet_pcp, path = "./figure-static/figure-10.eps", format = "eps")
+  bullet_pcp <- image_read("./figure-static/figure-10-1.png")
+  image_write(bullet_pcp, path = "./figure-static/figure-10-1.eps", format = "eps")
   
 }
 
