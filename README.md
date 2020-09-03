@@ -46,8 +46,8 @@ The font sizes in the figures are calculated based on how the figures are scaled
 | Title | 7 pt |
 | Subtitle | 7 pt |
 | Axis labels | 7 pt |
-| Facet labels (that act as x-axis or y-axis labels) | 7 pt |
-| Facet labels (that act as titles for lime R package plots) | 7 pt |
+| Facet labels that act as x-axis or y-axis labels | 7 pt |
+| Facet labels that act as titles for lime R package plots | 7 pt |
 | Legend titles | 7 pt |
 | Interior labels (such as those created using geom_text) | 7 pt |
 | Axis tick labels | 5.5 pt |
