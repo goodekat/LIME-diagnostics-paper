@@ -2,10 +2,6 @@
 
 Research paper on visual diagnostic tools for LIME
 
-### To Do
-
-- Prepare for submission
-
 ### Instructions for Knitting Paper
 
 1.  Pull repo from GitHub
