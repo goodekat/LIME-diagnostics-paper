@@ -39,7 +39,7 @@ Note: The data needed to knit the paper can be found in the Cybox folder called 
 
 ### Figure Font Size Information
 
-The font sizes in the figures are calculated based on how the figures are scaled due to the specification of both fig.width and out.width in the Rnw file to ensure that they are consistent across figures. The text sizes are either set to 7 pt or 5.5 pt as indicated by the table below (note that the text in the manuscript is 9 pt): 
+The font sizes in the figures are calculated based on how the figures are scaled due to the specification of both fig.width and out.width in the Rnw file to ensure that they are consistent across figures. The text sizes are either set to 7 pt or 5.5 pt as indicated by the table below. Note that the text in the manuscript is 9 pt and a similar approach was used to ensure that line sizes are larger than 0.5 pt.
 
 | Part of Graphic | Font Size |
 | --------------- | --------- | 
@@ -53,5 +53,3 @@ The font sizes in the figures are calculated based on how the figures are scaled
 | Legend titles | 7 pt |
 | Legend labels | 5.5 pt |
 | Interior labels (such as those created using geom_text) | 7 pt |
-
-Note: A similar approach was used to ensure that line sizes are larger than 0.5 pt.
