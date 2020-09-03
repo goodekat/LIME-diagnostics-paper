@@ -6,18 +6,6 @@ Research paper on visual diagnostic tools for LIME
 
 - Prepare for submission
 
-### Questions for Heike
-
-- Are the font sizes okay? 
-  - I increase or decrease them all by the same constant easily
-  - Would it be better if all text associated with a graphic was the same size?
-- Can you write up definitions of the bullet data features (to be included in the readme)?
-- Should we include definitions of the bullet features in the appendix?
-  - Is it okay to use abbreviations for the feature names (I did that because otherwise I have to rerun the LIME applications)?
-- Make sure to install limeaid again (I made some more updates)
-- Should I change the font in the figures to Helvetica? The guidelines mention that this font family works nicely for lettering in figures. I currently have it set to Times.
-- Is it okay if I delete the old GitHub repo with the longer version of the paper (and move the longer version into a folder of this repo called something like 'old version')? Then I will rename this repo.
-
 ### Instructions for Knitting Paper
 
 1.  Pull repo from GitHub
