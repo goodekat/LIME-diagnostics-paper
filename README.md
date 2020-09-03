@@ -43,7 +43,7 @@ The font sizes in the figures are calculated based on how the figures are scaled
 
 | Part of Graphic | Font Size |
 | --------------- | --------- | 
-| Title (except Fig 13 where explanation scatterplot titles are 7 pt) | 7 pt |
+| Title | 7 pt |
 | Subtitle | 7 pt |
 | Axis labels | 7 pt |
 | Facet labels (that act as x-axis or y-axis labels) | 7 pt |
