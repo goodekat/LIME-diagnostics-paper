@@ -12,7 +12,6 @@
 *.Rapp.history
 *.rds
 *.Rproj
-*.tex
 
 figure/
 figure-static/figure-08-1.eps
