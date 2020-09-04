@@ -6,6 +6,7 @@
 
 *.bbl
 *.csv
+*.eps
 *.gz
 *.log
 *.pag
