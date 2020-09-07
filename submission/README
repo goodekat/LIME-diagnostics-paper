@@ -1,0 +1,10 @@
+INFORMATION ON THE FILES CONTAINED IN code-and-data
+---------------------------------------------------
+
+These files are supporting information for the manuscript "Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations" by Katherine Goode and Heike Hofmann.
+
+manuscript-code.r: Contains all of the code used to produce the results and visualizations in the manuscript.
+
+hamby173and252_train: 
+
+hamby224_test: 
