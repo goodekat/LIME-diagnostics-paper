@@ -1032,9 +1032,25 @@ In this section, we provide a discussion of the application of the visual diagno
 
 <<bullet-data>>=
 
-# Load the hamby data
+# Load the bullet matching training data and make some adjustments:
+#   1. filter out observations know to have tank rash
+#   2. exclude features not used to train the rtrees random forest 
+#   3. add a variable with the random forest probability in support of a match
+#   4. change the name of the same_source variable to match the test data
+#   5. reorder the variables
+bullet_train_temp <- read.csv("data-bullet-train.csv") %>%
+  #filter(land_id1 == "Hamby173-BrUnk-B2-L1")
+  select(-lag,-abs_lag,-signature_length) %>%
+  mutate(
+    case = factor(1:n()),
+    rfscore = predict(rtrees, bullet_train_temp %>% select(rownames(rtrees$importance)), type = "prob")[, 2]
+  ) %>%
+  rename("samesource" = "same_source") %>%
+  select(case, land_id1, land_id2, everything())
+
+# Load the bullet test data
 bullet_train <- read.csv("../data/hamby173and252_train.csv")
-bullet_test <- read.csv("../data/hamby224_test.csv")
+bullet_test <- read.csv("data-bullet-test.csv")
 
 # Extract the features and order them based on feature importance
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
