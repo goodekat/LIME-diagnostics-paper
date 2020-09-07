@@ -370,7 +370,7 @@ In this section, we provide a discussion of the application of the visual diagno
 
 In current practice, forensic firearm examiners evaluate whether two bullets are from the same source (fired from the same gun) or from different sources based on microscopic comparison of the striation patterns engraved on bullets during the firing process (see \autoref{fig:figure-08}). The process is based on a visual and therefore subjective assessment of the evidence. The lack of objective evaluation and the associated absence of established error rates has first been criticized by the National Research Council \cite{nrc:2009} and later by the President's Council of Advisors on Science and Technology \cite{pcast:2016}.
 
-In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes 83028 land-to-land comparisons.
+In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). \kge{See the supporting information for additional information on the data.} The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes 83028 land-to-land comparisons.
 
 \begin{figure}[!t]
 \centering
@@ -535,12 +535,7 @@ The authors declare no potential conflict of interests.
 
 \section*{Supporting information}
 
-The following supporting information is available: 
-
-\kge{\begin{itemize}
-\item \textbf{Paper GitHub Repository}: The R markdown document and code used to produce the paper are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper-short-sweet}{https://github.com/goodekat/LIME-diagnostics-paper-short-sweet}. \kgc{Need to update this link after I change the name of the repository.}
-\item \textbf{Data}: The data used for the examples in Section \ref{application} are available at \kgc{need to fill in once Heike has the data published.}
-\end{itemize}}
+\kge{The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}. Additional information about the bullet matching data are available at \kgc{XXX}.}
 
 \bibliography{references}
 

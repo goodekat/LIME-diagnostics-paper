@@ -1045,17 +1045,16 @@ bullet_features_ordered <-
   ) %>%
   arrange(desc(MeanDecreaseGini)) %>%
   mutate(
-    feature = fct_recode(
-      feature,
-      "CCF" = "ccf",
-      "CMS" = "cms",
+    feature = fct_recode(feature,
+      "Cross Correlation Function" = "ccf",
+      "Consecutively Matching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-CMS" = "non_cms",
+      "Non-Consecutively Matching Striae" = "non_cms",
       "Rough Correlation" = "rough_cor",
-      "Distance Std Dev" = "sd_D",
+      "Distance Standard Deviation" = "sd_D",
       "Distance" = "D",
-      "Sum Peaks" = "sum_peaks"
+      "Sum of Peaks" = "sum_peaks"
     )
   )
 
@@ -1067,7 +1066,7 @@ bullet_features_ordered <- bullet_features_ordered %>%
 
 In current practice, forensic firearm examiners evaluate whether two bullets are from the same source (fired from the same gun) or from different sources based on microscopic comparison of the striation patterns engraved on bullets during the firing process (see \autoref{fig:figure-08}). The process is based on a visual and therefore subjective assessment of the evidence. The lack of objective evaluation and the associated absence of established error rates has first been criticized by the National Research Council \cite{nrc:2009} and later by the President's Council of Advisors on Science and Technology \cite{pcast:2016}.
 
-In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes \Sexpr{dim(bullet_train)[1]} land-to-land comparisons.
+In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). \kge{See the supporting information for additional information on the data.} The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes \Sexpr{dim(bullet_train)[1]} land-to-land comparisons.
 
 \begin{figure}[!t]
 \centering
@@ -1107,7 +1106,7 @@ signatures %>%
   ylim(c(-4,6)) +
   theme_bw(base_family = ff, base_size = f9_fs) +
   theme(strip.background = element_blank()) +
-  ylab("Surface measurement (in microns)") +
+  ylab("Surface Measurement (in microns)") +
   xlab("Relative Location (in millimeters)") 
 
 @
@@ -1120,8 +1119,7 @@ signatures %>%
 \begin{figure*}[!thp]
 <<figure-10, out.width = '6.5in', warning = FALSE>>=
 
-
-# Create (or load) the parallel coordinate plot
+# Create or load the parallel coordinate plot
 if (!file.exists("./figure-static/figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
@@ -1147,15 +1145,15 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
       )
     ) %>%
     rename(
-      "CCF" = "ccf",
-      "CMS" = "cms",
+      "Cross Correlation Function" = "ccf",
+      "Consecutively Matching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-CMS" = "non_cms",
+      "Non-Consecutively Matching Striae" = "non_cms",
       "Rough Correlation" = "rough_cor",
-      "Distance Std Dev" = "sd_D",
+      "Distance Standard Deviation" = "sd_D",
       "Distance" = "D",
-      "Sum Peaks" = "sum_peaks"
+      "Sum of Peaks" = "sum_peaks"
     ) %>%
     na.omit() %>%
     ggplot(aes(color = rfscore)) +
@@ -1189,20 +1187,15 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
     dpi = 1200
   )
   
-}
-
-# Create (or load) the parallel coordinate plot
-if (file.exists("./figure-static/figure-10-1.eps")) {
-  
-  # Load and print the plot
-  knitr::include_graphics("./figure-static/figure-10-1.eps")
-  
-} else {
-  
   # Load the figure and then save as an EPS file
   bullet_pcp <- image_read("./figure-static/figure-10-1.png")
   image_write(bullet_pcp, path = "./figure-static/figure-10-1.eps", format = "eps")
   
+} else {
+ 
+   # Load and print the plot
+  knitr::include_graphics("./figure-static/figure-10-1.eps")
+
 }
 
 @
@@ -1448,166 +1441,87 @@ f13_fs = fs * (f13_fw / f13_ow)
 f13_ls = 0.5 * (f13_fw / f13_ow)
 
 # Adjust names of the cases
-bullet_explain_perms <- bullet_explain_perms %>%
-  mutate(case = ifelse(case == bullet_poi_nonmatch, "NM", "M")) 
+bullet_explain_perms_clean <- bullet_explain_perms %>%
+  mutate(case = ifelse(case == bullet_poi_nonmatch, "NM", "M"))
 
-# Create the explanation scatterplot: case M, 3 quantile bins
+# Create a theme for the lime explanation visualizations
+bullet_explain_plot_theme <-
+  list(
+    scale_fill_manual(values = c("darkorange", "grey50")),
+    theme(
+      text = element_text(family = ff, size = f13_fs),
+      strip.text.x = element_text(face = "plain", size = f13_fs)
+    )
+  )
+
+# Create the lime explanation visualizations
+pfM_3qb <- plot_features(bullet_explain_perms_clean[1:3,]) + bullet_explain_plot_theme
+pfNM_3qb <- plot_features(bullet_explain_perms_clean[4:6,]) + bullet_explain_plot_theme
+pfM_3eb <- plot_features(bullet_explain_perms_clean[7:9,]) + bullet_explain_plot_theme
+pfNM_3eb <- plot_features(bullet_explain_perms_clean[10:12,]) + bullet_explain_plot_theme
+
+# Create theme for explanation scatterplots
+bullet_eoi_plot_theme <-
+  list(
+    scale_color_gradient2(
+      low = "grey50",
+      high = "darkorange",
+      midpoint = 0.5,
+      limits = c(0, 1)
+    ),
+    scale_fill_gradient2(
+      low = "grey50",
+      high = "darkorange",
+      midpoint = 0.5,
+      limits = c(0, 1)
+    ),
+    theme_bw(base_family = ff, base_size = f13_fs),
+    theme(
+      aspect.ratio = 1,
+      plot.title = element_text(size = f13_fs),
+      strip.text.x = element_text(size = f13_fs),
+      strip.text.y = element_text(size = f13_fs),
+      strip.placement = "outside",
+      strip.background = element_rect(color = "white", fill = "white")
+    ),
+    guides(size = guide_legend(nrow = 2, byrow = T), 
+           linetype = guide_legend(override.aes = list(color = c("grey50", "darkorange"))))
+  )
+
+# Create the explanation scatterplots
 eoiM_3qb <-
   plot_explain_scatter(
-    bullet_explain_perms[1:3,],
+    bullet_explain_perms_clean[1:3, ],
     alpha = 0.9,
     weights = TRUE,
     line_size = f13_ls
   ) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = ff, base_size = f13_fs) +
-  theme(
-    aspect.ratio = 1,
-    plot.title = element_text(size = f13_fs),
-    strip.text.x = element_text(size = f13_fs),
-    strip.text.y = element_text(size = f13_fs),
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white", fill = "white")
-  ) +
-  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))),
-         size = guide_legend(nrow = 2, byrow = T))
-
-# Create the explanation scatterplot: case MM, 3 quantile bins
+  bullet_eoi_plot_theme +
+  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
 eoiNM_3qb <-
   plot_explain_scatter(
-    bullet_explain_perms[4:6, ],
+    bullet_explain_perms_clean[4:6, ],
     alpha = 0.9,
     weights = TRUE,
     line_size = f13_ls
   ) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = ff, base_size = f13_fs) +
-  theme(
-    aspect.ratio = 1,
-    plot.title = element_text(size = f13_fs),
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white", fill = "white"),
-    strip.text.x = element_text(size = f13_fs),
-    strip.text.y = element_text(size = f13_fs)
-  ) +
-  guides(linetype = guide_legend(override.aes = list(color = c(
-    "grey50", "darkorange"
-  ))),
-  size = guide_legend(nrow = 2, byrow = T))
-
-# Create the explanation scatterplot: case M, 3 equal bins
+  bullet_eoi_plot_theme
 eoiM_3eb <-
   plot_explain_scatter(
-    bullet_explain_perms[7:9,],
+    bullet_explain_perms_clean[7:9, ],
     alpha = 0.9,
     weights = TRUE,
     line_size = f13_ls
   ) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = ff, base_size = f13_fs) +
-  theme(
-    aspect.ratio = 1,
-    plot.title = element_text(size = f13_fs),
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white", fill = "white"),
-    strip.text.x = element_text(size = f13_fs),
-    strip.text.y = element_text(size = f13_fs)
-  ) +
-  guides(linetype = guide_legend(override.aes = list(color = c(
-    "grey50", "darkorange"
-  ))),
-  size = guide_legend(nrow = 2, byrow = T))
-
-# Create the explanation scatterplot: case NM, 3 equal bins
+  bullet_eoi_plot_theme
 eoiNM_3eb <-
   plot_explain_scatter(
-    bullet_explain_perms[10:12,],
+    bullet_explain_perms_clean[10:12,],
     alpha = 0.9,
     weights = TRUE,
     line_size = f13_ls
   ) +
-  scale_color_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  scale_fill_gradient2(
-    low = "grey50",
-    high = "darkorange",
-    midpoint = 0.5,
-    limits = c(0, 1)
-  ) +
-  theme_bw(base_family = ff, base_size = f13_fs) +
-  theme(
-    aspect.ratio = 1,
-    plot.title = element_text(size = f13_fs),
-    strip.placement = "outside",
-    strip.background = element_rect(color = "white", fill = "white"),
-    strip.text.x = element_text(size = f13_fs),
-    strip.text.y = element_text(size = f13_fs)
-  ) +
-  guides(linetype = guide_legend(override.aes = list(color = c(
-    "grey50", "darkorange"
-  ))),
-  size = guide_legend(nrow = 2, byrow = T))
-
-# Create the lime explanation visualization: case M, 3 quantile bins
-pfM_3qb <- plot_features(bullet_explain_perms[1:3,]) +
-  scale_fill_manual(values = c("darkorange", "grey50")) +
-  theme(text = element_text(family = ff, size = f13_fs),
-        strip.text.x = element_text(face = "plain", size = f13_fs))
-
-# Create the lime explanation visualization: case NM, 3 quantile bins
-pfNM_3qb <- plot_features(bullet_explain_perms[4:6,]) +
-  scale_fill_manual(values = c("darkorange", "grey50")) + 
-  theme(text = element_text(family = ff, size = f13_fs),
-        strip.text.x = element_text(face = "plain", size = f13_fs))
-
-# Create the lime explanation visualization: case M, 3 equal bins
-pfM_3eb <- plot_features(bullet_explain_perms[7:9,]) +
-  scale_fill_manual(values = c("darkorange", "grey50")) +
-  theme(text = element_text(family = ff, size = f13_fs),
-        strip.text.x = element_text(face = "plain", size = f13_fs))
-
-# Create the lime explanation visualization: case NM, 3 equal bins
-pfNM_3eb <- plot_features(bullet_explain_perms[10:12,]) +
-  scale_fill_manual(values = c("darkorange", "grey50")) +
-  theme(text = element_text(family = ff, size = f13_fs),
-        strip.text.x = element_text(face = "plain", size = f13_fs))
+  bullet_eoi_plot_theme
 
 # Join the plots
 plot_grid(
@@ -1672,12 +1586,7 @@ The authors declare no potential conflict of interests.
 
 \section*{Supporting information}
 
-The following supporting information is available: 
-
-\kge{\begin{itemize}
-\item \textbf{Paper GitHub Repository}: The R markdown document and code used to produce the paper are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper-short-sweet}{https://github.com/goodekat/LIME-diagnostics-paper-short-sweet}. \kgc{Need to update this link after I change the name of the repository.}
-\item \textbf{Data}: The data used for the examples in Section \ref{application} are available at \kgc{need to fill in once Heike has the data published.}
-\end{itemize}}
+\kge{The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}. Additional information about the bullet matching data are available at \kgc{XXX}.}
 
 \bibliography{references}
 
