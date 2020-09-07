@@ -622,7 +622,7 @@ plot_grid(sine_plot_obs, sine_plot_pred,
 <<sine-lime>>=
 
 # Apply LIME with various tuning parameters to the sine data
-if (!file.exists("../data/sine_lime_explain.rds")) {
+if (!file.exists("data-sine-lime-explain.rds")) {
 
     # Apply lime with various input options
     sine_lime_explain <- apply_lime(
@@ -641,11 +641,11 @@ if (!file.exists("../data/sine_lime_explain.rds")) {
       all_fs = TRUE,
       seed = 20190914)
 
-    saveRDS(sine_lime_explain, "../data/sine_lime_explain.rds")
+    saveRDS(sine_lime_explain, "data-sine-lime-explain.rds")
+  
+    } else {
 
-  } else {
-
-    sine_lime_explain <- readRDS("../data/sine_lime_explain.rds")
+    sine_lime_explain <- readRDS("data-sine-lime-explain.rds")
 
   }
 
@@ -1032,28 +1032,39 @@ In this section, we provide a discussion of the application of the visual diagno
 
 <<bullet-data>>=
 
+# Files that will need to be removed once I know how to 
+#bullet_train <- read.csv("../data/hamby173and252_train.csv")
+no_tank_rash = read.csv("data-no-tank-rash.csv")
+
 # Load the bullet matching training data and make some adjustments:
 #   1. filter out observations know to have tank rash
 #   2. exclude features not used to train the rtrees random forest 
-#   3. add a variable with the random forest probability in support of a match
-#   4. change the name of the same_source variable to match the test data
-#   5. reorder the variables
-bullet_train_temp <- read.csv("data-bullet-train.csv") %>%
+#   3. change the name of the same_source variable to match the test data
+#   4. reorder the variables
+bullet_train <-
+  read.csv("data-bullet-train.csv") %>%
+  slice(no_tank_rash$case) %>%
   #filter(land_id1 == "Hamby173-BrUnk-B2-L1")
   select(-lag,-abs_lag,-signature_length) %>%
-  mutate(
-    case = factor(1:n()),
-    rfscore = predict(rtrees, bullet_train_temp %>% select(rownames(rtrees$importance)), type = "prob")[, 2]
-  ) %>%
+  mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
 
 # Load the bullet test data
-bullet_train <- read.csv("../data/hamby173and252_train.csv")
 bullet_test <- read.csv("data-bullet-test.csv")
 
-# Extract the features and order them based on feature importance
+# Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
+
+# Add a variable to the training data with the random forest probability
+# in support of a match
+bullet_train$rfscore <- 
+  bulletxtrctr::rtrees %>%
+  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
+  data.frame() %>%
+  pull(TRUE.)
+
+# Order the features based on feature importance
 bullet_features_ordered <-
   data.frame(
     feature = rownames(bulletxtrctr::rtrees$importance),
@@ -1077,7 +1088,6 @@ bullet_features_ordered <-
 # Create an ordered version of the data
 bullet_features_ordered <- bullet_features_ordered %>%
   mutate(feature = factor(feature, levels = bullet_features_ordered$feature))
-
 @
 
 In current practice, forensic firearm examiners evaluate whether two bullets are from the same source (fired from the same gun) or from different sources based on microscopic comparison of the striation patterns engraved on bullets during the firing process (see \autoref{fig:figure-08}). The process is based on a visual and therefore subjective assessment of the evidence. The lack of objective evaluation and the associated absence of established error rates has first been criticized by the National Research Council \cite{nrc:2009} and later by the President's Council of Advisors on Science and Technology \cite{pcast:2016}.
@@ -1089,13 +1099,13 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 <<figure-08, out.width = '2.25in', fig.width = 6, fig.height = 3, warning = FALSE>>=
 
 # Convert the bullet figure to eps (if needed)
-if (!file.exists("./figure-static/figure-08-1.eps")) {
-  bullets <- image_read("./figure-static/figure-08-1.png")
-  image_write(bullets, path = "./figure-static/figure-08-1.eps", format = "eps")
+if (!file.exists("figure-08-1.eps")) {
+  bullets <- image_read("figure-08-1.png")
+  image_write(bullets, path = "figure-08-1.eps", format = "eps")
 }
 
 # Load and print the plot
-knitr::include_graphics("./figure-static/figure-08-1.eps")
+knitr::include_graphics("figure-08-1.eps")
 
 @
 \caption{(Top left) Traditionally rifled gun barrel. The grooves and lands alternate to give bullets a spin during the firing process, which create markings (striations) on a bullet when fired. (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Close up of a land engraved area showing striations (vertical lines).}
@@ -1111,7 +1121,7 @@ f9_fw = 6
 f9_fs = fs * (f9_fw / f9_ow)
 
 # Load the signatures data
-signatures <- readRDS("../data/signatures.rds")
+signatures <- read.csv("data-example-signatures.csv")
 
 # Create plot of the signatures
 signatures %>%
@@ -1136,7 +1146,7 @@ signatures %>%
 <<figure-10, out.width = '6.5in', warning = FALSE>>=
 
 # Create or load the parallel coordinate plot
-if (!file.exists("./figure-static/figure-10-1.png")) {
+if (!file.exists("figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
   f10_ow = 6.5
@@ -1196,7 +1206,7 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
   # Save the plot
   ggplot2::ggsave(
     plot = bullet_pcp,
-    filename = "./figure-static/figure-10-1.png",
+    filename = "figure-10-1.png",
     width = 7.5,
     height = 3.5,
     units = "in",
@@ -1204,13 +1214,13 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
   )
   
   # Load the figure and then save as an EPS file
-  bullet_pcp <- image_read("./figure-static/figure-10-1.png")
-  image_write(bullet_pcp, path = "./figure-static/figure-10-1.eps", format = "eps")
+  bullet_pcp <- image_read("figure-10-1.png")
+  image_write(bullet_pcp, path = "figure-10-1.eps", format = "eps")
   
 } else {
  
    # Load and print the plot
-  knitr::include_graphics("./figure-static/figure-10-1.eps")
+  knitr::include_graphics("figure-10-1.eps")
 
 }
 
@@ -1228,12 +1238,7 @@ LIME is applied to all test set observations using different tuning parameter va
 <<bullet-lime>>=
 
 # Apply LIME to all but two cases without returning the permutations
-if (file.exists("../data/hamby_lime.rds")){
-
-  # Load the files
-  bullet_explain_noperms <- readRDS("../data/hamby_explain.rds")
-
-} else {
+if (!file.exists("data-bullet-lime.rds") | !file.exists("data-bullet-explain.rds")){
 
   # Apply lime with various input options to the hamby data
   bullet_lime_explain_noperms <- apply_lime(
@@ -1260,10 +1265,13 @@ if (file.exists("../data/hamby_lime.rds")){
   bullet_explain_noperms <- bullet_lime_explain_noperms$explain
 
   # Save the output objects
-  saveRDS(object = bullet_lime_noperms,
-          file = "../data/hamby_lime.rds")
-  saveRDS(object = bullet_explain_noperms,
-          file = "../data/hamby_explain.rds")
+  saveRDS(object = bullet_lime_noperms, file = "data-bullet-lime.rds")
+  saveRDS(object = bullet_explain_noperms, file = "data-bullet-explain.rds")
+  
+} else {
+
+  # Load the files
+  bullet_explain_noperms <- readRDS("data-bullet-explain.rds")
 
 }
 
