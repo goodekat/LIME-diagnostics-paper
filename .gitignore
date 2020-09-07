@@ -10,13 +10,12 @@
 *.gz
 *.log
 *.pag
+*.png
 *.Rapp.history
 *.rds
 *.Rproj
 
 figure/
-figure-static/figure-08-1.eps
-figure-static/figure-10-1.eps
 submission/figure-01-1.pdf
 submission/figure-02-1.pdf
 submission/figure-03-1.pdf
