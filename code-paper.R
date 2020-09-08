@@ -1,4 +1,4 @@
-## ----setup, echo = FALSE, include = FALSE----------------
+## ----setup, echo = FALSE, include = FALSE---------------------
 
 # Specify global options
 knitr::opts_chunk$set(
@@ -20,7 +20,7 @@ library(dplyr)
 library(forcats)
 library(ggforce)
 library(ggplot2)
-library(ggpcp) #devtools::install_github("yaweige/ggpcp", build_vignettes = TRUE)
+library(ggpcp) #devtools::install_github("yaweige/ggpcp")
 library(glmnet)
 library(gower)
 library(graphics)
@@ -39,7 +39,7 @@ fs = 7
 ff = "Helvetica"
 
 
-## ----concept-data----------------------------------------
+## ----concept-data---------------------------------------------
 
 # Simulate example data
 set.seed(20190624)
@@ -122,7 +122,7 @@ prediction_of_interest_gathered <- prediction_of_interest %>%
 
 
 
-## ----concept-explainers----------------------------------
+## ----concept-explainers---------------------------------------
 
 # Fit the good interpretable explainer model
 explainer_good <-
@@ -359,7 +359,7 @@ ggplot() +
 
 
 
-## ----sine-data, echo = FALSE, include = FALSE------------
+## ----sine-data, echo = FALSE, include = FALSE-----------------
 
 # Functions for rotating the data
 rot_x <- function(x, y, theta) (x * cos(theta)) - (y * sin(theta))
@@ -497,10 +497,10 @@ plot_grid(sine_plot_obs, sine_plot_pred,
 
 
 
-## ----sine-lime-------------------------------------------
+## ----sine-lime------------------------------------------------
 
 # Apply LIME with various tuning parameters to the sine data
-if (!file.exists("../data/sine_lime_explain.rds")) {
+if (!file.exists("data-sine-lime-explain.rds")) {
 
     # Apply lime with various input options
     sine_lime_explain <- apply_lime(
@@ -519,17 +519,17 @@ if (!file.exists("../data/sine_lime_explain.rds")) {
       all_fs = TRUE,
       seed = 20190914)
 
-    saveRDS(sine_lime_explain, "../data/sine_lime_explain.rds")
+    saveRDS(sine_lime_explain, "data-sine-lime-explain.rds")
+  
+    } else {
 
-  } else {
-
-    sine_lime_explain <- readRDS("../data/sine_lime_explain.rds")
+    sine_lime_explain <- readRDS("data-sine-lime-explain.rds")
 
   }
 
 
 
-## ----sine-lime-default-----------------------------------
+## ----sine-lime-default----------------------------------------
 
 # Extract the explanations from the default lime application
 sine_lime_default <- sine_lime_explain$explain %>% filter(nbins == 4)
@@ -542,7 +542,7 @@ sine_poi_lime_default <- sine_lime_default %>%
 
 
 
-## ----warning = FALSE-------------------------------------
+## ----warning = FALSE------------------------------------------
 
 # Obtain the simulated data associated with the poi
 sine_poi_perms <- sine_poi_lime_default %>%
@@ -574,7 +574,7 @@ sine_lime_default_bin_cuts <- sine_lime_default %>%
 
 
 
-## ----sine-poi-explainer, warning = FALSE-----------------
+## ----sine-poi-explainer, warning = FALSE----------------------
 
 # Determine the lime explanation cutoffs
 sine_poi_bounds <- sine_poi_lime_default %>%
@@ -646,6 +646,14 @@ exp_scatter <-
 
 # Join the plots
 plot_grid(sine_poi_exp, exp_scatter) 
+
+# Save the figure to use in the GitHub repo readme
+# ggsave(
+#   filename = "figure-readme.png",
+#   plot = plot_grid(sine_poi_exp, exp_scatter),
+#   width = 12,
+#   height = 5
+# )
 
 
 
@@ -805,16 +813,50 @@ plot_metrics(sine_lime_explain$explain, rank_legend = "discrete") +
 
 
 
-## ----bullet-data-----------------------------------------
+## ----bullet-data----------------------------------------------
 
-# Load the hamby data
-bullet_train <- read.csv("../data/hamby173and252_train.csv") %>%
+# Load the bullet matching training data and make some adjustments:
+#   1. filter out observations known to have tank rash
+#   2. exclude features not used to train the rtrees random forest 
+#   3. add a case variable
+#   4. change the name of the same_source variable to match the test data
+#   5. reorder the variables
+bullet_train <-
+  read.csv("data-bullet-train.csv") %>%
+  filter(!(
+    land_id1 %in% c(
+      "Hamby173-Br6-B2-L1",
+      "Hamby173-Br9-B2-L4",
+      "Hamby173-BrUnk-BB-L2",
+      "Hamby173-BrUnk-BQ-L4"
+    ) |
+      land_id2 %in% c(
+        "Hamby173-Br6-B2-L1",
+        "Hamby173-Br9-B2-L4",
+        "Hamby173-BrUnk-BB-L2",
+        "Hamby173-BrUnk-BQ-L4"
+      )
+  )) %>%
+  select(-lag, -abs_lag, -signature_length) %>%
   mutate(case = factor(1:n())) %>%
-  select(case, everything())
-bullet_test <- read.csv("../data/hamby224_test.csv")
+  rename("samesource" = "same_source") %>%
+  select(case, land_id1, land_id2, everything())
 
-# Extract the features and order them based on feature importance
+# Load the bullet test data
+bullet_test <- read.csv("data-bullet-test.csv")
+
+# Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
+
+# Add a variable to the training data with the random forest probability
+# in support of a match
+bullet_train$rfscore <- 
+  bulletxtrctr::rtrees %>%
+  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
+  data.frame() %>%
+  pull(TRUE.)
+
+# Order the features based on feature importance
 bullet_features_ordered <-
   data.frame(
     feature = rownames(bulletxtrctr::rtrees$importance),
@@ -823,13 +865,13 @@ bullet_features_ordered <-
   arrange(desc(MeanDecreaseGini)) %>%
   mutate(
     feature = fct_recode(feature,
-      "Cross Correlation Function" = "ccf",
-      "Consecutively Matching Striae" = "cms",
+      "Cross Correlation\nFunction" = "ccf",
+      "Consecutively\nMatching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-Consecutively Matching Striae" = "non_cms",
-      "Rough Correlation" = "rough_cor",
-      "Distance Standard Deviation" = "sd_D",
+      "Non-Consecutively\nMatching Striae" = "non_cms",
+      "Rough\nCorrelation" = "rough_cor",
+      "Distance Standard\nDeviation" = "sd_D",
       "Distance" = "D",
       "Sum of Peaks" = "sum_peaks"
     )
@@ -840,17 +882,16 @@ bullet_features_ordered <- bullet_features_ordered %>%
   mutate(feature = factor(feature, levels = bullet_features_ordered$feature))
 
 
-
 ## ----figure-08, out.width = '2.25in', fig.width = 6, fig.height = 3, warning = FALSE----
 
 # Convert the bullet figure to eps (if needed)
-if (!file.exists("./figure-static/figure-08-1.eps")) {
-  bullets <- image_read("./figure-static/figure-08-1.png")
-  image_write(bullets, path = "./figure-static/figure-08-1.eps", format = "eps")
+if (!file.exists("figure-08-1.eps")) {
+  bullets <- image_read("figure-08-1.png")
+  image_write(bullets, path = "figure-08-1.eps", format = "eps")
 }
 
 # Load and print the plot
-knitr::include_graphics("./figure-static/figure-08-1.eps")
+knitr::include_graphics("figure-08-1.eps")
 
 
 
@@ -862,14 +903,13 @@ f9_fw = 6
 f9_fs = fs * (f9_fw / f9_ow)
 
 # Load the signatures data
-signatures <- readRDS("../data/signatures.rds")
+signatures <- read.csv("data-example-signatures.csv")
 
 # Create plot of the signatures
 signatures %>%
-  mutate(land = c("Signature 1", "Signature 2")[as.factor(source)]) %>%
-  ggplot(aes(x = x/1000)) + 
-  geom_line(aes(y = sig), colour = "grey30") +
-  facet_grid(land~.) +
+  ggplot(aes(x = x/1000, y = sig)) + 
+  geom_line() +
+  facet_grid(land ~ .) +
   ylim(c(-4,6)) +
   theme_bw(base_family = ff, base_size = f9_fs) +
   theme(strip.background = element_blank()) +
@@ -878,10 +918,10 @@ signatures %>%
 
 
 
-## ----figure-10, out.width = '6.5in', warning = FALSE-----
+## ----figure-10, out.width = '6.5in', warning = FALSE----------
 
 # Create or load the parallel coordinate plot
-if (!file.exists("./figure-static/figure-10-1.png")) {
+if (!file.exists("figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
   f10_ow = 6.5
@@ -890,7 +930,8 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
   f10_ls = 0.5 * (f10_fw / f10_ow)
 
   # Create the plot
-  bullet_pcp <- bullet_train %>%
+  bullet_pcp <- 
+    bullet_train %>%
     select(all_of(bullet_features), samesource, rfscore) %>%
     bind_rows(bullet_test %>%
                 select(all_of(bullet_features), samesource, rfscore),
@@ -906,13 +947,13 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
       )
     ) %>%
     rename(
-      "Cross Correlation Function" = "ccf",
-      "Consecutively Matching Striae" = "cms",
+      "Cross Correlation\nFunction" = "ccf",
+      "Consecutively\nMatching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-Consecutively Matching Striae" = "non_cms",
-      "Rough Correlation" = "rough_cor",
-      "Distance Standard Deviation" = "sd_D",
+      "Non-Consecutively\nMatching Striae" = "non_cms",
+      "Rough\nCorrelation" = "rough_cor",
+      "Distance Standard\nDeviation" = "sd_D",
       "Distance" = "D",
       "Sum of Peaks" = "sum_peaks"
     ) %>%
@@ -929,7 +970,7 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
                           midpoint = 0.5) +
     theme_bw(base_family = ff, base_size = f10_fs) +
     theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
       strip.placement = "outside",
       strip.background = element_rect(color = "white",
                                       fill = "white")
@@ -941,7 +982,7 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
   # Save the plot
   ggplot2::ggsave(
     plot = bullet_pcp,
-    filename = "./figure-static/figure-10-1.png",
+    filename = "figure-10-1.png",
     width = 7.5,
     height = 3.5,
     units = "in",
@@ -949,27 +990,22 @@ if (!file.exists("./figure-static/figure-10-1.png")) {
   )
   
   # Load the figure and then save as an EPS file
-  bullet_pcp <- image_read("./figure-static/figure-10-1.png")
-  image_write(bullet_pcp, path = "./figure-static/figure-10-1.eps", format = "eps")
+  bullet_pcp <- image_read("figure-10-1.png")
+  image_write(bullet_pcp, path = "figure-10-1.eps", format = "eps")
   
 } else {
  
    # Load and print the plot
-  knitr::include_graphics("./figure-static/figure-10-1.eps")
+  knitr::include_graphics("figure-10-1.eps")
 
 }
 
 
 
-## ----bullet-lime-----------------------------------------
+## ----bullet-lime----------------------------------------------
 
 # Apply LIME to all but two cases without returning the permutations
-if (file.exists("../data/hamby_lime.rds")){
-
-  # Load the files
-  bullet_explain_noperms <- readRDS("../data/hamby_explain.rds")
-
-} else {
+if (!file.exists("data-bullet-lime.rds") | !file.exists("data-bullet-explain.rds")){
 
   # Apply lime with various input options to the hamby data
   bullet_lime_explain_noperms <- apply_lime(
@@ -996,16 +1032,19 @@ if (file.exists("../data/hamby_lime.rds")){
   bullet_explain_noperms <- bullet_lime_explain_noperms$explain
 
   # Save the output objects
-  saveRDS(object = bullet_lime_noperms,
-          file = "../data/hamby_lime.rds")
-  saveRDS(object = bullet_explain_noperms,
-          file = "../data/hamby_explain.rds")
+  saveRDS(object = bullet_lime_noperms, file = "data-bullet-lime.rds")
+  saveRDS(object = bullet_explain_noperms, file = "data-bullet-explain.rds")
+  
+} else {
+
+  # Load the files
+  bullet_explain_noperms <- readRDS("data-bullet-explain.rds")
 
 }
 
 
 
-## ----bullet-lime-perms-----------------------------------
+## ----bullet-lime-perms----------------------------------------
 
 # Specify two cases of interest
 bullet_poi_match <- unique(bullet_explain_noperms$case)[c(325)]
@@ -1047,7 +1086,7 @@ bullet_explain_perms <- bullet_lime_explain_perms$explain %>%
 
 
 
-## ----bullet-lime-combined--------------------------------
+## ----bullet-lime-combined-------------------------------------
 
 # Determine the application and case number of the poi
 # in the no_perms data
