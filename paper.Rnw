@@ -797,6 +797,14 @@ exp_scatter <-
 # Join the plots
 plot_grid(sine_poi_exp, exp_scatter) 
 
+# Save the figure to use in the GitHub repo readme
+# ggsave(
+#   filename = "figure-readme.png",
+#   plot = plot_grid(sine_poi_exp, exp_scatter),
+#   width = 12,
+#   height = 5
+# )
+
 @
 \caption{(left) Visualization from the \emph{lime} R package of a LIME explanation for the \data \ prediction of interest identified in \autoref{fig:figure-03}. (right) \emph{Explanation Scatterplot}. The points represent the simulated data colored by the random forest probabilities and sized by the assigned LIME weights. The prediction of interest is shown as the diamond shaped point. The explainer model indicator variables associated with $x_1$ and $x_2$ (quantile bins containing the prediction of interest) are depicted by the solid lines. The line colors represent the explainer model coefficient signs and indicate whether the feature supports a prediction of `blue' (blue lines) or supports a prediction of `red' (red lines). This figure shows that the quantile bins are not flexible enough to capture the relationship between the random forest predictions and the $x_1$ and $x_2$ values.}
 \label{fig:figure-04}
