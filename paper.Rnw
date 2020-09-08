@@ -1142,10 +1142,9 @@ signatures <- read.csv("data-example-signatures.csv")
 
 # Create plot of the signatures
 signatures %>%
-  mutate(land = c("Signature 1", "Signature 2")[as.factor(source)]) %>%
-  ggplot(aes(x = x/1000)) + 
-  geom_line(aes(y = sig), colour = "grey30") +
-  facet_grid(land~.) +
+  ggplot(aes(x = x/1000, y = sig)) + 
+  geom_line() +
+  facet_grid(land ~ .) +
   ylim(c(-4,6)) +
   theme_bw(base_family = ff, base_size = f9_fs) +
   theme(strip.background = element_blank()) +
@@ -1162,7 +1161,7 @@ signatures %>%
 \begin{figure*}[!thp]
 <<figure-10, out.width = '6.5in', warning = FALSE>>=
 
-# Create or load the parallel coordinate plot
+# Create the parallel coordinate plot (if needed)
 if (!file.exists("figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
@@ -1235,12 +1234,10 @@ if (!file.exists("figure-10-1.png")) {
   bullet_pcp <- image_read("figure-10-1.png")
   image_write(bullet_pcp, path = "figure-10-1.eps", format = "eps")
   
-} else {
- 
-   # Load and print the plot
-  knitr::include_graphics("figure-10-1.eps")
-
 }
+
+# Load and print the plot
+knitr::include_graphics("figure-10-1.eps")
 
 @
 \caption{Parallel coordinate plots of the \citet{hare:2016} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
