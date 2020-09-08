@@ -83,7 +83,7 @@ devtools::install_github("goodekat/limeaid")
 
 ## Additional Information on Bullet Data
 
-**Need to write still**
+**Need to write…**
 
 ## Figure Font Size Information
 
