@@ -70,7 +70,7 @@ library(dplyr)
 library(forcats)
 library(ggforce)
 library(ggplot2)
-library(ggpcp) #devtools::install_github("yaweige/ggpcp", build_vignettes = TRUE)
+library(ggpcp) #devtools::install_github("goodekat/ggpcp")
 library(glmnet)
 library(gower)
 library(graphics)
@@ -1090,13 +1090,13 @@ bullet_features_ordered <-
   arrange(desc(MeanDecreaseGini)) %>%
   mutate(
     feature = fct_recode(feature,
-      "Cross Correlation Function" = "ccf",
-      "Consecutively Matching Striae" = "cms",
+      "Cross Correlation\nFunction" = "ccf",
+      "Consecutively\nMatching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-Consecutively Matching Striae" = "non_cms",
-      "Rough Correlation" = "rough_cor",
-      "Distance Standard Deviation" = "sd_D",
+      "Non-Consecutively\nMatching Striae" = "non_cms",
+      "Rough\nCorrelation" = "rough_cor",
+      "Distance Standard\nDeviation" = "sd_D",
       "Distance" = "D",
       "Sum of Peaks" = "sum_peaks"
     )
@@ -1172,7 +1172,8 @@ if (!file.exists("figure-10-1.png")) {
   f10_ls = 0.5 * (f10_fw / f10_ow)
 
   # Create the plot
-  bullet_pcp <- bullet_train %>%
+  bullet_pcp <- 
+    bullet_train %>%
     select(all_of(bullet_features), samesource, rfscore) %>%
     bind_rows(bullet_test %>%
                 select(all_of(bullet_features), samesource, rfscore),
@@ -1188,13 +1189,13 @@ if (!file.exists("figure-10-1.png")) {
       )
     ) %>%
     rename(
-      "Cross Correlation Function" = "ccf",
-      "Consecutively Matching Striae" = "cms",
+      "Cross Correlation\nFunction" = "ccf",
+      "Consecutively\nMatching Striae" = "cms",
       "Matches" = "matches",
       "Mismatches" = "mismatches",
-      "Non-Consecutively Matching Striae" = "non_cms",
-      "Rough Correlation" = "rough_cor",
-      "Distance Standard Deviation" = "sd_D",
+      "Non-Consecutively\nMatching Striae" = "non_cms",
+      "Rough\nCorrelation" = "rough_cor",
+      "Distance Standard\nDeviation" = "sd_D",
       "Distance" = "D",
       "Sum of Peaks" = "sum_peaks"
     ) %>%
@@ -1211,7 +1212,7 @@ if (!file.exists("figure-10-1.png")) {
                           midpoint = 0.5) +
     theme_bw(base_family = ff, base_size = f10_fs) +
     theme(
-      axis.text.x = element_text(angle = 45, hjust = 1),
+      axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1),
       strip.placement = "outside",
       strip.background = element_rect(color = "white",
                                       fill = "white")
