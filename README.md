@@ -15,6 +15,20 @@ readme contains:
     manuscript, and
   - the steps taken to create the `submission` folder.
 
+## To Do
+
+  - Figure out discrepancies with old and new versions of the training
+    data
+  - Rerun the lime explanations with the finalized training data
+  - Write up dataset descriptions in README and convert to a txt
+    document for the submission
+  - Write up steps for creating the submission folder
+  - Update all files in the submission folder
+  - Consider getting rid of CyBox folder
+  - Delete old repo with long version
+  - Upload the files for submission, finish filling in questions, and
+    submit\!
+
 ## Description of Items in Repository
 
 **Folders**
