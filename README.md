@@ -1,4 +1,15 @@
 
+## To Do
+
+  - Figure out discrepancies with old and new versions of the training
+    data
+  - Rerun the lime explanations with the finalized training data
+  - Edit dataset descriptions in README and add to the readme.txt
+    document for submission
+  - Update all files in the submission folder
+  - Finish filling in questions in ASA submission document
+  - Upload the files for submission and submit
+
 # LIME Diagnostics Paper
 
 <img src="figure-readme.png" width="3600" />
@@ -14,20 +25,6 @@ readme contains:
   - information on the font sizes used for the figures in the
     manuscript, and
   - the steps taken to create the `submission` folder.
-
-## To Do
-
-  - Figure out discrepancies with old and new versions of the training
-    data
-  - Rerun the lime explanations with the finalized training data
-  - Write up dataset descriptions in README and convert to a txt
-    document for the submission
-  - Write up steps for creating the submission folder
-  - Update all files in the submission folder
-  - Consider getting rid of CyBox folder
-  - Delete old repo with long version
-  - Upload the files for submission, finish filling in questions, and
-    submit\!
 
 ## Description of Items in Repository
 
@@ -49,6 +46,9 @@ readme contains:
     for submission.
   - `code-paper.R` contains the R code extracted from `paper.Rnw` using
     code in `code-file-organization.R`.
+  - `code-trim-sig-data.R` contains R code for preparing the data in the
+    file `data-example-signatures.csv.zip` based on data provided by
+    Heike (that are not included in this directory).
   - `data-bullet-test.csv.zip` and `data-bullet-test.csv.zip` contain
     the data used for the bullet examples in the paper. Additional
     information about these files is included below under the heading
@@ -99,7 +99,31 @@ devtools::install_github("goodekat/limeaid")
 
 ## Additional Information on Bullet Data
 
-**Need to write…**
+The data used in the manuscript for the bullet comparison examples is
+described below.
+
+`data-bullet-train`: Contains comparison features from the Hamby 173 and
+252 sets.
+
+`data-bullet-test`: Contains comparison features from the Hamby 224
+Clone sets. As with all Hamby sets, Hamby set 224, is a collection of 35
+bullets, organized as 20 known bullets and 15 questioned bullets. The
+known bullets are fired in pairs of two through one of ten consecutively
+manufactures P-85 barrels. Clone set 224 is arranged as a test set of
+fifteen tests, one for each questioned bullet. Each test set is arranged
+as a combination of three bullets: two known bullets and a questioned
+bullet. The test asks for a decision on whether the questioned bullet
+comes from the same source as the two known bullets or from a different
+source. This situation is similar to what a firearms and toolmarks
+examiner might encounter in case work.
+
+`data-example-signatures`: Contains the signature data from two
+bullet-lands that are a match. The variables in the data are as follows:
+
+  - land = Indicates where the observation corresponds to ‘Signature 1’
+    or ‘Signature 2’
+  - x = The x position of the signature
+  - sig = The y position of the signature
 
 ## Figure Font Size Information
 
@@ -127,7 +151,45 @@ used to ensure that line sizes are larger than 0.5 pt.
 
 Follow these steps to make sure all guidelines are met for submission.
 
-1.  Knit paper (to make sure everything is up to date).
-2.  Run the code in the file code-extract-paper-code.R to produce an R
-    script with all of the code from the manuscript (paper.Rnw).
-3.  **Need to finish…**
+1.  Knit the file `paper.Rnw` (to make sure everything is up to date).
+2.  Run the code in the file `code-file-organization.R` for producing an
+    R script with all of the code from the manuscript (paper.Rnw).
+3.  Move the following files to the `submission` folder:
+      - `code-paper.R`
+      - `data-bullet-test.csv`
+      - `data-bullet-train.csv`
+      - `data-example-signatures.csv`
+      - `figure/figure-XX-1.eps` (for XX = 01-07, 09, 11-13, B1, B2, and
+        C3)
+      - `figure-08-1.eps`
+      - `figure-10-1.eps`
+      - `paper.tex`
+      - `readme.txt`
+      - `references.bib`
+      - `WileyNJD-AMS.bst`
+      - `WileyNJD-v1.csl`
+4.  Change the name of `paper.tex` to `paper-submission.tex`.
+5.  Delete `figure/` from the figure file paths in
+    `paper-submission.tex`. For example, change  to .
+6.  Compile the file `paper-submission.tex` (using LaTex, then bibTex,
+    then LaTeX twice more) to make sure it compiles correctly.
+7.  Besides for `paper-submission.pdf`, delete all other files generated
+    when `paper-sumbission.tex` was compiled. This includes other
+    `paper-submission` files and pdf versions of the figures.
+8.  Convert the following files in the submission folder to a zip file,
+    call it `code-and-data.zip`, and then delete the unzipped versions
+    of the files:
+      - `code-paper.R`
+      - `data-bullet-test.csv`
+      - `data-bullet-train.csv`
+      - `data-example-signatures.csv`
+      - `readme.txt`
+9.  Upload all remaining files to ASA data science journal submission
+    page (except for `paper-submission.Rnw`) which should be:
+      - `code-and-data.zip`
+      - `figure-01-1.eps` through `figure-C3-1.eps`
+      - `paper-sumbission.pdf`
+      - `paper-sumbission.tex`
+      - `references.bib`
+      - `WileyNJD-AMS.bst`
+      - `WileyNJD-v2.cls`
