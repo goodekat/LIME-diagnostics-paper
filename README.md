@@ -9,6 +9,8 @@ instructions for knitting the paper, descriptions of the bullet data
 used in the paper, and information on the font sizes used for the
 figures in the manuscript.
 
+<img src="figure-readme.png" width="3600" />
+
 ### Description of Items in Repository
 
 **Folders**
