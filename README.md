@@ -12,10 +12,10 @@ readme contains:
   - instructions for knitting the paper,
   - descriptions of the bullet data used in the paper,
   - information on the font sizes used for the figures in the
-    manuscript,
-  - and the steps taken to create the `submission` folder.
+    manuscript, and
+  - the steps taken to create the `submission` folder.
 
-### Description of Items in Repository
+## Description of Items in Repository
 
 **Folders**
 
@@ -54,7 +54,7 @@ readme contains:
   - `WileyNJG-AMS.bst` and `WileyNJG-v2.cls` contain the latex
     formatting specifications for the ASA data science journal.
 
-### Instructions for Knitting Paper
+## Instructions for Knitting Paper
 
 When the paper is knit, various files will be generated (such as
 `data-bullet-explain.rds` and `figure-10-1.png`). The first time the
@@ -81,11 +81,11 @@ devtools::install_github("goodekat/limeaid")
 
 4.  Knit paper (via the paper.Rnw file).
 
-### Additional Information on Bullet Data
+## Additional Information on Bullet Data
 
 **Need to write still**
 
-### Figure Font Size Information
+## Figure Font Size Information
 
 The font sizes in the figures are calculated based on how the figures
 are scaled due to the specification of both fig.width and out.width in
@@ -107,7 +107,7 @@ used to ensure that line sizes are larger than 0.5 pt.
 | Facet labels (general)                                   | 5.5 pt    |
 | Legend labels                                            | 5.5 pt    |
 
-### Steps Followed to Create the Submission Folder
+## Steps Followed to Create the Submission Folder
 
 Follow these steps to make sure all guidelines are met for submission.
 
