@@ -13,9 +13,6 @@ zip::zip("data-bullet-test.csv.zip", "data-bullet-test.csv")
 # Save the dataset with two example matching signatures as a zip file
 zip::zip("data-example-signatures.csv.zip", "data-example-signatures.csv")
 
-# Save the dataset with observations with tank rash as a zip file
-zip::zip("data-no-tank-rash.csv.zip", "data-no-tank-rash.csv")
-
 # Preparing files for submission ----------------------------------------
 
 # Extract the R code from the file paper.Rnw to be used for submission
