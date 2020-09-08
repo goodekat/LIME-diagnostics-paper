@@ -42,8 +42,6 @@ readme contains:
   - `data-example-signatures.csv.zip` contains signature data from two
     matching bullet lands that is used to generate a figure in the
     manuscript.
-  - **`data-no-tank-rash.csv.zip` is a temporary fix file and needs to
-    be deleted eventually\!\!\!\!**
   - `figure-08-1.png.zip` is the one figure in the manuscript that is
     not generated using R code.
   - `figure-readme.png` is a figure used in the readme.
@@ -69,8 +67,8 @@ Follow these instructions to knit the paper:
 
 1.  Pull the repository from GitHub.
 2.  Unzip all .zip files in the repository (`data-bullet-train.csv.zip`,
-    `data-bullet-test.csv.zip`, `data-example-signatures.csv.zip`,
-    **`data-no-tank-rash.csv.zip`**, and `figure-08-1.png.zip`).
+    `data-bullet-test.csv.zip`, `data-example-signatures.csv.zip`, and
+    `figure-08-1.png.zip`).
 3.  Install R packages goodekat/lime and goodekat/limeaid R from GitHub
     using devtools.
 
@@ -84,6 +82,8 @@ devtools::install_github("goodekat/limeaid")
 4.  Knit paper (via the paper.Rnw file).
 
 ### Additional Information on Bullet Data
+
+**Need to write still**
 
 ### Figure Font Size Information
 
@@ -112,8 +112,6 @@ used to ensure that line sizes are larger than 0.5 pt.
 Follow these steps to make sure all guidelines are met for submission.
 
 1.  Knit paper (to make sure everything is up to date).
-
 2.  Run the code in the file code-extract-paper-code.R to produce an R
     script with all of the code from the manuscript (paper.Rnw).
-
-3.
+3.  **Need to finish…**
