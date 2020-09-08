@@ -1062,7 +1062,7 @@ bullet_train <-
         "Hamby173-BrUnk-BQ-L4"
       )
   )) %>%
-  select(-lag, -abs_lag, -signature_length) %>%
+  select(-lag, -abs_lag, -overlap, -signature_length) %>%
   mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
