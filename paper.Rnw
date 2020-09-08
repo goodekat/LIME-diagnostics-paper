@@ -1040,20 +1040,29 @@ In this section, we provide a discussion of the application of the visual diagno
 
 <<bullet-data>>=
 
-# Files that will need to be removed once I know how to 
-#bullet_train <- read.csv("../data/hamby173and252_train.csv")
-no_tank_rash = read.csv("data-no-tank-rash.csv")
-
 # Load the bullet matching training data and make some adjustments:
-#   1. filter out observations know to have tank rash
+#   1. filter out observations known to have tank rash
 #   2. exclude features not used to train the rtrees random forest 
-#   3. change the name of the same_source variable to match the test data
-#   4. reorder the variables
+#   3. add a case variable
+#   4. change the name of the same_source variable to match the test data
+#   5. reorder the variables
 bullet_train <-
   read.csv("data-bullet-train.csv") %>%
-  slice(no_tank_rash$case) %>%
-  #filter(land_id1 == "Hamby173-BrUnk-B2-L1")
-  select(-lag,-abs_lag,-signature_length) %>%
+  filter(!(
+    land_id1 %in% c(
+      "Hamby173-Br6-B2-L1",
+      "Hamby173-Br9-B2-L4",
+      "Hamby173-BrUnk-BB-L2",
+      "Hamby173-BrUnk-B!-L4"
+    ) |
+      land_id2 %in% c(
+        "Hamby173-Br6-B2-L1",
+        "Hamby173-Br9-B2-L4",
+        "Hamby173-BrUnk-BB-L2",
+        "Hamby173-BrUnk-B!-L4"
+      )
+  )) %>%
+  select(-lag, -abs_lag, -signature_length) %>%
   mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
