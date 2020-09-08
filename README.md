@@ -83,18 +83,16 @@ Follow these instructions to knit the paper:
 2.  Unzip all .zip files in the repository (`data-bullet-train.csv.zip`,
     `data-bullet-test.csv.zip`, `data-example-signatures.csv.zip`, and
     `figure-08-1.png.zip`).
-3.  Install R packages goodekat/lime, goodekat/limeaid, and
-    goodekat/ggpcp from GitHub using devtools. (Note that goodekat/lime
-    and goodekat/ggpcp are forked versions of thomasp85/lime and
-    yaweige/ggpcp, respectively with minor changes to meet the needs of
-    the manuscript.)
+3.  Install R packages goodekat/lime and goodekat/limeaid from GitHub
+    using devtools. (Note that goodekat/lime is a forked versions of
+    thomasp85/lime with minor changes to extract objects for the
+    analysis in the manuscript.)
 
 <!-- end list -->
 
 ``` r
 devtools::install_github("goodekat/lime")
 devtools::install_github("goodekat/limeaid")
-devtools::install_github("goodekat/ggpcp")
 ```
 
 4.  Knit paper (via the paper.Rnw file).
