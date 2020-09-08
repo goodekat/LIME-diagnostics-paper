@@ -1,8 +1,6 @@
 
 # LIME Diagnostics Paper
 
-<img src="figure-readme.png" width="3600" />
-
 This repository contains the files associated with the paper “Visual
 Diagnostics of a Model Explainer – Tools for the Assessment of LIME
 Explanations” by Katherine Goode and Heike Hofmann. The rest of this
@@ -14,6 +12,8 @@ readme contains:
   - information on the font sizes used for the figures in the
     manuscript,
   - and the steps taken to create the `submission` folder.
+
+<img src="figure-readme.png" width="3600" />
 
 ### Description of Items in Repository
 

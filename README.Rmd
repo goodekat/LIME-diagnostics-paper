@@ -9,10 +9,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 # LIME Diagnostics Paper
 
-```{r echo = FALSE}
-knitr::include_graphics("figure-readme.png")
-```
-
 This repository contains the files associated with the paper "Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations" by Katherine Goode and Heike Hofmann. The rest of this readme contains:
 
 - information about the files in the repository,
@@ -21,7 +17,9 @@ This repository contains the files associated with the paper "Visual Diagnostics
 - information on the font sizes used for the figures in the manuscript, 
 - and the steps taken to create the `submission` folder.
 
-
+```{r echo = FALSE}
+knitr::include_graphics("figure-readme.png")
+```
 
 ### Description of Items in Repository
 
