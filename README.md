@@ -94,8 +94,9 @@ remotes::install_github("goodekat/lime")
 remotes::install_github("goodekat/limeaid")
 ```
 
-3.  Knit paper (via the paper.Rnw file). et \#\# Additional Information
-    on Bullet Data
+3.  Knit paper (via the paper.Rnw file).
+
+## Additional Information on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
 described below.
