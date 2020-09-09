@@ -86,7 +86,7 @@
 
 % Abstract and keywords
 \abstract[Abstract]{The importance of providing explanations for predictions made by black-box models has led to the development of model explainer methods such as LIME (local interpretable model-agnostic explanations). LIME uses a surrogate model to explain the relationship between predictor variables and predictions from a black-box model in a local region around a prediction of interest. However, the quality of the resulting explanations relies on how well the explainer model captures the black-box model in a specified local region. Here we introduce three visual diagnostics to assess the quality of LIME explanations: (1) explanation scatterplots, (2) assessment metric plots, and (3) feature heatmaps. We apply the visual diagnostics to a forensics bullet matching dataset to show examples where LIME explanations depend on the tuning parameter values and the explainer model oversimplifies the black-box model. Our examples raise concerns about claims made of LIME that are similar to other criticisms in the literature.}
-\keywords{LIME, black-box models, interpretability, diagnostics}
+\keywords{explainable machine learning, black-box models, interpretability, statistical graphics, data science}
 
 % Citation information
 \jnlcitation{
@@ -172,7 +172,7 @@ The general form of the LIME algorithm can be divided into three steps \citep[se
 
 \item \emph{Data Simulation and Interpretable Transformation}: Simulate a dataset from the original data used to fit the black-box model. Apply a transformation to the simulated data and the prediction of interest that will allow for interpretable explanations.
 
-\item \emph{Explainer Model Fitting}: Apply the black-box model to the simulated data to obtain predictions. Compute the distance between each of the simulated observations and the prediction of interest. Perform feature selection. Fit an interpretable model with the black-box predictions from the simulated data as the response, the selected features from the transformed simulated data as the predictors, and the distances as weights. This model is the explainer model.
+\item \emph{Explainer Model Fitting}: Apply the black-box model to the simulated data to obtain predictions. Compute the distance between each of the simulated data points and the prediction of interest. Perform feature selection. Fit an interpretable model with the black-box predictions from the simulated data as the response, the selected features from the transformed simulated data as the predictors, and the distances as weights. This model is the explainer model.
 
 \item \emph{Explainer Model Interpretation}: Interpret the explainer model to determine which features played the most important role in the prediction of interest.
 
@@ -370,7 +370,7 @@ In this section, we provide a discussion of the application of the visual diagno
 
 In current practice, forensic firearm examiners evaluate whether two bullets are from the same source (fired from the same gun) or from different sources based on microscopic comparison of the striation patterns engraved on bullets during the firing process (see \autoref{fig:figure-08}). The process is based on a visual and therefore subjective assessment of the evidence. The lack of objective evaluation and the associated absence of established error rates has first been criticized by the National Research Council \cite{nrc:2009} and later by the President's Council of Advisors on Science and Technology \cite{pcast:2016}.
 
-In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). \kge{See the supporting information for additional information on the data.} The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes 83436 land-to-land comparisons.
+In response, \citet{hare:2016} proposed an automated machine learning method for bullet matching to complement a visual inspection by firearm examiners. Based on high-resolution topological scans of land engraved areas, \citet{hare:2016} obtain signatures of striations from two bullet lands (\autoref{fig:figure-09}). Nine features quantifying the similarity of signatures, such as the cross-correlation function, the distance between signatures, and the number of matching striae, are extracted and used to train a random forest (available in the \emph{bulletxtrctr} R package) to determine the probability of a comparison resulting from the same source (matching signatures) or from different sources (non-matching signatures). See the supporting information for additional information on the data. The model was trained on a set of scans of bullets from the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}, which includes over 80,000 land-to-land comparisons.
 
 \begin{figure}[!t]
 \centering
@@ -535,7 +535,7 @@ The authors declare no potential conflict of interests.
 
 \section*{Supporting information}
 
-\kge{The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}. Additional information about the bullet matching data are available at \kgc{XXX}.}
+The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}. Additional information about the bullet matching data are available at XXX.
 
 \bibliography{references}
 
@@ -629,9 +629,9 @@ In order to assess the claim of linearity for the \data \ prediction of interest
 
 Suppose $f$ is a complex model, and let $\textbf{X}$ be a matrix of observed data with $K$ features and $E$ observations where $x_e$ is an observed feature vector for observation $e$. Let $f(x_e)$ be the complex model prediction for observation $e$. It is of interest to explain the predictions made by $f$ applied to $X$ using LIME. 
 
-For $x_e$ and a set of tuning parameter values $t$, let $\textbf{X}_{e,t}'$ be the LIME simulated dataset with $K$ features and $S$ observations such that $x'_{e,t,s}$ is the feature vector for simulated data observation $s$ corresponding to observation/explanation $e$ and tuning parameter values $t$. Let $\textbf{Z}'_{e,t}$ be the matrix of simulated data transformed to bin indicator variables (for bin based simulation methods) or standardization (for density based simulation methods)  with $K$ features and $S$ observations such that $z'_{e,t,s}$ is the interpretability transformed feature vector for observation/explanation $e$, tuning parameter values $t$, and simulated data observation $s$. Note that $z_{e,t}$ will represent the  transformed version of $x_e$.
+For $x_e$ and a set of tuning parameter values $t$, let $\textbf{X}_{e,t}'$ be the LIME simulated dataset with $K$ features and $S$ rows such that $x'_{e,t,s}$ is the feature vector for simulated data point $s$ corresponding to explanation $e$ and tuning parameter values $t$. Let $\textbf{Z}'_{e,t}$ be the matrix of simulated data transformed to bin indicator variables (for bin based simulation methods) or standardization (for density based simulation methods) with $K$ features and $S$ observations such that $z'_{e,t,s}$ is the interpretability transformed feature vector for explanation $e$, tuning parameter values $t$, and simulated data point $s$. Note that $z_{e,t}$ will represent the  transformed version of $x_e$.
 
-Next, let $\omega_t$ represent a proximity distance metric corresponding to tuning parameter values $t$. Then $\omega_t\left(x_e, x'_{e,t,s}\right)$ is the weight assigned to $x'_{e,t,s}$, which is the proximity between $x_e$ and $x'_{e,t,s}$. Allow $g_{e,t}$ to be the explainer model for an explanation $e$ and tuning parameter values $t$. Thus, $g_{e,t}\left(z'_{e,s,t}\right)$ is the explainer model prediction for the interpretability transformed simulated data observation $s$. 
+Next, let $\omega_t$ represent a proximity distance metric corresponding to tuning parameter values $t$. Then $\omega_t\left(x_e, x'_{e,t,s}\right)$ is the weight assigned to $x'_{e,t,s}$, which is the proximity between $x_e$ and $x'_{e,t,s}$. Allow $g_{e,t}$ to be the explainer model for an explanation $e$ and tuning parameter values $t$. Thus, $g_{e,t}\left(z'_{e,s,t}\right)$ is the explainer model prediction for the interpretability transformed simulated data point $s$. 
 
 For a set of $E$ explanations and a set of tuning parameter values $t$, we define the assessment metrics as follows:\\
 \\
@@ -645,7 +645,7 @@ For a set of $E$ explanations and a set of tuning parameter values $t$, we defin
 
 \begin{eqnarray*} \mathcal{L}_{\mbox{ave}} & = & \frac{1}{E}\sum_{e=1}^E\mathcal{L}(f, \ g_{e,t}, \ \pi_{t}) \\ & = & \frac{1}{E}\sum_{e=1}^E\sum_{s=1}^{S}\omega_{t}\left(x_e, x'_{e,t,s}\right)\left(f\left(x'_{e,t,s}\right)-g_{e,t}\left(z_{e,t,s}'\right)\right)^2. \end{eqnarray*}
 
-\noindent where $\mathcal{L}$ was originally defined in \citet{ribeiro:2016}.\\
+\noindent where $\mathcal{L}$ is the fidelity metric originally defined in \citet{ribeiro:2016}.\\
 \\
 \emph{Mean squared explanation error} is denoted by MSEE and computed as
 

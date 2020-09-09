@@ -81,24 +81,20 @@ minute on Katherine’s computer).
 Follow these instructions to knit the paper:
 
 1.  Pull the repository from GitHub.
-2.  Unzip all .zip files in the repository (`data-bullet-train.csv.zip`,
-    `data-bullet-test.csv.zip`, `data-example-signatures.csv.zip`, and
-    `figure-08-1.png.zip`).
-3.  Install R packages goodekat/lime and goodekat/limeaid from GitHub
-    using devtools. (Note that goodekat/lime is a forked versions of
-    thomasp85/lime with minor changes to extract objects for the
-    analysis in the manuscript.)
+2.  Install R packages goodekat/lime and goodekat/limeaid from GitHub
+    using the remotes R package. (Note that goodekat/lime is a forked
+    versions of thomasp85/lime with minor changes to extract objects for
+    the analysis in the manuscript.)
 
 <!-- end list -->
 
 ``` r
-devtools::install_github("goodekat/lime")
-devtools::install_github("goodekat/limeaid")
+remotes::install_github("goodekat/lime")
+remotes::install_github("goodekat/limeaid")
 ```
 
-4.  Knit paper (via the paper.Rnw file).
-
-## Additional Information on Bullet Data
+3.  Knit paper (via the paper.Rnw file). et \#\# Additional Information
+    on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
 described below.
