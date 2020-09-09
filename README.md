@@ -9,6 +9,7 @@
   - Update all files in the submission folder
   - Finish filling in questions in ASA submission document
   - Upload the files for submission and submit
+  - Make the repository public
 
 # LIME Diagnostics Paper
 
