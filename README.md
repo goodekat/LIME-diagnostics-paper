@@ -1,16 +1,16 @@
 
 ## To Do
 
-  - Look into using renev
   - Remove NAs from test data
+  - Finish filling in questions in ASA submission document
   - Figure out discrepancies with old and new versions of the training
     data
   - Rerun the lime explanations with the finalized training data
   - Edit dataset descriptions in README and add to the readme.txt
     document for submission
   - Update all files in the submission folder
-  - Finish filling in questions in ASA submission document
   - Upload the files for submission and submit
+  - Look into using renev
 
 # LIME Diagnostics Paper
 
