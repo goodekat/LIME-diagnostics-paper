@@ -9,7 +9,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## To Do
 
-- Remove NAs from test data
 - Write cover letter
 - Finish filling in questions in ASA submission document
 - Figure out discrepancies with old and new versions of the training data
