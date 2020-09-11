@@ -142,7 +142,7 @@ hamby224_test <-
     land_id2 = paste(study, set, bullet2, land2, sep = "-")
   ) %>%
   select(-study,-set,-bullet1,-land1,-bullet2,-land2) %>%
-  select(case, land_id1, land_id2, everything())
+  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)
 
 # ave the file to the folder where the LIME diagnostics paper is stored
 write.csv(
