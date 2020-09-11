@@ -23,7 +23,6 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 # LIME Diagnostics Paper
 
 ```{r echo = FALSE}
-unzip("figure-static/figure-readme.png.zip")
 knitr::include_graphics("figure-static/figure-readme.png")
 ```
 
