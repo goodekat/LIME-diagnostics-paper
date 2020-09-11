@@ -11,17 +11,16 @@ submission_folder <- "submission"
 
 ## DATA AND CODE
 
-# Extract the R code from the file paper.Rnw to be used for submission
-knitr::purl("paper.Rnw", output = "code/paper.R")
-
 # Create a temporary directory for storing code and data files for submission
 code_data_folder = "code-and-data"
 dir.create(code_data_folder) 
 
+# Extract the R code from the file paper.Rnw to be used for submission
+knitr::purl("paper.Rnw", output = paste0(code_data_folder, "/paper.R"))
+
 # Create a vector with code and data files to be included for submission 
-code_data_files <-
+data_files <-
   c(
-    "code/paper.R",
     "data/bullet-test.csv",
     "data/bullet-train.csv",
     "data/example-signatures.csv"
