@@ -1,20 +1,8 @@
-## Code for organizing files associated with the paper
+## Steps to follow for ASA Data Science Journal submission
 ## Last Run: September 11, 2020
 
 # Load packages
 library(zip)
-
-# Compressing files for GitHub ------------------------------------------
-
-# Save the static figure that is used in the paper as a zip file
-zip("figure-static/figure-08-1.png.zip", "figure-static/figure-08-1.png")
-
-# Save the bullet training and testing datasets a zip files
-zip("data/data-bullet-train.csv.zip", "data/data-bullet-train.csv")
-zip("data/data-bullet-test.csv.zip", "data/data-bullet-test.csv")
-
-# Save the dataset with two example matching signatures as a zip file
-zip("data/data-example-signatures.csv.zip", "data/data-example-signatures.csv")
 
 # Preparing files for submission ----------------------------------------
 

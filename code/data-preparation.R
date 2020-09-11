@@ -1,6 +1,13 @@
 
 library(dplyr)
 
+# Save the bullet training and testing datasets a zip files
+zip("data/data-bullet-train.csv.zip", "data/data-bullet-train.csv")
+zip("data/data-bullet-test.csv.zip", "data/data-bullet-test.csv")
+
+# Save the dataset with two example matching signatures as a zip file
+zip("data/data-example-signatures.csv.zip", "data/data-example-signatures.csv")
+
 # The code in this script trims the data provided by Heike of two matching bullet signatures
 
 # Import the data
@@ -36,7 +43,7 @@ bullet_train <-
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
 
-write.csv(bullet_train, "data/bullet-train.csv.zip")
+write.csv(bullet_train, "data/bullet-train.csv")
 
 
 # Load in the Hamby 224 datasets

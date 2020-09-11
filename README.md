@@ -45,11 +45,12 @@ organization):
     training data (based on Hamby 173 and 252), bullet testing data
     (based on Hamby 224 sets 1 and 11), and example matching signatures
     (based on data provided by Heike).
-  - `file-organization.R` contains R code for organizing the files to be
-    added to the GitHub repository and preparing and moving files to the
-    submission folder.
+  - `figure-compression.R` contains R code for compressing the static
+    figure used in the manuscript
   - `paper.R` contains the R code extracted from `paper.Rnw` using code
     in `file-organization.R`.
+  - `submission-steps.R` contains the to do list and R code for
+    preparing the files for submission to the ASA Data Science Journal.
 
 **`data`**
 
