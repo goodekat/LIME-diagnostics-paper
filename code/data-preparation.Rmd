@@ -1,0 +1,346 @@
+---
+title: "Bullet Data Preparation for LIME Diagnostics Paper"
+author: "Katherine Goode"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: 
+  html_document: 
+    toc: TRUE
+    toc_float: TRUE
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+```
+
+This document contains code for preparing the raw bullet data sets (training, testing, and example matching signatures) to be used the paper "Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations".
+
+Load R packages:
+
+```{r}
+library(cowplot)
+library(dplyr)
+library(ggplot2)
+library(stringr)
+```
+
+Obtain features used when fitting the rtrees random forest:
+
+```{r}
+rf_features <- rownames(bulletxtrctr::rtrees$importance)
+```
+
+# Bullet Training Data
+
+Load the raw version of the Hamby 172 and 252 bullet comparison data:
+
+```{r}
+bullet_train_raw = read.csv("../data/raw/hamby-comparisons.csv")
+```
+
+Remove any lands with tank rash, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
+
+```{r}
+bullet_train <- 
+  bullet_train_raw %>%
+  filter(!(
+    land_id1 %in% c(
+      "Hamby173-Br6-B2-L1",
+      "Hamby173-Br9-B2-L4",
+      "Hamby173-BrUnk-BB-L2",
+      "Hamby173-BrUnk-BQ-L4"
+    ) |
+      land_id2 %in% c(
+        "Hamby173-Br6-B2-L1",
+        "Hamby173-Br9-B2-L4",
+        "Hamby173-BrUnk-BB-L2",
+        "Hamby173-BrUnk-BQ-L4"
+      )
+  )) %>%
+  select(-lag, -abs_lag, -overlap, -signature_length) %>%
+  mutate(case = factor(1:n())) %>%
+  rename("samesource" = "same_source") %>%
+  select(case, land_id1, land_id2, everything())
+```
+
+Save the prepared data as a csv file:
+
+```{r}
+write.csv(
+  x = bullet_train, 
+  file = "../data/bullet-train.csv", 
+  row.names = FALSE
+)
+```
+
+Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+
+```{r}
+zip(
+  zipfile = "../data/raw/hamby-comparisons.csv.zip", 
+  files = "../data/raw/hamby-comparisons.csv"
+)
+zip(
+  zipfile = "../data/bullet-train.csv.zip", 
+  files = "../data/bullet-train.csv"
+)
+```
+
+# Bullet Testing Data
+
+Load in the raw Hamby 224 datasets (sets 1 and 11):
+
+```{r}
+hamby224_set1 <- readRDS("../data/raw/h224-set1-features.rds")
+hamby224_set11 <- readRDS("../data/raw/h224-set11-features.rds")
+```
+
+The bullet and land names from each of the sets are included below. This indicates that each set contains `r length(unique(hamby224_set1$bulletA))` bullets with `r length(unique(hamby224_set1$landA))` lands each.
+
+| Set | Bullets | Lands | 
+| --- | -------------- | -------------- | 
+| 1 | `r unique(hamby224_set1$bulletA)` | `r unique(hamby224_set1$landA)` |
+| 11 | `r unique(hamby224_set11$bulletA)` | `r unique(hamby224_set11$landA)` |
+
+The dimensions of the datasets are:
+
+| Set | Number of Rows | Number of Columns | 
+| --- | -------------- | -------------- | 
+| 1 | `r dim(hamby224_set1)[1]` | `r dim(hamby224_set1)[2]` |
+| 11 | `r dim(hamby224_set11)[1]` | `r dim(hamby224_set11)[2]` |
+
+The number of rows in each of these datasets indicates that there are some lands missing since a complete set with 3 bullets and 6 lands would contains 3 bullets x 3 bullets x 6 lands x 6 lands  = `r 6 * 6 * 3 * 3` comparisons. The figures below show that set 1 is missing land 4 from bullet Q, and set 11 is missing land2 from bullet 1 and land 4 from bullet I.
+
+```{r fig.width = 10, fig.height = 4.5}
+plot_grid(
+  hamby224_set1 %>%
+    count(bulletA, bulletB, landA, landB) %>%
+    ggplot(aes(
+      x = landA, y = landB, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bulletB ~ bulletA) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1),
+  hamby224_set11 %>%
+    count(bulletA, bulletB, landA, landB) %>%
+    ggplot(aes(
+      x = landA, y = landB, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bulletB ~ bulletA) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, hjust = 1)),
+  align = "hv"
+)
+```
+Preparing the data from sets 1 and 11 for analysis:
+
+```{r}
+hamby224_set1_cleaned <-
+  hamby224_set1 %>%
+  # Remove unneeded variables
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
+  # Rename bullet and land variables
+  rename(
+    bullet1 = bulletA,
+    bullet2 = bulletB,
+    land1 = landA,
+    land2 = landB
+  ) %>%
+  # Create study and set variables and change levels of bullet and land
+  # variables to match those in the training data
+  mutate(
+    study = factor("Hamby224"),
+    set = factor("Set1"),
+    bullet1 = recode(factor(bullet1), "1" = "B1", "2" = "B2", "Q" = "BUnk"),
+    bullet2 = recode(factor(bullet2), "1" = "B1", "2" = "B2", "Q" = "BUnk"),
+    land1 = paste0("L", land1),
+    land2 = paste0("L", land2)
+  ) %>%
+  # Order the variables as desired
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)
+
+hamby224_set11_cleaned <- 
+  hamby224_set11 %>%
+  # Remove unneeded variables
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
+  # Rename bullet and land variables
+  rename(
+    bullet1 = bulletA,
+    bullet2 = bulletB,
+    land1 = landA,
+    land2 = landB
+  ) %>%
+  # Create study and set variables and change levels of bullet and land
+  # variables to match those in the training data
+  mutate(
+    study = factor("Hamby224"),
+    set = factor("Set11"),
+    bullet1 = recode(factor(bullet1), "Bullet 1" = "B1", "Bullet 2" = "B2", "Bullet I" = "BUnk"),
+    bullet2 = recode(factor(bullet2), "Bullet 1" = "B1", "Bullet 2" = "B2", "Bullet I" = "BUnk"),
+    land1 = str_remove(land1, "and "),
+    land2 = str_remove(land2, "and ")
+  ) %>%
+  # Order the variables as desired
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)
+```
+
+Plots show that the number of observations is still the same after cleaning:
+
+```{r fig.width = 10, fig.height = 4.5}
+plot_grid(
+  hamby224_set1_cleaned %>%
+    count(bullet1, bullet2, land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bullet2 ~ bullet1) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1),
+  hamby224_set11_cleaned %>%
+    count(bullet1, bullet2, land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bullet2 ~ bullet1) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1),
+  align = "hv"
+)
+```
+
+Join the two cleaned Hamby 224 sets into one testing set, remove duplicate comparisons, create a case variable, and create land ids based on the study, set, bullet, and land (remove those variables afterwards):
+
+```{r}
+hamby224_test_extra_vars <-
+  # Join the two data sets
+  bind_rows(hamby224_set1_cleaned, hamby224_set11_cleaned) %>%
+  # Remove duplicate comparisons
+  filter(!(bullet1 == "BUnk" & bullet2 == "B1"),
+         !(bullet1 == "BUnk" & bullet2 == "B2"),
+         !(bullet1 == "B2" & bullet2 == "B1")) %>%
+  # Create a case and land_id variables
+  mutate(
+    case = factor(1:length(study)),
+    land_id1 = paste(study, set, bullet1, land1, sep = "-"),
+    land_id2 = paste(study, set, bullet2, land2, sep = "-")
+  ) # Leave the extract variables for plotting
+
+# Select and order variables to keep for analysis
+hamby224_test <- hamby224_test_extra_vars %>%
+  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)
+```
+
+Remaining comparisons included in the test data after the duplicate comparisons are removed:
+
+```{r fig.width = 10, fig.height = 4.5}
+plot_grid(
+  hamby224_test_extra_vars %>%
+    filter(set == "Set1") %>%
+    count(bullet1, land1, bullet2, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bullet2 ~ bullet1) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1),
+  hamby224_test_extra_vars %>%
+    filter(set == "Set11") %>%
+    count(bullet1, land1, bullet2, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(bullet2 ~ bullet1) +
+    scale_fill_distiller(palette = "GnBu", direction = 1) +
+    theme_minimal() +
+    theme(aspect.ratio = 1),
+  align = "hv"
+)
+```
+
+Save the test data as a csv file:
+
+```{r}
+write.csv(
+  x = hamby224_test, 
+  file = "../data/bullet-test.csv", 
+  row.names = FALSE
+)
+```
+
+Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+
+```{r}
+zip(
+  zipfile = "../data/raw/h224-set1-features.rds.zip", 
+  files = "../data/raw/h224-set1-features.rds"
+)
+zip(
+  zipfile = "../data/raw/h224-set11-features.rds.zip", 
+  files = "../data/raw/h224-set11-features.rds"
+)
+zip(
+  zipfile = "../data/bullet-test.csv.zip", 
+  files = "../data/bullet-test.csv"
+)
+```
+
+# Example Matching Signatures
+
+The following code trims the data provided by Heike of two matching bullet-land signatures
+
+Import the data:
+
+```{r}
+signatures <- readRDS("../data/raw/signatures.rds")
+```
+
+Structure of the data:
+
+```{r}
+signatures %>% str()
+```
+
+Create a land variable based on the source variable, select only variables necessary for the manuscript, and rename sig as y:
+
+```{r}
+signatures_trimmed <-
+  signatures %>%
+  mutate(land = c("Signature 1", "Signature 2")[as.factor(source)]) %>%
+  select(land, x, sig) %>%
+  rename(y = sig)
+```
+
+Export the trimmed data as a csv file:
+
+```{r}
+write.csv(
+  x = signatures_trimmed,
+  file = "../data/example-signatures.csv",
+  row.names = FALSE
+)
+```
+
+Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+
+```{r}
+zip(
+  zipfile = "../data/raw/signatures.rds.zip", 
+  files = "../data/raw/signatures.rds"
+)
+zip(
+  zipfile = "../data/example-signatures.csv.zip", 
+  files = "../data/example-signatures.csv"
+)
+```
+
