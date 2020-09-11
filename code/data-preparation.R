@@ -34,7 +34,11 @@ bullet_train <-
   select(case, land_id1, land_id2, everything())
 
 # Save the prepared data as a csv file
-write.csv(bullet_train, "data/bullet-train.csv")
+write.csv(
+  x = bullet_train, 
+  file = "data/bullet-train.csv", 
+  row.names = FALSE
+)
 
 # Also, save the original and prepared data as a zip files (for GitHub repo)
 zip("data/raw/hamby-comparisons.csv.zip", "data/raw/hamby-comparisons.csv")
