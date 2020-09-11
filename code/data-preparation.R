@@ -133,6 +133,9 @@ hamby224_set11_cleaned <-
 # bullet, and land (remove those variables afterwards)
 hamby224_test <-
   bind_rows(hamby224_set1_cleaned, hamby224_set11_cleaned) %>%
+  filter(!(bullet1 == "BUnk" & bullet2 == "B1"),
+         !(bullet1 == "BUnk" & bullet2 == "B2"),
+         !(bullet1 == "B2" & bullet2 == "B1")) %>%
   mutate(
     case = factor(1:length(study)),
     land_id1 = paste(study, set, bullet1, land1, sep = "-"),
@@ -181,3 +184,4 @@ write.csv(
 # Also, save the original and trimmed data as a zip files (for GitHub repo)
 zip("data/raw/signatures.rds.zip", "data/raw/signatures.rds")
 zip("data/example-signatures.csv.zip", "data/example-signatures.csv")
+
