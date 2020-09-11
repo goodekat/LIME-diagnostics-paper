@@ -2,7 +2,10 @@
 ## To Do
 
   - Remove NAs from test data
+  - Update readme after file changes (and practice making new submission
+    folder, maybe create a script for copying the files)
   - Finish filling in questions in ASA submission document
+  - Write cover letter
   - Figure out discrepancies with old and new versions of the training
     data
   - Rerun the lime explanations with the finalized training data
@@ -14,7 +17,7 @@
 
 # LIME Diagnostics Paper
 
-<img src="figure-readme.png" width="3600" />
+<img src="figure-static/figure-readme.png" width="3600" />
 
 This repository contains the files associated with the paper “Visual
 Diagnostics of a Model Explainer – Tools for the Assessment of LIME
@@ -30,27 +33,40 @@ readme contains:
 
 ## Description of Items in Repository
 
-**Folders**
+The contents of the folders and main directory are described below:
 
-  - `old-version` contains the files associated with an old version of
-    the paper that is much longer the the submitted version.
-  - `submission` contains all of the files submitted to the ASA data
-    science journal. Note that the paper is specified slightly different
-    in this folder in order to meet the requirements of the ASA data
-    science journal. These are as follows:
-      - The figure path in the .Rnw saves the generated figures in the
-        main folder (instead of a figures folder).
+**`code`**
+
+Contains the R code associated with the manuscript that is not directly
+included in `paper.Rnw` (such as some external data cleaning and file
+organization):
+
+  - `file-organization.R` contains R code for organizing the files to be
+    added to the GitHub repository and preparing and moving files to the
+    submission folder.
+  - `paper.R` contains the R code extracted from `paper.Rnw` using code
+    in `file-organization.R`.
+  - `prepare-bullet-signature-data.R` contains R code for preparing the
+    bullet test data to be used in the paper based on the Hamby 224 sets
+    1 and 11 data provided by Heike (that are not included in this
+    directory).
+  - `code-trim-sig-data.R` contains R code for preparing the data in the
+    file `data-example-signatures.csv` based on data provided by Heike
+    (that are not included in this directory).
+
+**`old-version`**
+
+Contains the files associated with an old version of the paper that is
+much longer the the submitted version
+
+**`submission`**
+
+Contains the files submitted to the ASA data science journal. These
+files are moved to this folder using code in the file
+`code/file-organization.R`.
 
 **Files**
 
-  - `code-file-organization.R` contains R code for organizing the files
-    to be added to the GitHub repository and generating a file with code
-    for submission.
-  - `code-paper.R` contains the R code extracted from `paper.Rnw` using
-    code in `code-file-organization.R`.
-  - `code-trim-sig-data.R` contains R code for preparing the data in the
-    file `data-example-signatures.csv.zip` based on data provided by
-    Heike (that are not included in this directory).
   - `data-bullet-test.csv.zip` and `data-bullet-test.csv.zip` contain
     the data used for the bullet examples in the paper. Additional
     information about these files is included below under the heading

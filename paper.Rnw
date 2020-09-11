@@ -622,7 +622,7 @@ plot_grid(sine_plot_obs, sine_plot_pred,
 <<sine-lime>>=
 
 # Apply LIME with various tuning parameters to the sine data
-if (!file.exists("data-sine-lime-explain.rds")) {
+if (!file.exists("data/sine-lime-explain.rds")) {
 
     # Apply lime with various input options
     sine_lime_explain <- apply_lime(
@@ -641,11 +641,11 @@ if (!file.exists("data-sine-lime-explain.rds")) {
       all_fs = TRUE,
       seed = 20190914)
 
-    saveRDS(sine_lime_explain, "data-sine-lime-explain.rds")
+    saveRDS(sine_lime_explain, "data/sine-lime-explain.rds")
   
     } else {
 
-    sine_lime_explain <- readRDS("data-sine-lime-explain.rds")
+    sine_lime_explain <- readRDS("data/sine-lime-explain.rds")
 
   }
 
@@ -1046,29 +1046,10 @@ In this section, we provide a discussion of the application of the visual diagno
 #   3. add a case variable
 #   4. change the name of the same_source variable to match the test data
 #   5. reorder the variables
-bullet_train <-
-  readr::read_csv("data-bullet-train.csv.zip") %>%
-  filter(!(
-    land_id1 %in% c(
-      "Hamby173-Br6-B2-L1",
-      "Hamby173-Br9-B2-L4",
-      "Hamby173-BrUnk-BB-L2",
-      "Hamby173-BrUnk-BQ-L4"
-    ) |
-      land_id2 %in% c(
-        "Hamby173-Br6-B2-L1",
-        "Hamby173-Br9-B2-L4",
-        "Hamby173-BrUnk-BB-L2",
-        "Hamby173-BrUnk-BQ-L4"
-      )
-  )) %>%
-  select(-lag, -abs_lag, -overlap, -signature_length) %>%
-  mutate(case = factor(1:n())) %>%
-  rename("samesource" = "same_source") %>%
-  select(case, land_id1, land_id2, everything())
+bullet_train <- readr::read_csv("data/bullet-train.csv.zip") %>%
 
 # Load the bullet test data
-bullet_test <- readr::read_csv("data-bullet-test.csv.zip")
+bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
 
 # Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
@@ -1116,14 +1097,14 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 <<figure-08, out.width = '2.25in', fig.width = 6, fig.height = 3, warning = FALSE>>=
 
 # Convert the bullet figure to eps (if needed)
-if (!file.exists("figure-08-1.eps")) {
-  unzip("figure-08-1.png.zip")
-  bullets <- image_read("figure-08-1.png")
-  image_write(bullets, path = "figure-08-1.eps", format = "eps")
+if (!file.exists("figure-static/figure-08-1.eps")) {
+  unzip("figure-static/figure-08-1.png.zip")
+  bullets <- image_read("figure-static/figure-08-1.png")
+  image_write(bullets, path = "figure-static/figure-08-1.eps", format = "eps")
 }
 
 # Load and print the plot
-knitr::include_graphics("figure-08-1.eps")
+knitr::include_graphics("figure-static/figure-08-1.eps")
 
 @
 \caption{(Top left) Traditionally rifled gun barrel. The grooves and lands alternate to give bullets a spin during the firing process, which create markings (striations) on a bullet when fired. (Top right) Image of a fired bullet. The vertical stripes along the lower half of the bullet show groove and land engraved areas. The land engraved areas contain the microscopic striations created when the bullet passed through the barrel of the gun. (Bottom) Close up of a land engraved area showing striations (vertical lines).}
@@ -1139,7 +1120,7 @@ f9_fw = 6
 f9_fs = fs * (f9_fw / f9_ow)
 
 # Load the signatures data
-signatures <- readr::read_csv("data-example-signatures.csv.zip")
+signatures <- readr::read_csv("data/example-signatures.csv.zip")
 
 # Create plot of the signatures
 signatures %>%
@@ -1163,7 +1144,7 @@ signatures %>%
 <<figure-10, out.width = '6.5in', warning = FALSE>>=
 
 # Create the parallel coordinate plot (if needed)
-if (!file.exists("figure-10-1.png")) {
+if (!file.exists("figure-static/figure-10-1.png")) {
 
   # Specify the figure size (for determining font size)
   f10_ow = 6.5
@@ -1232,13 +1213,13 @@ if (!file.exists("figure-10-1.png")) {
   )
   
   # Load the figure and then save as an EPS file
-  bullet_pcp <- image_read("figure-10-1.png")
-  image_write(bullet_pcp, path = "figure-10-1.eps", format = "eps")
+  bullet_pcp <- image_read("figure-static/figure-10-1.png")
+  image_write(bullet_pcp, path = "figure-static/figure-10-1.eps", format = "eps")
   
 }
 
 # Load and print the plot
-knitr::include_graphics("figure-10-1.eps")
+knitr::include_graphics("figure-static/figure-10-1.eps")
 
 @
 \caption{Parallel coordinate plots of the \citet{hare:2016} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
@@ -1254,7 +1235,7 @@ LIME is applied to all test set observations using different tuning parameter va
 <<bullet-lime>>=
 
 # Apply LIME to all but two cases without returning the permutations
-if (!file.exists("data-bullet-lime.rds") | !file.exists("data-bullet-explain.rds")){
+if (!file.exists("data/bullet-lime.rds") | !file.exists("data/bullet-explain.rds")){
 
   # Apply lime with various input options to the hamby data
   bullet_lime_explain_noperms <- apply_lime(
@@ -1281,13 +1262,13 @@ if (!file.exists("data-bullet-lime.rds") | !file.exists("data-bullet-explain.rds
   bullet_explain_noperms <- bullet_lime_explain_noperms$explain
 
   # Save the output objects
-  saveRDS(object = bullet_lime_noperms, file = "data-bullet-lime.rds")
-  saveRDS(object = bullet_explain_noperms, file = "data-bullet-explain.rds")
+  saveRDS(object = bullet_lime_noperms, file = "data/bullet-lime.rds")
+  saveRDS(object = bullet_explain_noperms, file = "data/bullet-explain.rds")
   
 } else {
 
   # Load the files
-  bullet_explain_noperms <- readRDS("data-bullet-explain.rds")
+  bullet_explain_noperms <- readRDS("data/bullet-explain.rds")
 
 }
 
