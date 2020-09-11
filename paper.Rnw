@@ -1040,15 +1040,8 @@ In this section, we provide a discussion of the application of the visual diagno
 
 <<bullet-data>>=
 
-# Load the bullet matching training data and make some adjustments:
-#   1. filter out observations known to have tank rash
-#   2. exclude features not used to train the rtrees random forest 
-#   3. add a case variable
-#   4. change the name of the same_source variable to match the test data
-#   5. reorder the variables
-bullet_train <- readr::read_csv("data/bullet-train.csv.zip") %>%
-
-# Load the bullet test data
+# Load the bullet matching training and testing data
+bullet_train <- readr::read_csv("data/bullet-train.csv.zip")
 bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
 
 # Extract the features
