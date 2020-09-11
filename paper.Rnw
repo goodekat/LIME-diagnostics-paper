@@ -1124,7 +1124,7 @@ signatures <- readr::read_csv("data/example-signatures.csv.zip")
 
 # Create plot of the signatures
 signatures %>%
-  ggplot(aes(x = x/1000, y = sig)) + 
+  ggplot(aes(x = x/1000, y = y)) + 
   geom_line() +
   facet_grid(land ~ .) +
   ylim(c(-4,6)) +
