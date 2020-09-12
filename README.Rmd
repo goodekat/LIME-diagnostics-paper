@@ -39,8 +39,8 @@ The contents of the folders and main directory are described below:
 
 Contains the R code associated with the paper that is not directly included in `paper.Rnw` (such as some external data cleaning and file organization):
 
-- `data-preparation.Rmd` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the paper
-- `figure-compression.Rmd` contains R code for compressing the static figure used in the paper
+- `data-preparation.Rmd` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the paper and saves zip versions of the data sets to be uploaded to GitHub
+- `figure-compression.Rmd` contains R code for compressing the static figure used in the paper to be uploaded to GitHub
 - `submission-steps.Rmd` contains the to do list and R code for preparing the files for submission to the ASA Data Science Journal.
 
 **`data`**
