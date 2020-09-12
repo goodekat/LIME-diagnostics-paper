@@ -56,8 +56,8 @@ Contains the data used to generate the paper:
   - `example-signatures.csv.zip` contains signature data from two
     matching bullet lands that is used to generate a figure in the
     paper.
-  - `raw` contains the raw versions of the data files that the above
-    datasets are derived from.
+  - `raw` contains the raw versions of the data files (from Heike and
+    CSAFE) that the above datasets are derived from.
 
 **`figure-static`**
 
