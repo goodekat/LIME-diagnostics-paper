@@ -1522,30 +1522,42 @@ div.tocify {
 <pre class="r"><code>library(cowplot)
 library(dplyr)
 library(ggplot2)
-library(stringr)</code></pre>
+library(stringr)
+library(tidyr)</code></pre>
 <p>Obtain features used when fitting the rtrees random forest:</p>
 <pre class="r"><code>rf_features &lt;- rownames(bulletxtrctr::rtrees$importance)</code></pre>
 <div id="bullet-training-data" class="section level1">
 <h1>Bullet Training Data</h1>
 <p>Load the raw version of the Hamby 172 and 252 bullet comparison data:</p>
 <pre class="r"><code>bullet_train_raw = read.csv(&quot;../data/raw/hamby-comparisons.csv&quot;)</code></pre>
+<p>Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data:</p>
+<pre class="r"><code>bullet_train_raw_expanded &lt;-
+  bullet_train_raw %&gt;%
+  separate(land_id1,
+           sep = &quot;-&quot;,
+           into = c(&quot;study1&quot;, &quot;barrel1&quot;, &quot;bullet1&quot;, &quot;land1&quot;)) %&gt;%
+  separate(land_id2,
+           sep = &quot;-&quot;,
+           into = c(&quot;study2&quot;, &quot;barrel2&quot;, &quot;bullet2&quot;, &quot;land2&quot;))</code></pre>
+<p>The number of comparisons within the two studies are included below:</p>
+<pre class="r"><code>table(
+  bullet_train_raw_expanded$study1,
+  bullet_train_raw_expanded$study2
+)</code></pre>
+<pre><code>##           
+##            Hamby173 Hamby252
+##   Hamby173    21321    25573
+##   Hamby252    16862    20910</code></pre>
+<p>The dimension of the data once the observations with tank rash (<code>flag != FALSE</code>) are removed:</p>
+<pre class="r"><code>bullet_train_raw %&gt;% filter(flag == FALSE) %&gt;% dim()</code></pre>
+<pre><code>## [1] 84255    17</code></pre>
+<p>The number of observations in the random forest <code>rtrees</code> (note that they do not match the number of rows in the above dataset):</p>
+<pre class="r"><code>length(bulletxtrctr::rtrees$predicted)</code></pre>
+<pre><code>## [1] 83028</code></pre>
 <p>Remove any lands with tank rash, select only variables of use for the paper, add a case variable, and rename <code>same_source</code> as <code>samesource</code>:</p>
 <pre class="r"><code>bullet_train &lt;- 
   bullet_train_raw %&gt;%
-  filter(!(
-    land_id1 %in% c(
-      &quot;Hamby173-Br6-B2-L1&quot;,
-      &quot;Hamby173-Br9-B2-L4&quot;,
-      &quot;Hamby173-BrUnk-BB-L2&quot;,
-      &quot;Hamby173-BrUnk-BQ-L4&quot;
-    ) |
-      land_id2 %in% c(
-        &quot;Hamby173-Br6-B2-L1&quot;,
-        &quot;Hamby173-Br9-B2-L4&quot;,
-        &quot;Hamby173-BrUnk-BB-L2&quot;,
-        &quot;Hamby173-BrUnk-BQ-L4&quot;
-      )
-  )) %&gt;%
+  filter(flag == FALSE) %&gt;%
   select(-lag, -abs_lag, -overlap, -signature_length) %&gt;%
   mutate(case = factor(1:n())) %&gt;%
   rename(&quot;samesource&quot; = &quot;same_source&quot;) %&gt;%
@@ -1556,7 +1568,7 @@ library(stringr)</code></pre>
   file = &quot;../data/bullet-train.csv&quot;, 
   row.names = FALSE
 )</code></pre>
-<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repo):</p>
+<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
   zipfile = &quot;../data/raw/hamby-comparisons.csv.zip&quot;, 
   files = &quot;../data/raw/hamby-comparisons.csv&quot;
@@ -1769,7 +1781,7 @@ hamby224_test &lt;- hamby224_test_extra_vars %&gt;%
   file = &quot;../data/bullet-test.csv&quot;, 
   row.names = FALSE
 )</code></pre>
-<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repo):</p>
+<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
   zipfile = &quot;../data/raw/h224-set1-features.rds.zip&quot;, 
   files = &quot;../data/raw/h224-set1-features.rds&quot;
@@ -1810,7 +1822,7 @@ zip(
   file = &quot;../data/example-signatures.csv&quot;,
   row.names = FALSE
 )</code></pre>
-<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repo):</p>
+<p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
   zipfile = &quot;../data/raw/signatures.rds.zip&quot;, 
   files = &quot;../data/raw/signatures.rds&quot;

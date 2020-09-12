@@ -21,6 +21,7 @@ library(cowplot)
 library(dplyr)
 library(ggplot2)
 library(stringr)
+library(tidyr)
 ```
 
 Obtain features used when fitting the rtrees random forest:
@@ -37,25 +38,46 @@ Load the raw version of the Hamby 172 and 252 bullet comparison data:
 bullet_train_raw = read.csv("../data/raw/hamby-comparisons.csv")
 ```
 
+Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data:
+
+```{r}
+bullet_train_raw_expanded <-
+  bullet_train_raw %>%
+  separate(land_id1,
+           sep = "-",
+           into = c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2,
+           sep = "-",
+           into = c("study2", "barrel2", "bullet2", "land2"))
+```
+
+The number of comparisons within the two studies are included below: 
+
+```{r}
+table(
+  bullet_train_raw_expanded$study1,
+  bullet_train_raw_expanded$study2
+)
+```
+
+The dimension of the data once the observations with tank rash (`flag != FALSE`) are removed:
+
+```{r}
+bullet_train_raw %>% filter(flag == FALSE) %>% dim()
+```
+ 
+The number of observations in the random forest `rtrees` (note that they do not match the number of rows in the above dataset):
+
+```{r}
+length(bulletxtrctr::rtrees$predicted)
+```
+
 Remove any lands with tank rash, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
 
 ```{r}
 bullet_train <- 
   bullet_train_raw %>%
-  filter(!(
-    land_id1 %in% c(
-      "Hamby173-Br6-B2-L1",
-      "Hamby173-Br9-B2-L4",
-      "Hamby173-BrUnk-BB-L2",
-      "Hamby173-BrUnk-BQ-L4"
-    ) |
-      land_id2 %in% c(
-        "Hamby173-Br6-B2-L1",
-        "Hamby173-Br9-B2-L4",
-        "Hamby173-BrUnk-BB-L2",
-        "Hamby173-BrUnk-BQ-L4"
-      )
-  )) %>%
+  filter(flag == FALSE) %>%
   select(-lag, -abs_lag, -overlap, -signature_length) %>%
   mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
