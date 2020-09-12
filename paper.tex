@@ -91,7 +91,7 @@
 % Citation information
 \jnlcitation{
 \cname{\author{Goode K.}, \author{H. Hofmann}, }
-\cyear{2019},
+\cyear{2020},
 \ctitle{Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations},
 \cjournal{Stat Anal Data Min: The ASA Data Sci Journal},
 \cvol{volume, number and page}.}
@@ -422,7 +422,7 @@ In response, \citet{hare:2016} proposed an automated machine learning method for
 
 Since firearm identification is commonly used as evidence for convictions in court cases, it is important to be able to understand and assess a model used to quantify the probability that a bullet is fired from a gun. LIME explanations would provide a local explanation for an individual prediction, but just as it is important to assess the model for this high-stakes application, it is also important to assess the LIME explanations. We will demonstrate an assessment of LIME explanations using the visual diagnostics introduced in this paper.
 
-We apply the trained random forest model from \citet{hare:2016} to another set of bullets from the Hamby study with 432 rows of land comparisons. We first consider a global visualization of the relationship between the random forest predictions and the model features with a parallel coordinate plot of the training data (top facet) and testing data (bottom facets) predictions (\autoref{fig:figure-10}). The majority of same source observations with random forest probabilities close to 1 have a clear pattern of corresponding feature values. The known same source observations where the random forest is wrong (does not return probabilities close to 1) have feature values that reflect those of observations where same source is known to be false.
+We apply the trained random forest model from \citet{hare:2016} to another set of bullets from the Hamby study with 419 rows of land comparisons. We first consider a global visualization of the relationship between the random forest predictions and the model features with a parallel coordinate plot of the training data (top facet) and testing data (bottom facets) predictions (\autoref{fig:figure-10}). The majority of same source observations with random forest probabilities close to 1 have a clear pattern of corresponding feature values. The known same source observations where the random forest is wrong (does not return probabilities close to 1) have feature values that reflect those of observations where same source is known to be false.
 
 LIME is applied to all test set observations using different tuning parameter values: 12 sampling methods (2-6 equally spaced bins, 2-6 quantile bins, kernel density estimation, and normal approximation) and 3 Gower exponents (0.5, 1, and 10). Thus, a total of $12\times 3=36$ different applications of LIME are performed. We specify that each LIME explanation return 3 features and feature selection is performed by selecting the features with the highest weights in a ridge regression model (default option).
 

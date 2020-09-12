@@ -41,7 +41,7 @@
 % Citation information
 \jnlcitation{
 \cname{\author{Goode K.}, \author{H. Hofmann}, }
-\cyear{2019},
+\cyear{2020},
 \ctitle{Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations},
 \cjournal{Stat Anal Data Min: The ASA Data Sci Journal},
 \cvol{volume, number and page}.}
@@ -1136,8 +1136,12 @@ signatures %>%
 \begin{figure*}[!thp]
 <<figure-10, out.width = '6.5in', warning = FALSE>>=
 
+# File names for parallel coordinate plot
+pcp_file_name_png = "figure-static/figure-10-1.png"
+pcp_file_name_eps = "figure-static/figure-10-1.eps"
+
 # Create the parallel coordinate plot (if needed)
-if (!file.exists("figure-static/figure-10-1.png")) {
+if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
 
   # Specify the figure size (for determining font size)
   f10_ow = 6.5
@@ -1198,7 +1202,7 @@ if (!file.exists("figure-static/figure-10-1.png")) {
   # Save the plot
   ggplot2::ggsave(
     plot = bullet_pcp,
-    filename = "figure-10-1.png",
+    filename = pcp_file_name_png,
     width = 7.5,
     height = 3.5,
     units = "in",
@@ -1206,13 +1210,13 @@ if (!file.exists("figure-static/figure-10-1.png")) {
   )
   
   # Load the figure and then save as an EPS file
-  bullet_pcp <- image_read("figure-static/figure-10-1.png")
-  image_write(bullet_pcp, path = "figure-static/figure-10-1.eps", format = "eps")
+  bullet_pcp <- image_read(pcp_file_name_png)
+  image_write(bullet_pcp, path = pcp_file_name_eps, format = "eps")
   
 }
 
 # Load and print the plot
-knitr::include_graphics("figure-static/figure-10-1.eps")
+knitr::include_graphics(pcp_file_name_eps)
 
 @
 \caption{Parallel coordinate plots of the \citet{hare:2016} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
@@ -1409,7 +1413,7 @@ plot_feature_heatmap(
 
 \vspace*{\floatsep}
 
-<<figure-12, out.width = '6.5in', warning = FALSE, fig.width = 10, fig.height = 4.25>>=
+<<figure-12, out.width = '6.5in', warning = FALSE, fig.width = 10, fig.height = 4>>=
 
 # Specify the figure size (for determining font size)
 f12_ow = 6.5
