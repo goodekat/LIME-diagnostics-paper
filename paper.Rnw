@@ -1047,14 +1047,6 @@ bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
 # Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
 
-# Add a variable to the training data with the random forest probability
-# in support of a match
-bullet_train$rfscore <- 
-  bulletxtrctr::rtrees %>%
-  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
-  data.frame() %>%
-  pull(TRUE.)
-
 # Order the features based on feature importance
 bullet_features_ordered <-
   data.frame(
