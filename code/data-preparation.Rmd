@@ -9,16 +9,19 @@ output:
 ---
 
 ```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE)
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, fig.align = "center")
 ```
 
 This document contains code for preparing the raw bullet data sets (training, testing, and example matching signatures) to be used the paper "Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations".
+
+**NOTE** The code chunks where the prepared data versions are shared have `eval = FALSE`. These code chunks must be run manually. This is done to help avoid any accidental changes of the data.
 
 Load R packages:
 
 ```{r}
 library(cowplot)
 library(dplyr)
+library(forcats)
 library(ggplot2)
 library(randomForest)
 library(stringr)
@@ -39,7 +42,7 @@ Load the raw version of the Hamby 172 and 252 bullet comparison data:
 bullet_train_raw = read.csv("../data/raw/hamby-comparisons.csv")
 ```
 
-Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data:
+Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data and reorder the barrels:
 
 ```{r}
 bullet_train_raw_expanded <-
@@ -49,7 +52,9 @@ bullet_train_raw_expanded <-
            into = c("study1", "barrel1", "bullet1", "land1")) %>%
   separate(land_id2,
            sep = "-",
-           into = c("study2", "barrel2", "bullet2", "land2"))
+           into = c("study2", "barrel2", "bullet2", "land2")) %>%
+  mutate(barrel1 = fct_relevel(barrel1, paste0("Br", 1:10), "BrUnk"),
+         barrel2 = fct_relevel(barrel2, paste0("Br", 1:10), "BrUnk"))
 ```
 
 The number of comparisons within the two studies are included below: 
@@ -60,6 +65,8 @@ table(
   bullet_train_raw_expanded$study2
 )
 ```
+
+## Compare Dimensions to rtrees
 
 The dimension of the data once the observations with tank rash (`flag != FALSE`) are removed:
 
@@ -72,6 +79,10 @@ The number of observations in the random forest `rtrees` (note that they do not 
 ```{r}
 length(bulletxtrctr::rtrees$predicted)
 ```
+
+**XXX Need to determine why the number of dimensions do not match. XXX**
+
+## Preparing Data
 
 Remove any lands with tank rash, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
 
@@ -99,7 +110,7 @@ bullet_train$rfscore <-
 
 Save the prepared data as a csv file:
 
-```{r}
+```{r eval = FALSE}
 write.csv(
   x = bullet_train, 
   file = "../data/bullet-train.csv", 
@@ -109,7 +120,7 @@ write.csv(
 
 Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
 
-```{r}
+```{r eval = FALSE}
 zip(
   zipfile = "../data/raw/hamby-comparisons.csv.zip", 
   files = "../data/raw/hamby-comparisons.csv"
@@ -305,7 +316,7 @@ plot_grid(
 
 Save the test data as a csv file:
 
-```{r}
+```{r eval = FALSE}
 write.csv(
   x = hamby224_test, 
   file = "../data/bullet-test.csv", 
@@ -315,7 +326,7 @@ write.csv(
 
 Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
 
-```{r}
+```{r eval = FALSE}
 zip(
   zipfile = "../data/raw/h224-set1-features.rds.zip", 
   files = "../data/raw/h224-set1-features.rds"
@@ -358,7 +369,7 @@ signatures_trimmed <-
 
 Export the trimmed data as a csv file:
 
-```{r}
+```{r eval = FALSE}
 write.csv(
   x = signatures_trimmed,
   file = "../data/example-signatures.csv",
@@ -368,7 +379,7 @@ write.csv(
 
 Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
 
-```{r}
+```{r eval = FALSE}
 zip(
   zipfile = "../data/raw/signatures.rds.zip", 
   files = "../data/raw/signatures.rds"
