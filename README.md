@@ -154,9 +154,10 @@ bullet-lands that are a match. The variables in the data are as follows:
 The font sizes in the figures are calculated based on how the figures
 are scaled due to the specification of both fig.width and out.width in
 the Rnw file to ensure that they are consistent across figures. The text
-sizes are either set to 7 pt or 5.5 pt as indicated by the table below.
-Note that the text in the paper is 9 pt and a similar approach was used
-to ensure that line sizes are larger than 0.5 pt.
+sizes are either set to 7 pt or 5.5 pt (Helvetica) as indicated by the
+table below. Note that the text in the paper is 9 pt (Times) and a
+similar approach was used to ensure that line sizes are larger than 0.5
+pt.
 
 | Part of Graphic                                          | Font Size |
 | -------------------------------------------------------- | --------- |
@@ -170,3 +171,7 @@ to ensure that line sizes are larger than 0.5 pt.
 | Axis tick labels                                         | 5.5 pt    |
 | Facet labels (general)                                   | 5.5 pt    |
 | Legend labels                                            | 5.5 pt    |
+
+Note: The only figure that does not follow these values is Figure 11
+where the facet labels were set to font size 5 (Helvetica) in order for
+them to fit appropriately.
