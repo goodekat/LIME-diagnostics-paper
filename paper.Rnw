@@ -63,6 +63,7 @@ knitr::opts_chunk$set(
 )
 
 # Load packages
+library(bulletxtrctr) #remotes::install_github("heike/bulletxtrctr")
 library(Cairo)
 library(caret)
 library(cowplot)
