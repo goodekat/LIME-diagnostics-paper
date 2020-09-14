@@ -136,9 +136,11 @@ remotes::install_github("goodekat/limeaid")
 The data used in the paper for the bullet comparison examples is
 described below.
 
-`bullet-train`: A dataset with 84255 rows and 14 columns that contains
-comparison features from the Hamby 173 and 252 sets (XXX reference XXX).
-This dataset is created using the data available XXX, which contains XXX
+**`bullet-train`**
+
+A dataset with 84255 rows and 14 columns that contains comparison
+features from the Hamby 173 and 252 sets (XXX reference XXX). This
+dataset is created using the data available at XXX, which contains XXX
 (add more info about the comparisons). The only changes made to the data
 from XXX were to remove any lands with tank rash, select only variables
 of use for the paper, add a case variable, rename `same_source` as
@@ -161,23 +163,26 @@ comparisons. The variables in the data are as follows:
   - rfscore = the random forest score associated with the comparison in
     support of a match
 
-`bullet-test`: A dataset with 419 rows and 14 columns that contains
-comparison features from sets 1 and 11 of the Hamby 224 Clone sets (XXX
-reference XXX). Each test set is arranged as a combination of three
-bullets: two known bullets and a questioned bullet. Each bullet has 6
-lands. The data contains comparisons of bullet-lands within a set. With
-three bullets with six lands per set, there are a total of (2 sets) x
-(3\! bullet comparisons) x (6^2 land comparisons) = 432 comparisons.
-However, there are only 419 comparisons in the `bullet-test` data. This
-is due to the fact that some of the lands are missing from the data
-(probably due to tank rank): land 4 from the unknown bullet in set 1,
-land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in
-set 11. The 14 variables in the data are the same as those in the
-training data (see the variable definitions associated with
-`bullet-train`).
+**`bullet-test`**
 
-`example-signatures`: Contains the signature data from two bullet-land
-signatures that are a match. The variables in the data are as follows:
+A dataset with 419 rows and 14 columns that contains comparison features
+from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each
+test set is arranged as a combination of three bullets: two known
+bullets and a questioned bullet. Each bullet has 6 lands. The data
+contains comparisons of bullet-lands within a set. With three bullets
+with six lands per set, there are a total of (2 sets) x (3\! bullet
+comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
+are only 419 comparisons in the `bullet-test` data. This is due to the
+fact that some of the lands are missing from the data (probably due to
+tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
+1 in set 11, and land 4 from the unknown bullet in set 11. The 14
+variables in the data are the same as those in the training data (see
+the variable definitions associated with `bullet-train`).
+
+**`example-signatures`**
+
+Contains the signature data from two bullet-land signatures that are a
+match. The variables in the data are as follows:
 
   - land = Indicates where the observation corresponds to ‘Signature 1’
     or ‘Signature 2’
