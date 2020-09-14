@@ -9,12 +9,17 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## To Do
 
-- Figure out discrepancies with old and new versions of the training data
-- Finish filling in questions in ASA submission document
-- Rerun the lime explanations with the finalized training data
-- Edit dataset descriptions in README and add to the readme.txt document for submission
-- Update all files in the submission folder
-- Upload the files for submission and submit
+- Paper
+  - Figure out discrepancies with old and new versions of the training data
+  - Rerun the lime explanations with the finalized training data
+  - Update all files in the submission folder
+- Submission
+  - Add Heike's ORCID ID
+  - Not required but "Authors are requested to suggest at least one recommended reviewer"
+  - Edit cover letter and upload
+  - Enter the name of the Editor you are submitting to.
+  - Edit dataset descriptions in README and add to the readme.txt document for submission
+  - Upload the files for submission and submit
 - Look into using renev
 
 # LIME Diagnostics Paper
@@ -96,17 +101,32 @@ remotes::install_github("goodekat/limeaid")
 
 ## Additional Information on Bullet Data
 
+```{r echo = FALSE}
+bullet_train = readr::read_csv("data/bullet-train.csv.zip")
+bullet_test = readr::read_csv("data/bullet-test.csv.zip")
+signatures = readr::read_csv("data/example-signatures.csv.zip")
+```
+
 The data used in the paper for the bullet comparison examples is described below.
 
-`data-bullet-train`: Contains comparison features from the Hamby 173 and 252 sets.
+`bullet-train`: A dataset with `r dim(bullet_train)[1]` rows and `r dim(bullet_train)[2]` columns that contains comparison features from the Hamby 173 and 252 sets (XXX reference XXX). XXX Additional information about the number of comparisons.XXX See XXX for additional information on the data. The variables in the data are as follows: 
 
-`data-bullet-test`: Contains comparison features from the Hamby 224 Clone sets. As with all Hamby sets, Hamby set 224, is a collection of 35 bullets, organized as 20 known bullets and 15 questioned bullets. The known bullets are fired in pairs of two through one of ten consecutively manufactures P-85 barrels. Clone set 224 is arranged as a test set of fifteen tests, one for each questioned bullet. Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. The test asks for a decision on whether the questioned bullet comes from the same source as the two known bullets or from a different source. This situation is similar to what a firearms and toolmarks examiner might encounter in case work. 
+- `r names(bullet_train)[1]` = ID number associated with the bullet-land signature comparison
+- `r names(bullet_train)[2]` = ID associated with the first bullet-land in the comparison. The format is 'study-barrel number-bullet number-land number'.
+- `r names(bullet_train)[3]` = ID associated with the second bullet-land in the comparison. Again, the format is 'study-barrel number-bullet number-land number'.
+- `r names(bullet_train)[4]`, `r names(bullet_train)[5]`, `r names(bullet_train)[6]`, `r names(bullet_train)[7]`, `r names(bullet_train)[8]`, `r names(bullet_train)[9]`, `r names(bullet_train)[10]`, `r names(bullet_train)[11]`, and `r names(bullet_train)[12]` = comparison features of the two bullet-land signatures. See XXX for definitions of these features.
+- `r names(bullet_train)[13]` = indicator variable specifying whether the two bullet-lands are a match
+- `r names(bullet_train)[14]` = indictor variable specifying whether one of the bullets in the comparison has tank rash
 
-`data-example-signatures`: Contains the signature data from two bullet-lands that are a match. The variables in the data are as follows:
+`bullet-test`: A dataset with `r dim(bullet_test)[1]` rows and `r dim(bullet_test)[2]` columns that contains comparison features from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) x (3! bullet comparisons) x (6^2 land comparisons) = `r 2 * (3 + 2 + 1) * 6^2` comparisons. However, there are only `r dim(bullet_test)[1]` comparisons in the `bullet-test` data. This is due to the fact that some of the lands are missing from the data (probably due to tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. The first `r dim(bullet_test)[2] - 1` variables in the data are the same as those in the training data (see the variable definitions associated with `bullet-train`). The ``r dim(bullet_test)[2]`th variable is:
 
-  - land = Indicates where the observation corresponds to 'Signature 1' or 'Signature 2'
-  - x = The x position of the signature
-  - sig = The y position of the signature
+- `r names(bullet_test)[14]` = the random forest score associated with the comparison in support of a match
+
+`example-signatures`: Contains the signature data from two bullet-land signatures that are a match. The variables in the data are as follows:
+
+- `r names(signatures)[1]` = Indicates where the observation corresponds to 'Signature 1' or 'Signature 2'
+- `r names(signatures)[2]` = The x position of the signature
+- `r names(signatures)[3]` = The y position of the signature
 
 ## Figure Font Size Information
 

@@ -1,14 +1,20 @@
 
 ## To Do
 
-  - Figure out discrepancies with old and new versions of the training
-    data
-  - Finish filling in questions in ASA submission document
-  - Rerun the lime explanations with the finalized training data
-  - Edit dataset descriptions in README and add to the readme.txt
-    document for submission
-  - Update all files in the submission folder
-  - Upload the files for submission and submit
+  - Paper
+      - Figure out discrepancies with old and new versions of the
+        training data
+      - Rerun the lime explanations with the finalized training data
+      - Update all files in the submission folder
+  - Submission
+      - Add Heike’s ORCID ID
+      - Not required but “Authors are requested to suggest at least one
+        recommended reviewer”
+      - Edit cover letter and upload
+      - Enter the name of the Editor you are submitting to.
+      - Edit dataset descriptions in README and add to the readme.txt
+        document for submission
+      - Upload the files for submission and submit
   - Look into using renev
 
 # LIME Diagnostics Paper
@@ -130,28 +136,53 @@ remotes::install_github("goodekat/limeaid")
 The data used in the paper for the bullet comparison examples is
 described below.
 
-`data-bullet-train`: Contains comparison features from the Hamby 173 and
-252 sets.
+`bullet-train`: A dataset with 83436 rows and 14 columns that contains
+comparison features from the Hamby 173 and 252 sets (XXX reference XXX).
+XXX Additional information about the number of comparisons.XXX See XXX
+for additional information on the data. The variables in the data are as
+follows:
 
-`data-bullet-test`: Contains comparison features from the Hamby 224
-Clone sets. As with all Hamby sets, Hamby set 224, is a collection of 35
-bullets, organized as 20 known bullets and 15 questioned bullets. The
-known bullets are fired in pairs of two through one of ten consecutively
-manufactures P-85 barrels. Clone set 224 is arranged as a test set of
-fifteen tests, one for each questioned bullet. Each test set is arranged
-as a combination of three bullets: two known bullets and a questioned
-bullet. The test asks for a decision on whether the questioned bullet
-comes from the same source as the two known bullets or from a different
-source. This situation is similar to what a firearms and toolmarks
-examiner might encounter in case work.
+  - case = ID number associated with the bullet-land signature
+    comparison
+  - land\_id1 = ID associated with the first bullet-land in the
+    comparison. The format is ‘study-barrel number-bullet number-land
+    number’.
+  - land\_id2 = ID associated with the second bullet-land in the
+    comparison. Again, the format is ‘study-barrel number-bullet
+    number-land number’.
+  - ccf, rough\_cor, D, sd\_D, matches, mismatches, cms, non\_cms, and
+    sum\_peaks = comparison features of the two bullet-land signatures.
+    See XXX for definitions of these features.
+  - samesource = indicator variable specifying whether the two
+    bullet-lands are a match
+  - flag = indictor variable specifying whether one of the bullets in
+    the comparison has tank rash
 
-`data-example-signatures`: Contains the signature data from two
-bullet-lands that are a match. The variables in the data are as follows:
+`bullet-test`: A dataset with 419 rows and 14 columns that contains
+comparison features from sets 1 and 11 of the Hamby 224 Clone sets (XXX
+reference XXX). Each test set is arranged as a combination of three
+bullets: two known bullets and a questioned bullet. Each bullet has 6
+lands. The data contains comparisons of bullet-lands within a set. With
+three bullets with six lands per set, there are a total of (2 sets) x
+(3\! bullet comparisons) x (6^2 land comparisons) = 432 comparisons.
+However, there are only 419 comparisons in the `bullet-test` data. This
+is due to the fact that some of the lands are missing from the data
+(probably due to tank rank): land 4 from the unknown bullet in set 1,
+land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in
+set 11. The first 13 variables in the data are the same as those in the
+training data (see the variable definitions associated with
+`bullet-train`). The \`14th variable is:
+
+  - rfscore = the random forest score associated with the comparison in
+    support of a match
+
+`example-signatures`: Contains the signature data from two bullet-land
+signatures that are a match. The variables in the data are as follows:
 
   - land = Indicates where the observation corresponds to ‘Signature 1’
     or ‘Signature 2’
   - x = The x position of the signature
-  - sig = The y position of the signature
+  - y = The y position of the signature
 
 ## Figure Font Size Information
 
