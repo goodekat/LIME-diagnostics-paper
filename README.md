@@ -136,11 +136,14 @@ remotes::install_github("goodekat/limeaid")
 The data used in the paper for the bullet comparison examples is
 described below.
 
-`bullet-train`: A dataset with 83436 rows and 14 columns that contains
+`bullet-train`: A dataset with 84255 rows and 14 columns that contains
 comparison features from the Hamby 173 and 252 sets (XXX reference XXX).
-XXX Additional information about the number of comparisons.XXX See XXX
-for additional information on the data. The variables in the data are as
-follows:
+This dataset is created using the data available XXX, which contains XXX
+(add more info about the comparisons). The only changes made to the data
+from XXX were to remove any lands with tank rash, select only variables
+of use for the paper, add a case variable, rename `same_source` as
+`samesource`, and attach the random forest scores associated with the
+comparisons. The variables in the data are as follows:
 
   - case = ID number associated with the bullet-land signature
     comparison
@@ -155,8 +158,8 @@ follows:
     See XXX for definitions of these features.
   - samesource = indicator variable specifying whether the two
     bullet-lands are a match
-  - flag = indictor variable specifying whether one of the bullets in
-    the comparison has tank rash
+  - rfscore = the random forest score associated with the comparison in
+    support of a match
 
 `bullet-test`: A dataset with 419 rows and 14 columns that contains
 comparison features from sets 1 and 11 of the Hamby 224 Clone sets (XXX
@@ -169,12 +172,9 @@ However, there are only 419 comparisons in the `bullet-test` data. This
 is due to the fact that some of the lands are missing from the data
 (probably due to tank rank): land 4 from the unknown bullet in set 1,
 land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in
-set 11. The first 13 variables in the data are the same as those in the
+set 11. The 14 variables in the data are the same as those in the
 training data (see the variable definitions associated with
-`bullet-train`). The \`14th variable is:
-
-  - rfscore = the random forest score associated with the comparison in
-    support of a match
+`bullet-train`).
 
 `example-signatures`: Contains the signature data from two bullet-land
 signatures that are a match. The variables in the data are as follows:

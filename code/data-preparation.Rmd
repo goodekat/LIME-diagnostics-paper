@@ -20,6 +20,7 @@ Load R packages:
 library(cowplot)
 library(dplyr)
 library(ggplot2)
+library(randomForest)
 library(stringr)
 library(tidyr)
 ```
@@ -78,11 +79,23 @@ Remove any lands with tank rash, select only variables of use for the paper, add
 bullet_train <- 
   bullet_train_raw %>%
   filter(flag == FALSE) %>%
-  select(-lag, -abs_lag, -overlap, -signature_length) %>%
+  select(-lag, -abs_lag, -overlap, -signature_length, -flag) %>%
   mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
 ```
+
+Add a variable to the training data with the random forest probability in support of a match using the random forest model `rtrees` from `bulletxtrctr`:
+
+```{r}
+bullet_features <- rownames(bulletxtrctr::rtrees$importance)
+bullet_train$rfscore <- 
+  bulletxtrctr::rtrees %>%
+  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
+  data.frame() %>%
+  pull(TRUE.)
+```
+
 
 Save the prepared data as a csv file:
 
