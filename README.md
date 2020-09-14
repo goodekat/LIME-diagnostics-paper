@@ -1,10 +1,9 @@
 
 ## To Do
 
-  - Write cover letter
-  - Finish filling in questions in ASA submission document
   - Figure out discrepancies with old and new versions of the training
     data
+  - Finish filling in questions in ASA submission document
   - Rerun the lime explanations with the finalized training data
   - Edit dataset descriptions in README and add to the readme.txt
     document for submission
@@ -44,6 +43,11 @@ organization):
     figure used in the paper to be uploaded to GitHub
   - `submission-steps.Rmd` contains the to do list and R code for
     preparing the files for submission to the ASA Data Science Journal.
+
+**`cover-letter`**
+
+Contains the files associated with the cover letter submitted to the ASA
+Data Science journal.
 
 **`data`**
 
