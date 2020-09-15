@@ -150,14 +150,14 @@ comparisons. The variables in the data are as follows:
   - case = ID number associated with the bullet-land signature
     comparison
   - land\_id1 = ID associated with the first bullet-land in the
-    comparison. The format is ‘study-barrel number-bullet number-land
-    number’.
+    comparison. The format is ‘study - barrel number - bullet number -
+    land number’
   - land\_id2 = ID associated with the second bullet-land in the
-    comparison. Again, the format is ‘study-barrel number-bullet
-    number-land number’.
+    comparison. Again, the format is ‘study - barrel number - bullet
+    number - land number’
   - ccf, rough\_cor, D, sd\_D, matches, mismatches, cms, non\_cms, and
     sum\_peaks = comparison features of the two bullet-land signatures.
-    See XXX for definitions of these features.
+    See XXX for definitions of these features
   - samesource = indicator variable specifying whether the two
     bullet-lands are a match
   - rfscore = the random forest score associated with the comparison in
@@ -175,9 +175,24 @@ comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
 are only 419 comparisons in the `bullet-test` data. This is due to the
 fact that some of the lands are missing from the data (probably due to
 tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
-1 in set 11, and land 4 from the unknown bullet in set 11. The 14
-variables in the data are the same as those in the training data (see
-the variable definitions associated with `bullet-train`).
+1 in set 11, and land 4 from the unknown bullet in set 11. The variables
+in the data are as follows:
+
+  - case = ID number associated with the bullet-land signature
+    comparison
+  - land\_id1 = ID associated with the first bullet-land in the
+    comparison with a format of ‘study - set number - bullet number -
+    land number’
+  - land\_id2 = ID associated with the second bullet-land in the
+    comparison with a format of ‘study - set number - bullet number -
+    land number’
+  - ccf, rough\_cor, D, sd\_D, matches, mismatches, cms, non\_cms, and
+    sum\_peaks = comparison features of the two bullet-land signatures.
+    See XXX for definitions of these features.
+  - samesource = indicator variable specifying whether the two
+    bullet-lands are a match
+  - rfscore = the random forest score associated with the comparison in
+    support of a match
 
 **`example-signatures`**
 
