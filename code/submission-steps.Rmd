@@ -55,9 +55,9 @@ This document contains the steps to follow to make sure all guidelines are met f
     data_files <-
       c(
         "../readme.txt",
-        "../data/bullet-test.csv",
-        "../data/bullet-train.csv",
-        "../data/example-signatures.csv"
+        "../data/bullet-test.csv.zip",
+        "../data/bullet-train.csv.zip",
+        "../data/example-signatures.csv.zip"
       )
     
     # Copy the submission files to the temporary folder
