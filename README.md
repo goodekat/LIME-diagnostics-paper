@@ -174,7 +174,7 @@ with six lands per set, there are a total of (2 sets) x (3\! bullet
 comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
 are only 419 comparisons in the `bullet-test` data. This is due to the
 fact that some of the lands are missing from the data (probably due to
-tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
+tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet
 1 in set 11, and land 4 from the unknown bullet in set 11. The variables
 in the data are as follows:
 
