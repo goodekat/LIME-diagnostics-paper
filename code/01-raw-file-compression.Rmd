@@ -11,6 +11,8 @@ knitr::opts_chunk$set(echo = TRUE, message = FALSE, eval = FALSE)
 
 This document contains code for compressing the raw files (data and figure) associated with the manuscript.
 
+**NOTE** All code chunks in this document have `eval = FALSE` and must be run manually from within the Rmd file. This is done to avoid an accidental change of files.
+
 ```{r}
 # Load packages
 library(zip)
