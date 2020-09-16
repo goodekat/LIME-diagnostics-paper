@@ -110,10 +110,6 @@ Also, save the original and prepared data as a zip files (for uploading to the G
 
 ```{r eval = FALSE}
 zip(
-  zipfile = "../data/raw/hamby-comparisons.csv.zip", 
-  files = "../data/raw/hamby-comparisons.csv"
-)
-zip(
   zipfile = "../data/bullet-train.csv.zip", 
   files = "../data/bullet-train.csv"
 )
@@ -316,14 +312,6 @@ Also, save the original and prepared data as a zip files (for uploading to the G
 
 ```{r eval = FALSE}
 zip(
-  zipfile = "../data/raw/h224-set1-features.rds.zip", 
-  files = "../data/raw/h224-set1-features.rds"
-)
-zip(
-  zipfile = "../data/raw/h224-set11-features.rds.zip", 
-  files = "../data/raw/h224-set11-features.rds"
-)
-zip(
   zipfile = "../data/bullet-test.csv.zip", 
   files = "../data/bullet-test.csv"
 )
@@ -368,10 +356,6 @@ write.csv(
 Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
 
 ```{r eval = FALSE}
-zip(
-  zipfile = "../data/raw/signatures.rds.zip", 
-  files = "../data/raw/signatures.rds"
-)
 zip(
   zipfile = "../data/example-signatures.csv.zip", 
   files = "../data/example-signatures.csv"

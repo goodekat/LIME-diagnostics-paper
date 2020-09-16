@@ -1,0 +1,58 @@
+---
+title: "Compression of Raw Files"
+author: "Katherine Goode"
+date: "`r format(Sys.time(), '%B %d, %Y')`"
+output: html_document
+---
+
+```{r setup, include = FALSE}
+knitr::opts_chunk$set(echo = TRUE, message = FALSE, eval = FALSE)
+```
+
+This document contains code for compressing the raw files (data and figure) associated with the manuscript.
+
+```{r}
+# Load packages
+library(zip)
+```
+
+Save the bullet image used in the paper as a zip file: 
+
+```{r}
+zip(
+  zipfile = "../figure-static/figure-08-1.png.zip",
+  files =  "../figure-static/figure-08-1.png"
+)
+```
+
+Save the raw bullet training data files as zip files:
+
+```{r}
+zip(
+  zipfile = "../data/raw/hamby-comparisons.csv.zip", 
+  files = "../data/raw/hamby-comparisons.csv"
+)
+```
+
+Save the raw bullet testing data files as zip files:
+
+```{r}
+zip(
+  zipfile = "../data/raw/h224-set1-features.rds.zip", 
+  files = "../data/raw/h224-set1-features.rds"
+)
+zip(
+  zipfile = "../data/raw/h224-set11-features.rds.zip", 
+  files = "../data/raw/h224-set11-features.rds"
+)
+```
+
+Save the raw data with an example of matching signatures as a zip file:
+
+```{r}
+zip(
+  zipfile = "../data/raw/signatures.rds.zip", 
+  files = "../data/raw/signatures.rds"
+)
+```
+
