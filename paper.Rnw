@@ -1415,13 +1415,7 @@ plot_feature_heatmap(
       "Match" = "TRUE",
       "Non-Match" = "FALSE"
     )) %>%
-    mutate(samesource = fct_relevel(
-      samesource, 
-      "Non-Match",
-      "Match"
-    )) %>%
-    pull(samesource) %>%
-    na.omit(), 
+    pull(samesource), 
   order_method = "PCA"
 ) +
   scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
