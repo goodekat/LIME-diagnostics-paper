@@ -2,20 +2,27 @@
 ## To Do
 
   - Paper
-      - Figure out discrepancies with old and new versions of the
-        training data
-      - Rerun the lime explanations with the finalized training data
+      - Adjust order of match and non-match in feature heat map
+      - Train a random forest model on prepared training data (make sure
+        to set a seed\!)
+      - Make predictions on test data
+      - Rerun all code in paper (check for changes in results)
+      - Update text in paper to describe the random forest model process
       - Update all files in the submission folder
   - Submission
-      - Add Heike’s ORCID ID
+      - Take photos of lime R package defaults with a data and save in
+        figure-static for future reference and security
+      - Determine the number of land comparisons in training data (in
+        code file) and add to readme
       - Not required but “Authors are requested to suggest at least one
         recommended reviewer”
+          - Matthias: does research related to visual explanations
+          - Simon: exploratory data modeling
+          - Pedersen: author of R lime package
       - Edit cover letter and upload
-      - Enter the name of the Editor you are submitting to.
       - Edit dataset descriptions in README and add to the readme.txt
         document for submission
       - Upload the files for submission and submit
-  - Look into using renev
 
 # LIME Diagnostics Paper
 
@@ -174,7 +181,7 @@ with six lands per set, there are a total of (2 sets) x (3\! bullet
 comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
 are only 419 comparisons in the `bullet-test` data. This is due to the
 fact that some of the lands are missing from the data (probably due to
-tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet
+tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
 1 in set 11, and land 4 from the unknown bullet in set 11. The variables
 in the data are as follows:
 
