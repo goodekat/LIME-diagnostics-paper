@@ -1,42 +1,34 @@
 
 ## To Do
 
-  - Paper
+  - Manuscript
       - Adjust order of match and non-match in feature heat map
       - Train a random forest model on prepared training data (make sure
         to set a seed\!)
       - Make predictions on test data
-      - Rerun all code in paper (check for changes in results)
-      - Update text in paper to describe the random forest model process
+      - Rerun all code in manuscript (check for changes in results)
+      - Update text in manuscript to describe the random forest model
+        process
       - Update all files in the submission folder
   - Submission
-      - Take photos of lime R package defaults with a data and save in
-        figure-static for future reference and security
-      - Determine the number of land comparisons in training data (in
-        code file) and add to readme
-      - Not required but “Authors are requested to suggest at least one
-        recommended reviewer”
-          - Matthias: does research related to visual explanations
-          - Simon: exploratory data modeling
-          - Pedersen: author of R lime package
-      - Edit cover letter and upload
       - Edit dataset descriptions in README and add to the readme.txt
         document for submission
       - Upload the files for submission and submit
 
-# LIME Diagnostics Paper
+# LIME Diagnostics Manuscript
 
 <img src="figure-static/figure-readme.png" width="3600" />
 
-This repository contains the files associated with the paper “Visual
-Diagnostics of a Model Explainer – Tools for the Assessment of LIME
-Explanations” by Katherine Goode and Heike Hofmann. The rest of this
-readme contains:
+This repository contains the files associated with the manuscript
+“Visual Diagnostics of a Model Explainer – Tools for the Assessment of
+LIME Explanations” by Katherine Goode and Heike Hofmann. The rest of
+this readme contains:
 
   - information about the files in the repository,
-  - instructions for knitting the paper,
-  - descriptions of the bullet data used in the paper, and
-  - information on the font sizes used for the figures in the paper.
+  - instructions for knitting the manuscript,
+  - descriptions of the bullet data used in the manuscript, and
+  - information on the font sizes used for the figures in the
+    manuscript.
 
 ## Description of Items in Repository
 
@@ -44,16 +36,16 @@ The contents of the folders and main directory are described below:
 
 **`code`**
 
-Contains the R code associated with the paper that is not directly
+Contains the R code associated with the manuscript that is not directly
 included in `paper.Rnw` (such as some external data cleaning and file
 organization):
 
   - `data-preparation.Rmd` contains R code for preparing the raw bullet
     data (bullet training data, bullet testing data, and example
-    matching signatures) to be used in the paper and saves zip versions
-    of the data sets to be uploaded to GitHub
+    matching signatures) to be used in the manuscript and saves zip
+    versions of the data sets to be uploaded to GitHub
   - `figure-compression.Rmd` contains R code for compressing the static
-    figure used in the paper to be uploaded to GitHub
+    figure used in the manuscript to be uploaded to GitHub
   - `submission-steps.Rmd` contains the to do list and R code for
     preparing the files for submission to the ASA Data Science Journal.
 
@@ -64,15 +56,15 @@ Data Science journal.
 
 **`data`**
 
-Contains the data used to generate the paper:
+Contains the data used to generate the manuscript:
 
   - `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data
-    used for the bullet examples in the paper. Additional information
-    about these files is included below under the heading “Additional
-    Information on Bullet Data”.
+    used for the bullet examples in the manuscript. Additional
+    information about these files is included below under the heading
+    “Additional Information on Bullet Data”.
   - `example-signatures.csv.zip` contains signature data from two
     matching bullet lands that is used to generate a figure in the
-    paper.
+    manuscript.
   - `raw` contains the raw versions of the data files (from Heike and
     CSAFE) that the above datasets are derived from.
 
@@ -80,14 +72,14 @@ Contains the data used to generate the paper:
 
 Contains the static figures associated with the project:
 
-  - `figure-08-1.png.zip` is the one figure in the paper that is not
-    generated using R code.
+  - `figure-08-1.png.zip` is the one figure in the manuscript that is
+    not generated using R code.
   - `figure-readme.png` is a figure used in the readme.
 
 **`old-version`**
 
-Contains the files associated with an old version of the paper that is
-much longer the the submitted version
+Contains the files associated with an old version of the manuscript that
+is much longer the the submitted version
 
 **`submission`**
 
@@ -99,27 +91,27 @@ the EPS figures that are submitted due to size constraints.
 **Main Directory**
 
   - `.gitignore` contains objects to be ignored by git.
-  - `paper.Rnw`, `paper.pdf`, and `paper.tex` are the paper. Note that
-    `paper.pdf` and `paper.tex` are generated by `paper.Rnw`.
+  - `paper.Rnw`, `paper.pdf`, and `paper.tex` are the manuscript. Note
+    that `paper.pdf` and `paper.tex` are generated by `paper.Rnw`.
   - `README.Rmd` and `README.md` are the readme files that generated
     this output.
   - `readme.txt` contains descriptions of the data files that are
     included with the submission
   - `references.bib` contains the bibtex information for the references
-    in the paper
+    in the manuscript
   - `WileyNJG-AMS.bst` and `WileyNJG-v2.cls` contain the latex
     formatting specifications for the ASA Data Science Journal.
 
-## Instructions for Knitting Paper
+## Instructions for Knitting Manuscript
 
-When the paper is knit, various files will be generated (such as
+When the manuscript is knit, various files will be generated (such as
 `data-bullet-explain.rds` and `figure-10-1.png`). The first time the
-paper is knit, it will take a while (approximately 45 minutes on
+manuscript is knit, it will take a while (approximately 45 minutes on
 Katherine’s computer). Once these files have been generated during the
-first knit, the paper will take much less time to knit (approximately 1
-minute on Katherine’s computer).
+first knit, the manuscript will take much less time to knit
+(approximately 1 minute on Katherine’s computer).
 
-Follow these instructions to knit the paper:
+Follow these instructions to knit the manuscript:
 
 1.  Pull the repository from GitHub.
 2.  Install R packages [goodekat/lime](https://github.com/goodekat/lime)
@@ -127,7 +119,7 @@ Follow these instructions to knit the paper:
     GitHub using the remotes R package. (Note that goodekat/lime is a
     forked versions of
     [thomasp85/lime](https://github.com/thomasp85/lime) with minor
-    changes to extract objects for the analysis in the paper.)
+    changes to extract objects for the analysis in the manuscript.)
 
 <!-- end list -->
 
@@ -136,23 +128,25 @@ remotes::install_github("goodekat/lime")
 remotes::install_github("goodekat/limeaid")
 ```
 
-3.  Knit paper (via the paper.Rnw file).
+3.  Knit manuscript (via the `paper.Rnw` file).
 
 ## Additional Information on Bullet Data
 
-The data used in the paper for the bullet comparison examples is
+The data used in the manuscript for the bullet comparison examples is
 described below.
 
 **`bullet-train`**
 
-A dataset with 84255 rows and 14 columns that contains comparison
-features from the Hamby 173 and 252 sets (XXX reference XXX). This
-dataset is created using the data available at XXX, which contains XXX
-(add more info about the comparisons). The only changes made to the data
-from XXX were to remove any lands with tank rash, select only variables
-of use for the paper, add a case variable, rename `same_source` as
-`samesource`, and attach the random forest scores associated with the
-comparisons. The variables in the data are as follows:
+A dataset with 84255 rows and 13 columns that contains comparison
+features from the Hamby 173 and 252 sets (XXX reference XXX). It
+contains comparisons from 410 bullet-land signatures with some lands
+missing due to tank rash or other reasons. This dataset is created using
+the data available at XXX, which contains XXX (add more info about the
+comparisons). The only changes made to the data from XXX were to remove
+any lands with tank rash, select only variables of use for the
+manuscript, add a case variable, rename `same_source` as `samesource`,
+and attach the random forest scores associated with the comparisons. The
+variables in the data are as follows:
 
   - case = ID number associated with the bullet-land signature
     comparison
@@ -167,19 +161,17 @@ comparisons. The variables in the data are as follows:
     See XXX for definitions of these features
   - samesource = indicator variable specifying whether the two
     bullet-lands are a match
-  - rfscore = the random forest score associated with the comparison in
-    support of a match
 
 **`bullet-test`**
 
-A dataset with 419 rows and 14 columns that contains comparison features
+A dataset with 364 rows and 13 columns that contains comparison features
 from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each
 test set is arranged as a combination of three bullets: two known
 bullets and a questioned bullet. Each bullet has 6 lands. The data
 contains comparisons of bullet-lands within a set. With three bullets
 with six lands per set, there are a total of (2 sets) x (3\! bullet
 comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
-are only 419 comparisons in the `bullet-test` data. This is due to the
+are only 364 comparisons in the `bullet-test` data. This is due to the
 fact that some of the lands are missing from the data (probably due to
 tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
 1 in set 11, and land 4 from the unknown bullet in set 11. The variables
@@ -198,8 +190,6 @@ in the data are as follows:
     See XXX for definitions of these features.
   - samesource = indicator variable specifying whether the two
     bullet-lands are a match
-  - rfscore = the random forest score associated with the comparison in
-    support of a match
 
 **`example-signatures`**
 
@@ -217,7 +207,7 @@ The font sizes in the figures are calculated based on how the figures
 are scaled due to the specification of both fig.width and out.width in
 the Rnw file to ensure that they are consistent across figures. The text
 sizes are either set to 7 pt or 5.5 pt (Helvetica) as indicated by the
-table below. Note that the text in the paper is 9 pt (Times) and a
+table below. Note that the text in the manuscript is 9 pt (Times) and a
 similar approach was used to ensure that line sizes are larger than 0.5
 pt.
 

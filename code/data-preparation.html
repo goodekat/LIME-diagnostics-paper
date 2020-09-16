@@ -1534,26 +1534,20 @@ library(zip)</code></pre>
 <h1>Bullet Training Data</h1>
 <p>Load the raw version of the Hamby 172 and 252 bullet comparison data:</p>
 <pre class="r"><code>bullet_train_raw = read.csv(&quot;../data/raw/hamby-comparisons.csv&quot;)</code></pre>
-<p>Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data and reorder the barrels:</p>
-<pre class="r"><code>bullet_train_raw_expanded &lt;-
-  bullet_train_raw %&gt;%
-  separate(land_id1,
-           sep = &quot;-&quot;,
-           into = c(&quot;study1&quot;, &quot;barrel1&quot;, &quot;bullet1&quot;, &quot;land1&quot;)) %&gt;%
-  separate(land_id2,
-           sep = &quot;-&quot;,
-           into = c(&quot;study2&quot;, &quot;barrel2&quot;, &quot;bullet2&quot;, &quot;land2&quot;)) %&gt;%
-  mutate(barrel1 = fct_relevel(barrel1, paste0(&quot;Br&quot;, 1:10), &quot;BrUnk&quot;),
-         barrel2 = fct_relevel(barrel2, paste0(&quot;Br&quot;, 1:10), &quot;BrUnk&quot;))</code></pre>
-<p>The number of comparisons within the two studies are included below:</p>
-<pre class="r"><code>table(
-  bullet_train_raw_expanded$study1,
-  bullet_train_raw_expanded$study2
-)</code></pre>
-<pre><code>##           
-##            Hamby173 Hamby252
-##   Hamby173    21321    25573
-##   Hamby252    16862    20910</code></pre>
+<p>Determine the number of total study-barrel-bullet-lands in the data:</p>
+<pre class="r"><code>length(unique(bullet_train_raw %&gt;% pull(land_id1)))</code></pre>
+<pre><code>## [1] 411</code></pre>
+<p>Determine the number of total study-barrel-bullet-lands in the data when observations with tank rash are excluded:</p>
+<pre class="r"><code>length(unique(bullet_train_raw %&gt;% filter(flag == FALSE) %&gt;% pull(land_id1)))</code></pre>
+<pre><code>## [1] 410</code></pre>
+<p>There is only one less land id when the cases with tank rash are excluded. The code below shows that this case is <code>Hamby252-Br9-B2-L4</code> since there are no rows in the filtered data without <code>Hamby252-Br9-B2-L4</code> as one of the land ids:</p>
+<pre class="r"><code>length(unique(
+  bullet_train_raw %&gt;% filter(flag == TRUE) %&gt;% filter(
+    land_id1 != &quot;Hamby252-Br9-B2-L4&quot;,
+    land_id2 != &quot;Hamby252-Br9-B2-L4&quot;
+  ) %&gt;% pull(land_id1)
+))</code></pre>
+<pre><code>## [1] 0</code></pre>
 <div id="compare-dimensions-to-rtrees" class="section level2">
 <h2>Compare Dimensions to rtrees</h2>
 <p>The dimension of the data once the observations with tank rash (<code>flag != FALSE</code>) are removed:</p>
@@ -1562,7 +1556,7 @@ library(zip)</code></pre>
 <p>The number of observations in the random forest <code>rtrees</code> (note that they do not match the number of rows in the above dataset):</p>
 <pre class="r"><code>length(bulletxtrctr::rtrees$predicted)</code></pre>
 <pre><code>## [1] 83028</code></pre>
-<p><strong>XXX Need to determine why the number of dimensions do not match. XXX</strong></p>
+<p>The discrepancy in the number of observations has led us to decide to train a new random forest model using the data provided by Heike where <code>flag == FALSE</code> (observations known to not have tank rash). The code for the random forest can be found in the document <code>paper.Rnw</code>.</p>
 </div>
 <div id="preparing-data" class="section level2">
 <h2>Preparing Data</h2>
@@ -1574,13 +1568,6 @@ library(zip)</code></pre>
   mutate(case = factor(1:n())) %&gt;%
   rename(&quot;samesource&quot; = &quot;same_source&quot;) %&gt;%
   select(case, land_id1, land_id2, everything())</code></pre>
-<p>Add a variable to the training data with the random forest probability in support of a match using the random forest model <code>rtrees</code> from <code>bulletxtrctr</code>:</p>
-<pre class="r"><code>bullet_features &lt;- rownames(bulletxtrctr::rtrees$importance)
-bullet_train$rfscore &lt;- 
-  bulletxtrctr::rtrees %&gt;%
-  predict(bullet_train %&gt;% select(all_of(bullet_features)), type = &quot;prob&quot;) %&gt;%
-  data.frame() %&gt;%
-  pull(TRUE.)</code></pre>
 <p>Save the prepared data as a csv file:</p>
 <pre class="r"><code>write.csv(
   x = bullet_train, 
@@ -1681,7 +1668,7 @@ hamby224_set11 &lt;- readRDS(&quot;../data/raw/h224-set11-features.rds&quot;)</c
 <pre class="r"><code>hamby224_set1_cleaned &lt;-
   hamby224_set1 %&gt;%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %&gt;%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %&gt;%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -1700,12 +1687,12 @@ hamby224_set11 &lt;- readRDS(&quot;../data/raw/h224-set11-features.rds&quot;)</c
     land2 = paste0(&quot;L&quot;, land2)
   ) %&gt;%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)
 
 hamby224_set11_cleaned &lt;- 
   hamby224_set11 %&gt;%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %&gt;%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %&gt;%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -1724,7 +1711,7 @@ hamby224_set11_cleaned &lt;-
     land2 = str_remove(land2, &quot;and &quot;)
   ) %&gt;%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)</code></pre>
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)</code></pre>
 <p>Plots show that the number of observations is still the same after cleaning:</p>
 <pre class="r"><code>plot_grid(
   hamby224_set1_cleaned %&gt;%
@@ -1767,7 +1754,7 @@ hamby224_set11_cleaned &lt;-
 
 # Select and order variables to keep for analysis
 hamby224_test &lt;- hamby224_test_extra_vars %&gt;%
-  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)</code></pre>
+  select(case, land_id1, land_id2, all_of(rf_features), samesource)</code></pre>
 <p>Remaining comparisons included in the test data after the duplicate comparisons are removed:</p>
 <pre class="r"><code>plot_grid(
   hamby224_test_extra_vars %&gt;%

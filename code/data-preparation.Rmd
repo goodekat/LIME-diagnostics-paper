@@ -43,28 +43,27 @@ Load the raw version of the Hamby 172 and 252 bullet comparison data:
 bullet_train_raw = read.csv("../data/raw/hamby-comparisons.csv")
 ```
 
-Create a new version of the data with the land IDs separated into separate variables for an analysis of the number of observations in this data and reorder the barrels:
+Determine the number of total study-barrel-bullet-lands in the data:
 
 ```{r}
-bullet_train_raw_expanded <-
-  bullet_train_raw %>%
-  separate(land_id1,
-           sep = "-",
-           into = c("study1", "barrel1", "bullet1", "land1")) %>%
-  separate(land_id2,
-           sep = "-",
-           into = c("study2", "barrel2", "bullet2", "land2")) %>%
-  mutate(barrel1 = fct_relevel(barrel1, paste0("Br", 1:10), "BrUnk"),
-         barrel2 = fct_relevel(barrel2, paste0("Br", 1:10), "BrUnk"))
+length(unique(bullet_train_raw %>% pull(land_id1)))
 ```
 
-The number of comparisons within the two studies are included below: 
+Determine the number of total study-barrel-bullet-lands in the data when observations with tank rash are excluded:
 
 ```{r}
-table(
-  bullet_train_raw_expanded$study1,
-  bullet_train_raw_expanded$study2
-)
+length(unique(bullet_train_raw %>% filter(flag == FALSE) %>% pull(land_id1)))
+```
+
+There is only one less land id when the cases with tank rash are excluded. The code below shows that this case is `Hamby252-Br9-B2-L4` since there are no rows in the filtered data without `Hamby252-Br9-B2-L4` as one of the land ids:
+
+```{r}
+length(unique(
+  bullet_train_raw %>% filter(flag == TRUE) %>% filter(
+    land_id1 != "Hamby252-Br9-B2-L4",
+    land_id2 != "Hamby252-Br9-B2-L4"
+  ) %>% pull(land_id1)
+))
 ```
 
 ## Compare Dimensions to rtrees
@@ -81,7 +80,7 @@ The number of observations in the random forest `rtrees` (note that they do not 
 length(bulletxtrctr::rtrees$predicted)
 ```
 
-**XXX Need to determine why the number of dimensions do not match. XXX**
+The discrepancy in the number of observations has led us to decide to train a new random forest model using the data provided by Heike where `flag == FALSE` (observations known to not have tank rash). The code for the random forest can be found in the document `paper.Rnw`.
 
 ## Preparing Data
 
@@ -96,18 +95,6 @@ bullet_train <-
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
 ```
-
-Add a variable to the training data with the random forest probability in support of a match using the random forest model `rtrees` from `bulletxtrctr`:
-
-```{r}
-bullet_features <- rownames(bulletxtrctr::rtrees$importance)
-bullet_train$rfscore <- 
-  bulletxtrctr::rtrees %>%
-  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
-  data.frame() %>%
-  pull(TRUE.)
-```
-
 
 Save the prepared data as a csv file:
 
@@ -189,7 +176,7 @@ Preparing the data from sets 1 and 11 for analysis:
 hamby224_set1_cleaned <-
   hamby224_set1 %>%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %>%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -208,12 +195,12 @@ hamby224_set1_cleaned <-
     land2 = paste0("L", land2)
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)
 
 hamby224_set11_cleaned <- 
   hamby224_set11 %>%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %>%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -232,7 +219,7 @@ hamby224_set11_cleaned <-
     land2 = str_remove(land2, "and ")
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), rfscore, samesource)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)
 ```
 
 Plots show that the number of observations is still the same after cleaning:
@@ -282,7 +269,7 @@ hamby224_test_extra_vars <-
 
 # Select and order variables to keep for analysis
 hamby224_test <- hamby224_test_extra_vars %>%
-  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)
+  select(case, land_id1, land_id2, all_of(rf_features), samesource)
 ```
 
 Remaining comparisons included in the test data after the duplicate comparisons are removed:
