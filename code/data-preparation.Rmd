@@ -26,6 +26,7 @@ library(ggplot2)
 library(randomForest)
 library(stringr)
 library(tidyr)
+library(zip)
 ```
 
 Obtain features used when fitting the rtrees random forest:
