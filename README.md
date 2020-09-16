@@ -2,17 +2,11 @@
 ## To Do
 
   - Manuscript
-      - Adjust order of match and non-match in feature heat map
-      - Train a random forest model on prepared training data (make sure
-        to set a seed\!)
-      - Make predictions on test data
-      - Rerun all code in manuscript (check for changes in results)
-      - Update text in manuscript to describe the random forest model
-        process
-      - Update all files in the submission folder
+      - Determine what to do about random forest in paper
   - Submission
       - Edit dataset descriptions in README and add to the readme.txt
         document for submission
+      - Update all files in the submission folder
       - Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
@@ -106,10 +100,10 @@ the EPS figures that are submitted due to size constraints.
 
 When the manuscript is knit, various files will be generated (such as
 `data-bullet-explain.rds` and `figure-10-1.png`). The first time the
-manuscript is knit, it will take a while (approximately 45 minutes on
-Katherine’s computer). Once these files have been generated during the
-first knit, the manuscript will take much less time to knit
-(approximately 1 minute on Katherine’s computer).
+manuscript is knit, it will take a while (possibly up to several hours).
+Once these files have been generated during the first knit, the
+manuscript will take much less time to knit (approximately a few
+minutes).
 
 Follow these instructions to knit the manuscript:
 
