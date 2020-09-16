@@ -24,6 +24,7 @@ library(dplyr)
 library(forcats)
 library(ggplot2)
 library(randomForest)
+library(readr)
 library(stringr)
 library(tidyr)
 library(zip)
@@ -37,10 +38,10 @@ rf_features <- rownames(bulletxtrctr::rtrees$importance)
 
 # Bullet Training Data
 
-Load the raw version of the Hamby 172 and 252 bullet comparison data:
+Load the raw version of the Hamby 172 and 252 bullet comparison data (provided by Heike and CSAFE):
 
 ```{r}
-bullet_train_raw = read.csv("../data/raw/hamby-comparisons.csv")
+bullet_train_raw = read_csv("../data/raw/hamby-comparisons.csv.zip")
 ```
 
 Determine the number of total study-barrel-bullet-lands in the data:
@@ -117,9 +118,12 @@ zip(
 
 # Bullet Testing Data
 
-Load in the raw Hamby 224 datasets (sets 1 and 11):
+Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):
 
 ```{r}
+if (!file.exists("../data/raw/h224-set1-features.rds")) unzip("../data/raw/h224-set1-features.rds.zip")
+if (!file.exists("../data/raw/h224-set11-features.rds")) unzip("../data/raw/h224-set11-features.rds.zip")
+
 hamby224_set1 <- readRDS("../data/raw/h224-set1-features.rds")
 hamby224_set11 <- readRDS("../data/raw/h224-set11-features.rds")
 ```
@@ -319,11 +323,12 @@ zip(
 
 # Example Matching Signatures
 
-The following code trims the data provided by Heike of two matching bullet-land signatures
+The following code trims the data provided by Heike of two matching bullet-land signatures.
 
-Import the data:
+Import the data (provided by Heike and CSAFE):
 
 ```{r}
+if (!file.exists("../data/raw/signatures.rds")) unzip("../data/raw/signatures.rds.zip")
 signatures <- readRDS("../data/raw/signatures.rds")
 ```
 

@@ -1525,6 +1525,7 @@ library(dplyr)
 library(forcats)
 library(ggplot2)
 library(randomForest)
+library(readr)
 library(stringr)
 library(tidyr)
 library(zip)</code></pre>
@@ -1532,8 +1533,8 @@ library(zip)</code></pre>
 <pre class="r"><code>rf_features &lt;- rownames(bulletxtrctr::rtrees$importance)</code></pre>
 <div id="bullet-training-data" class="section level1">
 <h1>Bullet Training Data</h1>
-<p>Load the raw version of the Hamby 172 and 252 bullet comparison data:</p>
-<pre class="r"><code>bullet_train_raw = read.csv(&quot;../data/raw/hamby-comparisons.csv&quot;)</code></pre>
+<p>Load the raw version of the Hamby 172 and 252 bullet comparison data (provided by Heike and CSAFE):</p>
+<pre class="r"><code>bullet_train_raw = read_csv(&quot;../data/raw/hamby-comparisons.csv.zip&quot;)</code></pre>
 <p>Determine the number of total study-barrel-bullet-lands in the data:</p>
 <pre class="r"><code>length(unique(bullet_train_raw %&gt;% pull(land_id1)))</code></pre>
 <pre><code>## [1] 411</code></pre>
@@ -1576,10 +1577,6 @@ library(zip)</code></pre>
 )</code></pre>
 <p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
-  zipfile = &quot;../data/raw/hamby-comparisons.csv.zip&quot;, 
-  files = &quot;../data/raw/hamby-comparisons.csv&quot;
-)
-zip(
   zipfile = &quot;../data/bullet-train.csv.zip&quot;, 
   files = &quot;../data/bullet-train.csv&quot;
 )</code></pre>
@@ -1587,8 +1584,11 @@ zip(
 </div>
 <div id="bullet-testing-data" class="section level1">
 <h1>Bullet Testing Data</h1>
-<p>Load in the raw Hamby 224 datasets (sets 1 and 11):</p>
-<pre class="r"><code>hamby224_set1 &lt;- readRDS(&quot;../data/raw/h224-set1-features.rds&quot;)
+<p>Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):</p>
+<pre class="r"><code>if (!file.exists(&quot;../data/raw/h224-set1-features.rds&quot;)) unzip(&quot;../data/raw/h224-set1-features.rds.zip&quot;)
+if (!file.exists(&quot;../data/raw/h224-set11-features.rds&quot;)) unzip(&quot;../data/raw/h224-set11-features.rds.zip&quot;)
+
+hamby224_set1 &lt;- readRDS(&quot;../data/raw/h224-set1-features.rds&quot;)
 hamby224_set11 &lt;- readRDS(&quot;../data/raw/h224-set11-features.rds&quot;)</code></pre>
 <p>The bullet and land names from each of the sets are included below. This indicates that each set contains 3 bullets with 6 lands each.</p>
 <table>
@@ -1790,23 +1790,16 @@ hamby224_test &lt;- hamby224_test_extra_vars %&gt;%
 )</code></pre>
 <p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
-  zipfile = &quot;../data/raw/h224-set1-features.rds.zip&quot;, 
-  files = &quot;../data/raw/h224-set1-features.rds&quot;
-)
-zip(
-  zipfile = &quot;../data/raw/h224-set11-features.rds.zip&quot;, 
-  files = &quot;../data/raw/h224-set11-features.rds&quot;
-)
-zip(
   zipfile = &quot;../data/bullet-test.csv.zip&quot;, 
   files = &quot;../data/bullet-test.csv&quot;
 )</code></pre>
 </div>
 <div id="example-matching-signatures" class="section level1">
 <h1>Example Matching Signatures</h1>
-<p>The following code trims the data provided by Heike of two matching bullet-land signatures</p>
-<p>Import the data:</p>
-<pre class="r"><code>signatures &lt;- readRDS(&quot;../data/raw/signatures.rds&quot;)</code></pre>
+<p>The following code trims the data provided by Heike of two matching bullet-land signatures.</p>
+<p>Import the data (provided by Heike and CSAFE):</p>
+<pre class="r"><code>if (!file.exists(&quot;../data/raw/signatures.rds&quot;)) unzip(&quot;../data/raw/signatures.rds.zip&quot;)
+signatures &lt;- readRDS(&quot;../data/raw/signatures.rds&quot;)</code></pre>
 <p>Structure of the data:</p>
 <pre class="r"><code>signatures %&gt;% str()</code></pre>
 <pre><code>## tibble [2,244 × 7] (S3: tbl_df/tbl/data.frame)
@@ -1831,10 +1824,6 @@ zip(
 )</code></pre>
 <p>Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):</p>
 <pre class="r"><code>zip(
-  zipfile = &quot;../data/raw/signatures.rds.zip&quot;, 
-  files = &quot;../data/raw/signatures.rds&quot;
-)
-zip(
   zipfile = &quot;../data/example-signatures.csv.zip&quot;, 
   files = &quot;../data/example-signatures.csv&quot;
 )</code></pre>
