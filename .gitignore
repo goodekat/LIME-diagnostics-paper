@@ -16,6 +16,7 @@
 *.rds
 *.Rproj
 
+code/renv*
 figure/
 figure-08-1.png
 figure-10-1.png
