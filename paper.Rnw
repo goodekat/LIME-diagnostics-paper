@@ -1044,15 +1044,37 @@ In this section, we provide a discussion of the application of the visual diagno
 # Load the bullet matching training and testing data
 bullet_train <- readr::read_csv("data/bullet-train.csv.zip")
 bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
+@
+
+<<bullet-random-forest>>=
 
 # Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
 
+# Create a path where the random forest will be saved
+bullet_rf_file = "data/bullet-rf.rds"
+if (file.exists(bullet_rf_file)) {
+  # Load the random forest
+  bullet_rf = readRDS(bullet_rf_file)
+} else {
+  # Fit the random forest to mimic rtrees
+  set.seed(20160104)
+  bullet_rf <-
+    randomForest(
+      y = factor(bullet_train$samesource),
+      x = bullet_train %>% select(all_of(bullet_features)),
+      ntree = bulletxtrctr::rtrees$ntree,
+      mtry = bulletxtrctr::rtrees$mtry
+    )
+  #Save the random forest
+  saveRDS(bullet_rf, bullet_rf_file)
+}
+
 # Order the features based on feature importance
 bullet_features_ordered <-
   data.frame(
-    feature = rownames(bulletxtrctr::rtrees$importance),
-    MeanDecreaseGini = bulletxtrctr::rtrees$importance
+    feature = rownames(bullet_rf$importance),
+    MeanDecreaseGini = bullet_rf$importance
   ) %>%
   arrange(desc(MeanDecreaseGini)) %>%
   mutate(
@@ -1072,6 +1094,11 @@ bullet_features_ordered <-
 # Create an ordered version of the data
 bullet_features_ordered <- bullet_features_ordered %>%
   mutate(feature = factor(feature, levels = bullet_features_ordered$feature))
+
+# Add a variables to training and testing data with random forest predictions
+bullet_train$rfscore = predict(bullet_rf, type = "prob")[,2]
+bullet_test$rfscore = predict(bullet_rf, bullet_test %>% select(bullet_features), type = "prob")[,2]
+
 @
 
 In current practice, forensic firearm examiners evaluate whether two bullets are from the same source (fired from the same gun) or from different sources based on microscopic comparison of the striation patterns engraved on bullets during the firing process (see \autoref{fig:figure-08}). The process is based on a visual and therefore subjective assessment of the evidence. The lack of objective evaluation and the associated absence of established error rates has first been criticized by the National Research Council \cite{nrc:2009} and later by the President's Council of Advisors on Science and Technology \cite{pcast:2016}.
@@ -1171,6 +1198,7 @@ if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
       "Sum of Peaks" = "sum_peaks"
     ) %>%
     na.omit() %>%
+    arrange(rfscore) %>%
     ggplot(aes(color = rfscore)) +
     geom_pcp(
       mapping = aes(vars = vars(bullet_features_ordered$feature)),
@@ -1233,7 +1261,7 @@ if (!file.exists("data/bullet-lime.rds") | !file.exists("data/bullet-explain.rds
     test = bullet_test %>%
       select(all_of(bullet_features)) %>%
       na.omit(),
-    model = bulletxtrctr::rtrees,
+    model = bullet_rf,
     label = as.character(TRUE),
     n_features = 3,
     sim_method = c('quantile_bins', 'equal_bins',
@@ -1285,7 +1313,7 @@ bullet_lime_explain_perms <- apply_lime(
     bind_rows(bullet_test %>%
                 filter(case %in% bullet_poi_nonmatch)) %>%
     select(all_of(bullet_features)),
-  model = bulletxtrctr::rtrees,
+  model = bullet_rf,
   label = as.character(TRUE),
   n_features = 3,
   sim_method = c(
@@ -1387,8 +1415,13 @@ plot_feature_heatmap(
       "Match" = "TRUE",
       "Non-Match" = "FALSE"
     )) %>%
+    mutate(samesource = fct_relevel(
+      samesource, 
+      "Non-Match",
+      "Match"
+    )) %>%
     pull(samesource) %>%
-    na.omit(),
+    na.omit(), 
   order_method = "PCA"
 ) +
   scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
