@@ -1551,7 +1551,8 @@ eoiNM_3qb <-
     weights = TRUE,
     line_size = f13_ls
   ) +
-  bullet_eoi_plot_theme
+  bullet_eoi_plot_theme +
+  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
 eoiM_3eb <-
   plot_explain_scatter(
     bullet_explain_perms_clean[7:9, ],
