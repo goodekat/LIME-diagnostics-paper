@@ -75,43 +75,60 @@ The dimension of the data once the observations with tank rash (`flag != FALSE`)
 bullet_train_raw %>% filter(flag == FALSE) %>% dim()
 ```
  
-The number of observations in the random forest `rtrees` (note that they do not match the number of rows in the above dataset):
+The number of observations in the random forest `rtrees`: 
 
 ```{r}
 length(bulletxtrctr::rtrees$predicted)
 ```
 
-Current state of the code used to get to the right number of observations (need to clean up and document better and use in paper): 
+The number of rows in the training data with the flagged observations excluded does not match the number of observations used to train `rtrees`. In the Hare, Hofmann, and Carriquiry (2017), they describe removing four land impressions that were flagged for quality assessment: 
+
+- Barrel 6 Bullet 2-1
+- Barrel 9 Bullet 2-4
+- Unknown Bullet B-2
+- Unknown Bullet Q-4
+
+It is unclear which study these lands correspond to. The code below removes all comparisons that include these barrel, bullet, and land combinations:
 
 ```{r}
-read_csv("../data/raw/hamby-comparisons.csv.zip") %>%
-  separate(land_id1, into = c("study1", "barrel1", "bullet1", "land1")) %>%
-  separate(land_id2, into = c("study2", "barrel2", "bullet2", "land2")) %>%
-  mutate(barrel1 = str_remove(barrel1, "Br"),
-         bullet1 = str_remove(bullet1, "B"),
-         land1 = str_remove(land1, "L"),
-         barrel2 = str_remove(barrel2, "Br"),
-         bullet2 = str_remove(bullet2, "B"),
-         land2 = str_remove(land2, "L")) %>%
-  mutate(bbl1 = factor(barrel1):factor(bullet1):factor(land1),
-         bbl2 = factor(barrel2):factor(bullet2):factor(land2)) %>%
-  filter(!(bbl1 %in% c("6:2:1", "9:2:4", "Unk:B:2", "Unk:Q:4") | 
-           bbl2 %in% c("6:2:1", "9:2:4", "Unk:B:2", "Unk:Q:4"))) %>%
-  dim()
+bullet_train_filtered <- 
+  bullet_train_raw %>%
+  mutate(bbl1 = str_remove(land_id1, pattern = "Hamby252-|Hamby173-"),
+         bbl2 = str_remove(land_id2, pattern = "Hamby252-|Hamby173-")) %>%
+  filter(!(bbl1 %in% c("Br6-B2-L1", "Br9-B2-L4", "BrUnk-BB-L2", "BrUnk-BQ-L4") | 
+           bbl2 %in% c("Br6-B2-L1", "Br9-B2-L4", "BrUnk-BB-L2", "BrUnk-BQ-L4"))) %>%
+  select(-bbl1, -bbl2) 
+```
+
+The dimensions now agree with the number of observations in `rtrees`:
+
+```{r}
+dim(bullet_train_filtered)
+length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_filtered)[1]
 ```
 
 ## Preparing Data
 
-Remove any lands with tank rash, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
+Using the data with the flagged lands removed, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
 
 ```{r}
 bullet_train <- 
-  bullet_train_raw %>%
-  filter(flag == FALSE) %>%
+  bullet_train_filtered %>%
   select(-lag, -abs_lag, -overlap, -signature_length, -flag) %>%
   mutate(case = factor(1:n())) %>%
   rename("samesource" = "same_source") %>%
   select(case, land_id1, land_id2, everything())
+```
+
+Add a variable to the training data with the random forest probability in support of a match using the random forest model `rtrees` from `bulletxtrctr`:
+
+```{r}
+bullet_features <- rownames(bulletxtrctr::rtrees$importance)
+bullet_train$rfscore <- 
+  bulletxtrctr::rtrees %>%
+  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
+  data.frame() %>%
+  pull(TRUE.)
 ```
 
 Save the prepared data as a csv file:
@@ -193,7 +210,7 @@ Preparing the data from sets 1 and 11 for analysis:
 hamby224_set1_cleaned <-
   hamby224_set1 %>%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %>%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -212,12 +229,12 @@ hamby224_set1_cleaned <-
     land2 = paste0("L", land2)
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource, rfscore)
 
 hamby224_set11_cleaned <- 
   hamby224_set11 %>%
   # Remove unneeded variables
-  select(-bullet_score,-land1,-land2,-aligned,-striae,-features,-rfscore) %>%
+  select(-bullet_score,-land1,-land2,-aligned,-striae,-features) %>%
   # Rename bullet and land variables
   rename(
     bullet1 = bulletA,
@@ -236,7 +253,7 @@ hamby224_set11_cleaned <-
     land2 = str_remove(land2, "and ")
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource, rfscore)
 ```
 
 Plots show that the number of observations is still the same after cleaning:
@@ -270,7 +287,7 @@ plot_grid(
 Join the two cleaned Hamby 224 sets into one testing set, remove duplicate comparisons, create a case variable, and create land ids based on the study, set, bullet, and land (remove those variables afterwards):
 
 ```{r}
-hamby224_test_extra_vars <-
+bullet_test_extra_vars <-
   # Join the two data sets
   bind_rows(hamby224_set1_cleaned, hamby224_set11_cleaned) %>%
   # Remove duplicate comparisons
@@ -282,18 +299,18 @@ hamby224_test_extra_vars <-
     case = factor(1:length(study)),
     land_id1 = paste(study, set, bullet1, land1, sep = "-"),
     land_id2 = paste(study, set, bullet2, land2, sep = "-")
-  ) # Leave the extract variables for plotting
+  ) # Leave the extra variables for plotting
 
 # Select and order variables to keep for analysis
-hamby224_test <- hamby224_test_extra_vars %>%
-  select(case, land_id1, land_id2, all_of(rf_features), samesource)
+bullet_test <- bullet_test_extra_vars %>%
+  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)
 ```
 
 Remaining comparisons included in the test data after the duplicate comparisons are removed:
 
 ```{r fig.width = 10, fig.height = 4.5}
 plot_grid(
-  hamby224_test_extra_vars %>%
+  bullet_test_extra_vars %>%
     filter(set == "Set1") %>%
     count(bullet1, land1, bullet2, land2) %>%
     ggplot(aes(
@@ -304,7 +321,7 @@ plot_grid(
     scale_fill_distiller(palette = "GnBu", direction = 1) +
     theme_minimal() +
     theme(aspect.ratio = 1),
-  hamby224_test_extra_vars %>%
+  bullet_test_extra_vars %>%
     filter(set == "Set11") %>%
     count(bullet1, land1, bullet2, land2) %>%
     ggplot(aes(
@@ -323,7 +340,7 @@ Save the test data as a csv file:
 
 ```{r eval = FALSE}
 write.csv(
-  x = hamby224_test, 
+  x = bullet_test, 
   file = "../data/bullet-test.csv", 
   row.names = FALSE
 )
