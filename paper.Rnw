@@ -1048,33 +1048,18 @@ bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
 
 <<bullet-random-forest>>=
 
+# Load the bullet matching training and testing data
+bullet_train <- readr::read_csv("data/bullet-train.csv.zip")
+bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
+
 # Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
-
-# Create a path where the random forest will be saved
-bullet_rf_file = "data/bullet-rf.rds"
-if (file.exists(bullet_rf_file)) {
-  # Load the random forest
-  bullet_rf = readRDS(bullet_rf_file)
-} else {
-  # Fit the random forest to mimic rtrees
-  set.seed(20160104)
-  bullet_rf <-
-    randomForest(
-      y = factor(bullet_train$samesource),
-      x = bullet_train %>% select(all_of(bullet_features)),
-      ntree = bulletxtrctr::rtrees$ntree,
-      mtry = bulletxtrctr::rtrees$mtry
-    )
-  #Save the random forest
-  saveRDS(bullet_rf, bullet_rf_file)
-}
 
 # Order the features based on feature importance
 bullet_features_ordered <-
   data.frame(
-    feature = rownames(bullet_rf$importance),
-    MeanDecreaseGini = bullet_rf$importance
+    feature = rownames(bulletxtrctr::rtrees$importance),
+    MeanDecreaseGini = bulletxtrctr::rtrees$importance
   ) %>%
   arrange(desc(MeanDecreaseGini)) %>%
   mutate(
@@ -1094,10 +1079,6 @@ bullet_features_ordered <-
 # Create an ordered version of the data
 bullet_features_ordered <- bullet_features_ordered %>%
   mutate(feature = factor(feature, levels = bullet_features_ordered$feature))
-
-# Add a variables to training and testing data with random forest predictions
-bullet_train$rfscore = predict(bullet_rf, type = "prob")[,2]
-bullet_test$rfscore = predict(bullet_rf, bullet_test %>% select(bullet_features), type = "prob")[,2]
 
 @
 
@@ -1170,7 +1151,7 @@ if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
   f10_ls = 0.5 * (f10_fw / f10_ow)
 
   # Create the plot
-  bullet_pcp <- 
+  bullet_pcp <-
     bullet_train %>%
     select(all_of(bullet_features), samesource, rfscore) %>%
     bind_rows(bullet_test %>%
@@ -1198,7 +1179,6 @@ if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
       "Sum of Peaks" = "sum_peaks"
     ) %>%
     na.omit() %>%
-    arrange(rfscore) %>%
     ggplot(aes(color = rfscore)) +
     geom_pcp(
       mapping = aes(vars = vars(bullet_features_ordered$feature)),
@@ -1229,11 +1209,11 @@ if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
     units = "in",
     dpi = 1200
   )
-  
+
   # Load the figure and then save as an EPS file
   bullet_pcp <- image_read(pcp_file_name_png)
   image_write(bullet_pcp, path = pcp_file_name_eps, format = "eps")
-  
+
 }
 
 # Load and print the plot
@@ -1257,11 +1237,13 @@ if (!file.exists("data/bullet-lime.rds") | !file.exists("data/bullet-explain.rds
 
   # Apply lime with various input options to the hamby data
   bullet_lime_explain_noperms <- apply_lime(
-    train = bullet_train %>% select(all_of(bullet_features)),
+    train = bullet_train %>% 
+      arrange(rfscore) %>% 
+      select(all_of(bullet_features)),
     test = bullet_test %>%
       select(all_of(bullet_features)) %>%
       na.omit(),
-    model = bullet_rf,
+    model = bulletxtrctr::rtrees,
     label = as.character(TRUE),
     n_features = 3,
     sim_method = c('quantile_bins', 'equal_bins',
@@ -1313,7 +1295,7 @@ bullet_lime_explain_perms <- apply_lime(
     bind_rows(bullet_test %>%
                 filter(case %in% bullet_poi_nonmatch)) %>%
     select(all_of(bullet_features)),
-  model = bullet_rf,
+  model = bulletxtrctr::rtrees,
   label = as.character(TRUE),
   n_features = 3,
   sim_method = c(
@@ -1415,7 +1397,8 @@ plot_feature_heatmap(
       "Match" = "TRUE",
       "Non-Match" = "FALSE"
     )) %>%
-    pull(samesource), 
+    pull(samesource) %>%
+    na.omit(),
   order_method = "PCA"
 ) +
   scale_fill_gretchenalbrecht(palette = "last_rays", discrete = TRUE) +
@@ -1551,8 +1534,7 @@ eoiNM_3qb <-
     weights = TRUE,
     line_size = f13_ls
   ) +
-  bullet_eoi_plot_theme +
-  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
+  bullet_eoi_plot_theme
 eoiM_3eb <-
   plot_explain_scatter(
     bullet_explain_perms_clean[7:9, ],
