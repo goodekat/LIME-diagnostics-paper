@@ -1,13 +1,10 @@
 
 ## To Do
 
-  - Manuscript
-      - Determine what to do about random forest in paper
-  - Submission
-      - Edit dataset descriptions in README and add to the readme.txt
-        document for submission
-      - Update all files in the submission folder
-      - Upload the files for submission and submit
+  - Edit dataset descriptions in README and add to the readme.txt
+    document for submission
+  - Go through all steps in the sumbission steps (one more time)
+  - Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
 
@@ -60,7 +57,8 @@ Contains the data used to generate the manuscript:
     matching bullet lands that is used to generate a figure in the
     manuscript.
   - `raw` contains the raw versions of the data files (from Heike and
-    CSAFE) that the above datasets are derived from.
+    CSAFE) that the above datasets are derived from. *Do not alter these
+    files in any way.*
 
 **`figure-static`**
 
@@ -127,38 +125,54 @@ remotes::install_github("goodekat/limeaid")
 ## Additional Information on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
-described below.
+described below. Note that this text is also included in the file
+readme.txt that is submitted with the manuscript.
 
 **`bullet-train`**
 
-A dataset with 84255 rows and 13 columns that contains comparison
+A dataset with 83028 rows and 14 columns that contains comparison
 features from the Hamby 173 and 252 sets (XXX reference XXX). It
-contains comparisons from 410 bullet-land signatures with some lands
+contains comparisons from 407 bullet-land signatures with some lands
 missing due to tank rash or other reasons. This dataset is created using
-the data available at XXX, which contains XXX (add more info about the
-comparisons). The only changes made to the data from XXX were to remove
-any lands with tank rash, select only variables of use for the
-manuscript, add a case variable, rename `same_source` as `samesource`,
-and attach the random forest scores associated with the comparisons. The
-variables in the data are as follows:
+the data available at XXX, which contains XXX. The only changes made to
+the data from XXX were to remove any lands with tank rash, select only
+variables of use for the manuscript, add a case variable, rename
+`same_source` as `samesource`, and attach the random forest scores
+associated with the comparisons. The variables in the data are as
+follows:
 
   - case = ID number associated with the bullet-land signature
-    comparison
+    comparison.
   - land\_id1 = ID associated with the first bullet-land in the
     comparison. The format is ‘study - barrel number - bullet number -
-    land number’
+    land number’.
   - land\_id2 = ID associated with the second bullet-land in the
     comparison. Again, the format is ‘study - barrel number - bullet
-    number - land number’
-  - ccf, rough\_cor, D, sd\_D, matches, mismatches, cms, non\_cms, and
-    sum\_peaks = comparison features of the two bullet-land signatures.
-    See XXX for definitions of these features
+    number - land number’.
+  - ccf = the comparison feature of two signatures of cross correlation.
+  - rough\_cor = the comparison feature of two signatures of rough
+    correlation.
+  - D = the comparison feature of two signatures of distance.
+  - sd\_D = the comparison feature of two signatures of standard
+    deviation of distance.
+  - matches = the comparison feature of two signatures of matches.
+  - mismatches = the comparison feature of two signatures of mismatches.
+  - cms = the comparison feature of two signatures of consecutively
+    matched striae.
+  - non\_cms = the comparison feature of two signatures of
+    non-consecutively matched striae.
+  - sum\_peaks = the comparison feature of two signatures of sum of
+    peaks.
   - samesource = indicator variable specifying whether the two
-    bullet-lands are a match
+    bullet-lands are a match.
+  - rfscore = the random forest score associated with the comparison in
+    support of a match.
+
+For further details about the signatures comparison features, see XXX.
 
 **`bullet-test`**
 
-A dataset with 364 rows and 13 columns that contains comparison features
+A dataset with 364 rows and 14 columns that contains comparison features
 from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each
 test set is arranged as a combination of three bullets: two known
 bullets and a questioned bullet. Each bullet has 6 lands. The data
@@ -172,18 +186,33 @@ tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
 in the data are as follows:
 
   - case = ID number associated with the bullet-land signature
-    comparison
+    comparison.
   - land\_id1 = ID associated with the first bullet-land in the
     comparison with a format of ‘study - set number - bullet number -
-    land number’
+    land number’.
   - land\_id2 = ID associated with the second bullet-land in the
     comparison with a format of ‘study - set number - bullet number -
-    land number’
-  - ccf, rough\_cor, D, sd\_D, matches, mismatches, cms, non\_cms, and
-    sum\_peaks = comparison features of the two bullet-land signatures.
-    See XXX for definitions of these features.
+    land number’.
+  - ccf = the comparison feature of two signatures of cross correlation.
+  - rough\_cor = the comparison feature of two signatures of rough
+    correlation.
+  - D = the comparison feature of two signatures of distance.
+  - sd\_D = the comparison feature of two signatures of standard
+    deviation of distance.
+  - matches = the comparison feature of two signatures of matches.
+  - mismatches = the comparison feature of two signatures of mismatches.
+  - cms = the comparison feature of two signatures of consecutively
+    matched striae.
+  - non\_cms = the comparison feature of two signatures of
+    non-consecutively matched striae.
+  - sum\_peaks = the comparison feature of two signatures of sum of
+    peaks.
   - samesource = indicator variable specifying whether the two
-    bullet-lands are a match
+    bullet-lands are a match.
+  - rfscore = the random forest score associated with the comparison in
+    support of a match.
+
+For further details about the signatures comparison features, see XXX.
 
 **`example-signatures`**
 

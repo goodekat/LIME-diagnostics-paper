@@ -9,12 +9,9 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## To Do
 
-- Manuscript
-  - Determine what to do about random forest in paper
-- Submission
-  - Edit dataset descriptions in README and add to the readme.txt document for submission
-  - Update all files in the submission folder
-  - Upload the files for submission and submit
+- Edit dataset descriptions in README and add to the readme.txt document for submission
+- Go through all steps in the sumbission steps (one more time)
+- Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
 
@@ -51,7 +48,7 @@ Contains the data used to generate the manuscript:
 
 - `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data used for the bullet examples in the manuscript. Additional information about these files is included below under the heading "Additional Information on Bullet Data".
 - `example-signatures.csv.zip` contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
-- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from.
+- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter these files in any way.*
 
 **`figure-static`**
 
@@ -101,27 +98,49 @@ bullet_test = readr::read_csv("data/bullet-test.csv.zip")
 signatures = readr::read_csv("data/example-signatures.csv.zip")
 ```
 
-The data used in the manuscript for the bullet comparison examples is described below.
+The data used in the manuscript for the bullet comparison examples is described below. Note that this text is also included in the file readme.txt that is submitted with the manuscript.
 
 **`bullet-train`**
 
-A dataset with `r dim(bullet_train)[1]` rows and `r dim(bullet_train)[2]` columns that contains comparison features from the Hamby 173 and 252 sets (XXX reference XXX). It contains comparisons from `r length(unique(bullet_train$land_id1))` bullet-land signatures with some lands missing due to tank rash or other reasons. This dataset is created using the data available at XXX, which contains XXX (add more info about the comparisons). The only changes made to the data from XXX were to remove any lands with tank rash, select only variables of use for the manuscript, add a case variable, rename `same_source` as `samesource`, and attach the random forest scores associated with the comparisons. The variables in the data are as follows: 
+A dataset with `r dim(bullet_train)[1]` rows and `r dim(bullet_train)[2]` columns that contains comparison features from the Hamby 173 and 252 sets (XXX reference XXX). It contains comparisons from `r length(unique(bullet_train$land_id1))` bullet-land signatures with some lands missing due to tank rash or other reasons. This dataset is created using the data available at XXX, which contains XXX. The only changes made to the data from XXX were to remove any lands with tank rash, select only variables of use for the manuscript, add a case variable, rename `same_source` as `samesource`, and attach the random forest scores associated with the comparisons. The variables in the data are as follows: 
 
-- `r names(bullet_train)[1]` = ID number associated with the bullet-land signature comparison
-- `r names(bullet_train)[2]` = ID associated with the first bullet-land in the comparison. The format is 'study - barrel number - bullet number - land number'
-- `r names(bullet_train)[3]` = ID associated with the second bullet-land in the comparison. Again, the format is 'study - barrel number - bullet number - land number'
-- `r names(bullet_train)[4]`, `r names(bullet_train)[5]`, `r names(bullet_train)[6]`, `r names(bullet_train)[7]`, `r names(bullet_train)[8]`, `r names(bullet_train)[9]`, `r names(bullet_train)[10]`, `r names(bullet_train)[11]`, and `r names(bullet_train)[12]` = comparison features of the two bullet-land signatures. See XXX for definitions of these features
-- `r names(bullet_train)[13]` = indicator variable specifying whether the two bullet-lands are a match
+- `r names(bullet_train)[1]` = ID number associated with the bullet-land signature comparison.
+- `r names(bullet_train)[2]` = ID associated with the first bullet-land in the comparison. The format is 'study - barrel number - bullet number - land number'.
+- `r names(bullet_train)[3]` = ID associated with the second bullet-land in the comparison. Again, the format is 'study - barrel number - bullet number - land number'.
+- `r names(bullet_train)[4]` = the comparison feature of two signatures of cross correlation.
+- `r names(bullet_train)[5]` = the comparison feature of two signatures of rough correlation.
+- `r names(bullet_train)[6]` = the comparison feature of two signatures of distance.
+- `r names(bullet_train)[7]` = the comparison feature of two signatures of standard deviation of distance.
+- `r names(bullet_train)[8]` = the comparison feature of two signatures of matches.
+- `r names(bullet_train)[9]` = the comparison feature of two signatures of mismatches.
+- `r names(bullet_train)[10]` = the comparison feature of two signatures of consecutively matched striae.
+- `r names(bullet_train)[11]` = the comparison feature of two signatures of non-consecutively matched striae.
+- `r names(bullet_train)[12]` = the comparison feature of two signatures of sum of peaks.
+- `r names(bullet_train)[13]` = indicator variable specifying whether the two bullet-lands are a match.
+- `r names(bullet_train)[14]` = the random forest score associated with the comparison in support of a match.
+
+For further details about the signatures comparison features, see XXX.
 
 **`bullet-test`**
 
 A dataset with `r dim(bullet_test)[1]` rows and `r dim(bullet_test)[2]` columns that contains comparison features from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) x (3! bullet comparisons) x (6^2 land comparisons) = `r 2 * (3 + 2 + 1) * 6^2` comparisons. However, there are only `r dim(bullet_test)[1]` comparisons in the `bullet-test` data. This is due to the fact that some of the lands are missing from the data (probably due to tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. The variables in the data are as follows:  
 
-- `r names(bullet_test)[1]` = ID number associated with the bullet-land signature comparison
-- `r names(bullet_test)[2]` = ID associated with the first bullet-land in the comparison with a format of 'study - set number - bullet number - land number'
-- `r names(bullet_test)[3]` = ID associated with the second bullet-land in the comparison with a format of 'study - set number - bullet number - land number'
-- `r names(bullet_test)[4]`, `r names(bullet_test)[5]`, `r names(bullet_test)[6]`, `r names(bullet_test)[7]`, `r names(bullet_test)[8]`, `r names(bullet_test)[9]`, `r names(bullet_test)[10]`, `r names(bullet_test)[11]`, and `r names(bullet_test)[12]` = comparison features of the two bullet-land signatures. See XXX for definitions of these features.
-- `r names(bullet_test)[13]` = indicator variable specifying whether the two bullet-lands are a match
+- `r names(bullet_test)[1]` = ID number associated with the bullet-land signature comparison.
+- `r names(bullet_test)[2]` = ID associated with the first bullet-land in the comparison with a format of 'study - set number - bullet number - land number'.
+- `r names(bullet_test)[3]` = ID associated with the second bullet-land in the comparison with a format of 'study - set number - bullet number - land number'.
+- `r names(bullet_test)[4]` = the comparison feature of two signatures of cross correlation.
+- `r names(bullet_test)[5]` = the comparison feature of two signatures of rough correlation.
+- `r names(bullet_test)[6]` = the comparison feature of two signatures of distance.
+- `r names(bullet_test)[7]` = the comparison feature of two signatures of standard deviation of distance.
+- `r names(bullet_test)[8]` = the comparison feature of two signatures of matches.
+- `r names(bullet_test)[9]` = the comparison feature of two signatures of mismatches.
+- `r names(bullet_test)[10]` = the comparison feature of two signatures of consecutively matched striae.
+- `r names(bullet_test)[11]` = the comparison feature of two signatures of non-consecutively matched striae.
+- `r names(bullet_test)[12]` = the comparison feature of two signatures of sum of peaks.
+- `r names(bullet_test)[13]` = indicator variable specifying whether the two bullet-lands are a match.
+- `r names(bullet_test)[14]` = the random forest score associated with the comparison in support of a match.
+
+For further details about the signatures comparison features, see XXX.
 
 **`example-signatures`**
 
