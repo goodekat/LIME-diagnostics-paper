@@ -1237,8 +1237,7 @@ if (!file.exists("data/bullet-lime.rds") | !file.exists("data/bullet-explain.rds
 
   # Apply lime with various input options to the hamby data
   bullet_lime_explain_noperms <- apply_lime(
-    train = bullet_train %>% 
-      arrange(rfscore) %>% 
+    train = bullet_train %>%
       select(all_of(bullet_features)),
     test = bullet_test %>%
       select(all_of(bullet_features)) %>%
