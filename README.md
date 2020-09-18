@@ -3,7 +3,6 @@
 
   - Edit dataset descriptions in README and add to the readme.txt
     document for submission
-  - Go through all steps in the sumbission steps (one more time)
   - Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
