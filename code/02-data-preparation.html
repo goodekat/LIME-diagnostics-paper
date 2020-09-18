@@ -11,7 +11,7 @@
 
 <meta name="author" content="Katherine Goode" />
 
-<meta name="date" content="2020-09-16" />
+<meta name="date" content="2020-09-17" />
 
 <title>Bullet Data Preparation for LIME Diagnostics Paper</title>
 
@@ -1512,7 +1512,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Bullet Data Preparation for LIME Diagnostics Paper</h1>
 <h4 class="author">Katherine Goode</h4>
-<h4 class="date">September 16, 2020</h4>
+<h4 class="date">September 17, 2020</h4>
 
 </div>
 
@@ -1557,7 +1557,22 @@ library(zip)</code></pre>
 <p>The number of observations in the random forest <code>rtrees</code> (note that they do not match the number of rows in the above dataset):</p>
 <pre class="r"><code>length(bulletxtrctr::rtrees$predicted)</code></pre>
 <pre><code>## [1] 83028</code></pre>
-<p>The discrepancy in the number of observations has led us to decide to train a new random forest model using the data provided by Heike where <code>flag == FALSE</code> (observations known to not have tank rash). The code for the random forest can be found in the document <code>paper.Rnw</code>.</p>
+<p>Current state of the code used to get to the right number of observations (need to clean up and document better and use in paper):</p>
+<pre class="r"><code>read_csv(&quot;../data/raw/hamby-comparisons.csv.zip&quot;) %&gt;%
+  separate(land_id1, into = c(&quot;study1&quot;, &quot;barrel1&quot;, &quot;bullet1&quot;, &quot;land1&quot;)) %&gt;%
+  separate(land_id2, into = c(&quot;study2&quot;, &quot;barrel2&quot;, &quot;bullet2&quot;, &quot;land2&quot;)) %&gt;%
+  mutate(barrel1 = str_remove(barrel1, &quot;Br&quot;),
+         bullet1 = str_remove(bullet1, &quot;B&quot;),
+         land1 = str_remove(land1, &quot;L&quot;),
+         barrel2 = str_remove(barrel2, &quot;Br&quot;),
+         bullet2 = str_remove(bullet2, &quot;B&quot;),
+         land2 = str_remove(land2, &quot;L&quot;)) %&gt;%
+  mutate(bbl1 = factor(barrel1):factor(bullet1):factor(land1),
+         bbl2 = factor(barrel2):factor(bullet2):factor(land2)) %&gt;%
+  filter(!(bbl1 %in% c(&quot;6:2:1&quot;, &quot;9:2:4&quot;, &quot;Unk:B:2&quot;, &quot;Unk:Q:4&quot;) | 
+           bbl2 %in% c(&quot;6:2:1&quot;, &quot;9:2:4&quot;, &quot;Unk:B:2&quot;, &quot;Unk:Q:4&quot;))) %&gt;%
+  dim()</code></pre>
+<pre><code>## [1] 83028    25</code></pre>
 </div>
 <div id="preparing-data" class="section level2">
 <h2>Preparing Data</h2>

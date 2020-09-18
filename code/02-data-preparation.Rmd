@@ -81,7 +81,24 @@ The number of observations in the random forest `rtrees` (note that they do not 
 length(bulletxtrctr::rtrees$predicted)
 ```
 
-The discrepancy in the number of observations has led us to decide to train a new random forest model using the data provided by Heike where `flag == FALSE` (observations known to not have tank rash). The code for the random forest can be found in the document `paper.Rnw`.
+Current state of the code used to get to the right number of observations (need to clean up and document better and use in paper): 
+
+```{r}
+read_csv("../data/raw/hamby-comparisons.csv.zip") %>%
+  separate(land_id1, into = c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2, into = c("study2", "barrel2", "bullet2", "land2")) %>%
+  mutate(barrel1 = str_remove(barrel1, "Br"),
+         bullet1 = str_remove(bullet1, "B"),
+         land1 = str_remove(land1, "L"),
+         barrel2 = str_remove(barrel2, "Br"),
+         bullet2 = str_remove(bullet2, "B"),
+         land2 = str_remove(land2, "L")) %>%
+  mutate(bbl1 = factor(barrel1):factor(bullet1):factor(land1),
+         bbl2 = factor(barrel2):factor(bullet2):factor(land2)) %>%
+  filter(!(bbl1 %in% c("6:2:1", "9:2:4", "Unk:B:2", "Unk:Q:4") | 
+           bbl2 %in% c("6:2:1", "9:2:4", "Unk:B:2", "Unk:Q:4"))) %>%
+  dim()
+```
 
 ## Preparing Data
 
