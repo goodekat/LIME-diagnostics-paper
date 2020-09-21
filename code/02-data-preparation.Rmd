@@ -228,6 +228,7 @@ plot_grid(
   align = "hv"
 )
 ```
+
 Preparing the data from sets 1 and 11 for analysis:
 
 ```{r}
