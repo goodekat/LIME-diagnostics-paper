@@ -112,7 +112,7 @@ Extracting the predictions on the training data from `rtrees` and using `rtrees`
 ```{r}
 rtrees_pred = predict(bulletxtrctr::rtrees, type = "prob")[,2]
 new_pred = predict(bulletxtrctr::rtrees, bullet_train_filtered %>% select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
-new_pred_full = predict(bulletxtrctr::rtrees, bullet_train_raw %>% select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
+new_pred_full = predict(bulletxtrctr::rtrees, bullet_train_raw %>% select(rownames(bulletxtrctr::rtrees$importance)[]), type = "prob")[,2]
 ```
 
 Plot comparing the two predictions:
@@ -130,12 +130,6 @@ data.frame(data = c(rep("rtrees", length(rtrees_pred)), rep("new predictions on 
   ggplot(aes(x = pred, fill = data)) + 
   geom_density(alpha = 0.75)
 ```
-
-
-```{r}
-data.frame(rtrees_pred = sort(rtrees_pred), new_pred = sort(new_pred))
-```
-
 
 ## Preparing Data
 
