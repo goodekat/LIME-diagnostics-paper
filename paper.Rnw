@@ -1044,13 +1044,6 @@ In this section, we provide a discussion of the application of the visual diagno
 # Load the bullet matching training and testing data
 bullet_train <- readr::read_csv("data/bullet-train.csv.zip")
 bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
-@
-
-<<bullet-random-forest>>=
-
-# Load the bullet matching training and testing data
-bullet_train <- readr::read_csv("data/bullet-train.csv.zip")
-bullet_test <- readr::read_csv("data/bullet-test.csv.zip")
 
 # Extract the features
 bullet_features <- rownames(bulletxtrctr::rtrees$importance)
