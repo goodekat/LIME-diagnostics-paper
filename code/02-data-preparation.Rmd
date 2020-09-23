@@ -69,6 +69,12 @@ length(unique(
 
 ## Compare Dimensions to rtrees
 
+The dimensions of the raw data:
+
+```{r}
+bullet_train_raw %>% dim()
+```
+
 The dimension of the data once the observations with tank rash (`flag != FALSE`) are removed:
 
 ```{r}
@@ -107,12 +113,40 @@ dim(bullet_train_filtered)
 length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_filtered)[1]
 ```
 
+The code below removes observations based on Eric Hare's code (available [here](ttps://github.com/erichare/imaging-paper/blob/master/code/full_run.R)), which he thinks may be the code used to train `rtrees`:
+
+```{r}
+bullet_train_eric_filter <- 
+  bullet_train_raw %>%
+  separate(col = "land_id1", into = c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(col = "land_id2", into = c("study2", "barrel2", "bullet2", "land2")) %>%
+  filter(study1 != "Hamby173" | bullet1 != "BE") %>%
+  filter(study2 != "Hamby173" | bullet2 != "BE")
+
+# Eric's code for reference:
+# filter(study.y != "Hamby44" | barrel.y != "E") %>%
+# filter(study.x != "Hamby44" | barrel.x != "E") %>%
+```
+
+Here, the dimensions to not agree with the number of observations in `rtrees`:
+
+```{r}
+dim(bullet_train_eric_filter)
+length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_eric_filter)[1]
+```
+
 Extracting the predictions on the training data from `rtrees` and using `rtrees` to make predictions on the filtered data:
 
 ```{r}
 rtrees_pred = predict(bulletxtrctr::rtrees, type = "prob")[,2]
-new_pred = predict(bulletxtrctr::rtrees, bullet_train_filtered %>% select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
-new_pred_full = predict(bulletxtrctr::rtrees, bullet_train_raw %>% select(rownames(bulletxtrctr::rtrees$importance)[]), type = "prob")[,2]
+
+new_pred = predict(bulletxtrctr::rtrees, 
+                   bullet_train_filtered %>% 
+                     select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
+
+new_pred_full = predict(bulletxtrctr::rtrees, 
+                        bullet_train_raw %>%
+                          select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
 ```
 
 Plot comparing the two predictions:
@@ -126,10 +160,24 @@ data.frame(rtrees_pred = sort(rtrees_pred), new_pred = sort(new_pred)) %>%
 Plot showing distributions of predictions from `rtrees` and new predictions made on full training data:
 
 ```{r}
-data.frame(data = c(rep("rtrees", length(rtrees_pred)), rep("new predictions on full data", length(new_pred_full))), pred = c(rtrees_pred, new_pred_full)) %>%
+bulletxtrctr::rtrees$call
+```
+
+
+```{r}
+data.frame(data = c(rep("rtrees", length(rtrees_pred)), 
+                    rep("new predictions on full data", length(new_pred_full))), pred = c(rtrees_pred, new_pred_full)) %>%
   ggplot(aes(x = pred, fill = data)) + 
   geom_density(alpha = 0.75)
 ```
+
+Comparison to the data Eric Hare said was used to fit `rtrees` which has half the number of observations as the number of rtrees predictions: 
+
+```{r}
+eric <- read.csv("https://raw.githubusercontent.com/erichare/imaging-paper/master/data/data-25-25/bullet-stats.csv")
+dim(eric)
+```
+
 
 ## Preparing Data
 
