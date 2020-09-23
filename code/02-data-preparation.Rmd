@@ -149,7 +149,7 @@ new_pred_full = predict(bulletxtrctr::rtrees,
                           select(rownames(bulletxtrctr::rtrees$importance)), type = "prob")[,2]
 ```
 
-Plot comparing the two predictions:
+Plot comparing the two predictions (we discovered that the `predict` function from random forest returns different results when applied to only the model (out-of-bag predictions) and the training data (regular predictions), so this is not a good way to test for agreement between training data and models):
 
 ```{r}
 data.frame(rtrees_pred = sort(rtrees_pred), new_pred = sort(new_pred)) %>%
@@ -157,12 +157,7 @@ data.frame(rtrees_pred = sort(rtrees_pred), new_pred = sort(new_pred)) %>%
   geom_point()
 ```
 
-Plot showing distributions of predictions from `rtrees` and new predictions made on full training data:
-
-```{r}
-bulletxtrctr::rtrees$call
-```
-
+Plot showing distributions of predictions from `rtrees` and new predictions made on full training data (same comment here as above about not being able to use this to determine if we have the correct training data for the model):
 
 ```{r}
 data.frame(data = c(rep("rtrees", length(rtrees_pred)), 
