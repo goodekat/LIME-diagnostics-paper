@@ -113,7 +113,7 @@ dim(bullet_train_filtered)
 length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_filtered)[1]
 ```
 
-The code below removes observations based on Eric Hare's code (available [here](ttps://github.com/erichare/imaging-paper/blob/master/code/full_run.R)), which he thinks may be the code used to train `rtrees`:
+The code below removes observations based on Eric Hare's code (available [here](https://github.com/erichare/imaging-paper/blob/master/code/full_run.R)), which he thinks may be the code used to train `rtrees`:
 
 ```{r}
 bullet_train_eric_filter <- 
