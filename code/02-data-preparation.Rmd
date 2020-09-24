@@ -173,7 +173,6 @@ eric <- read.csv("https://raw.githubusercontent.com/erichare/imaging-paper/maste
 dim(eric)
 ```
 
-
 ## Preparing Data
 
 Using the data with the flagged lands removed, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:

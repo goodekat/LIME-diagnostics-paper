@@ -1591,22 +1591,6 @@ library(zip)</code></pre>
 # Eric&#39;s code for reference:
 # filter(study.y != &quot;Hamby44&quot; | barrel.y != &quot;E&quot;) %&gt;%
 # filter(study.x != &quot;Hamby44&quot; | barrel.x != &quot;E&quot;) %&gt;%</code></pre>
-<pre class="r"><code>bullet_train_raw_old &lt;- read.csv(&quot;../../data/raw/features-hamby173and252.csv&quot;)
-unique(bullet_train_raw_old$barrel1)</code></pre>
-<pre><code>##  [1] &quot;10&quot; &quot;1&quot;  &quot;2&quot;  &quot;3&quot;  &quot;4&quot;  &quot;5&quot;  &quot;6&quot;  &quot;7&quot;  &quot;8&quot;  &quot;9&quot;  &quot;A&quot;  &quot;B&quot;  &quot;C&quot;  &quot;E&quot;  &quot;G&quot; 
-## [16] &quot;H&quot;  &quot;I&quot;  &quot;L&quot;  &quot;M&quot;  &quot;N&quot;  &quot;R&quot;  &quot;U&quot;  &quot;V&quot;  &quot;W&quot;  &quot;X&quot;  &quot;D&quot;  &quot;F&quot;  &quot;J&quot;  &quot;Q&quot;  &quot;S&quot; 
-## [31] &quot;Y&quot;  &quot;Z&quot;</code></pre>
-<pre class="r"><code>unique(bullet_train_raw_old$bullet1)</code></pre>
-<pre><code>##  [1]    1    2    3    4    5    6    7    8    9   10   25   50   75  100  125
-## [16]  150  200  225  250  275  300  325  350  375  400  425  450  475  500  525
-## [31]  550  575  600  625  650  675  700  725  750  775  800  825  850  875  900
-## [46]  925  950  975 1000 1001 1025 1050 1075 1100 1125 1150 1175 1200 1225 1250
-## [61] 1275 1300 1325 1350 1375 1400 1425 1450 1475 1500 1525 1550 1575 1600 1625
-## [76] 1650 1675 1700 1725 1750 1775 1800 1825 1850 1875 1900 1925 1950 1975</code></pre>
-<pre class="r"><code>unique(bullet_train_raw_old$study1)</code></pre>
-<pre><code>## [1] &quot;Hamby44&quot;  &quot;Hamby252&quot; &quot;Cary&quot;</code></pre>
-<pre class="r"><code># filter(study.y != &quot;Hamby44&quot; | barrel.y != &quot;E&quot;) %&gt;%
-# filter(study.x != &quot;Hamby44&quot; | barrel.x != &quot;E&quot;) %&gt;%</code></pre>
 <p>Here, the dimensions to not agree with the number of observations in <code>rtrees</code>:</p>
 <pre class="r"><code>dim(bullet_train_eric_filter)</code></pre>
 <pre><code>## [1] 82215    23</code></pre>
