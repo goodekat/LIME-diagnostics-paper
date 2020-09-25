@@ -56,8 +56,8 @@ Contains the data used to generate the manuscript:
     matching bullet lands that is used to generate a figure in the
     manuscript.
   - `raw` contains the raw versions of the data files (from Heike and
-    CSAFE) that the above datasets are derived from. *Do not alter these
-    files in any way.*
+    CSAFE) that the above datasets are derived from. *Do not alter the
+    data in these files.*
 
 **`figure-static`**
 

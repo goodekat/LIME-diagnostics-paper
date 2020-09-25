@@ -47,7 +47,7 @@ Contains the data used to generate the manuscript:
 
 - `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data used for the bullet examples in the manuscript. Additional information about these files is included below under the heading "Additional Information on Bullet Data".
 - `example-signatures.csv.zip` contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
-- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter these files in any way.*
+- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*
 
 **`figure-static`**
 

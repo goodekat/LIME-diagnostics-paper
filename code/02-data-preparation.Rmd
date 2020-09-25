@@ -67,6 +67,468 @@ length(unique(
 ))
 ```
 
+## Comparing Training Datasets
+
+Load the newest training data provided by Heike to determine if the same data:
+
+```{r}
+ccfs_withlands_raw = read.csv("../data/raw/CCFs_withlands.csv")
+```
+
+Adjust the raw data to match the structure of `bullet_train_raw`: 
+
+```{r}
+ccfs_withlands_raw_expanded <- 
+  ccfs_withlands_raw %>%
+  rename("study1" = "study.x", "barrel1" = "barrel.x", "bullet1" = "bullet.x", "land1" = "land.x",
+         "study2" = "study.y", "barrel2" = "barrel.y", "bullet2" = "bullet.y", "land2" = "land.y") %>%
+  select(
+    study1, barrel1, bullet1, land1, 
+    study2, barrel2, bullet2, land2,
+    all_of(rf_features), 
+    match
+  ) %>%
+  mutate(across(c(study1, barrel1, bullet1, land1, study2, barrel2, bullet2, land2), factor))
+```
+
+```{r}
+bullet_train_raw_expanded <- 
+  bullet_train_raw %>%
+  separate(land_id1, c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2, c("study2", "barrel2", "bullet2", "land2")) %>%
+  mutate(across(where(is.character), factor)) %>%
+  mutate(barrel1 = fct_relevel(barrel1, paste0("Br", 1:10)),
+         barrel2 = fct_relevel(barrel2, paste0("Br", 1:10)))
+```
+
+Shows that `Hamby44` needs to be changed to `Hamby173` in `ccfs_withlands`:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(study1, study2) %>%
+    ggplot(aes(
+      x = study1, y = study2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_raw_expanded %>% count(study1, study2) %>%
+    ggplot(aes(
+      x = study1, y = study2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+Shows that lettered barrels need to be changed to `BrUnk` and `Br` added to other barrels in `ccfs_withlands`:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(barrel1, barrel2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_raw_expanded %>% count(barrel1, barrel2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+Shows that barrel letters from in `ccfs_withlands` need to be made the bullet and `B` added to all bullets:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(bullet1, bullet2) %>%
+    ggplot(aes(
+      x = bullet1, y = bullet2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_raw_expanded %>% count(bullet1, bullet2) %>%
+    ggplot(aes(
+      x = bullet1, y = bullet2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+Shows that `L` needs to be added to lands in `ccfs_withlands`:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_raw_expanded %>% count(land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+```{r}
+# Determine the letters in barrels
+letters <- 
+  ccfs_withlands_raw_expanded %>%
+  filter(!(barrel1 %in% 1:10)) %>% 
+  pull(barrel1) %>%
+  unique()
+
+letters2 <- 
+  ccfs_withlands_raw_expanded %>%
+  filter(!(barrel2 %in% 1:10)) %>% 
+  pull(barrel2) %>%
+  unique()
+sum(letters != letters2) > 0
+
+ccfs_withlands_expanded <- ccfs_withlands_raw_expanded %>%
+  mutate(
+    study1 = fct_recode(study1, "Hamby173" = "Hamby44"),
+    study2 = fct_recode(study2, "Hamby173" = "Hamby44"),
+    bullet1 = ifelse(barrel1 %in% letters, as.character(barrel1), as.character(bullet1)),
+    barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
+    bullet2 = ifelse(barrel2 %in% letters, as.character(barrel2), as.character(bullet2)),
+    barrel2 = ifelse(barrel2 %in% letters, "Unk", barrel2)
+    ) %>%
+  mutate(
+    study1 = fct_relevel(study1, "Hamby173", "Hamby252"),
+    study2 = fct_relevel(study2, "Hamby173", "Hamby252"),
+    barrel1 = paste0("Br", barrel1),
+    bullet1 = paste0("B", bullet1),
+    land1 = paste0("L", land1),
+    barrel2 = paste0("Br", barrel2),
+    bullet2 = paste0("B", bullet2),
+    land2 = paste0("L", land2)
+  ) %>% 
+  mutate(across(where(is.character), factor)) %>%
+  mutate(barrel1 = fct_relevel(barrel1, paste0("Br", 1:10)),
+         barrel2 = fct_relevel(barrel2, paste0("Br", 1:10)))
+```
+
+The labels agree now but note that :
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(study1, study2) %>%
+    ggplot(aes(
+      x = study1, y = study2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% count(study1, study2) %>%
+    ggplot(aes(
+      x = study1, y = study2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+The labels agree now but we are starting to see some differences in the two datasets:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(barrel1, barrel2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% count(barrel1, barrel2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+The labels agree now but again, there are apparent differences between datasets:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(bullet1, bullet2) %>%
+    ggplot(aes(
+      x = bullet1, y = bullet2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% count(bullet1, bullet2) %>%
+    ggplot(aes(
+      x = bullet1, y = bullet2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+The labels agree now:
+
+```{r fig.width = 10, fig.height = 4, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% count(land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% count(land1, land2) %>%
+    ggplot(aes(
+      x = land1, y = land2, fill = n
+    )) +
+    geom_tile() +
+    theme(aspect.ratio = 1) +
+    labs(title = "CCFs with lands data")
+)
+```
+
+```{r}
+ccfs_withlands <- 
+  ccfs_withlands_expanded %>%
+  mutate(
+    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
+    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
+  ) %>%
+  select(land_id1, land_id2, all_of(rf_features), match)
+```
+
+```{r fig.width = 12, fig.height = 6, echo = FALSE}
+plot_grid(
+  bullet_train_raw_expanded %>% 
+    mutate(across(where(is.character), factor)) %>%
+    filter(study1 == "Hamby173", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, land1, study2, barrel2, bullet2, land2) %>%
+    ggplot(aes(
+      x = barrel1:land1, y = barrel2:land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% 
+    filter(study1 == "Hamby173", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, land1, study2, barrel2, bullet2, land2) %>%
+    ggplot(aes(
+      x = barrel1:land1, y = barrel2:land2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "CCFs with lands data")
+)
+```
+
+```{r}
+bullet_train_raw_switch <-
+  bullet_train_raw_expanded %>%
+  mutate(across(where(is.factor), as.character)) %>%
+  mutate(temp_barrel = ifelse(barrel1 == "Br10", barrel1, "NA")) %>%
+  mutate(barrel1 = ifelse(temp_barrel == "Br10", barrel2, barrel1)) %>%
+  mutate(barrel2 = ifelse(temp_barrel == "Br10", temp_barrel, barrel2)) %>%
+  select(-temp_barrel) %>%
+  mutate(across(where(is.character), factor)) %>%
+  mutate(barrel1 = fct_relevel(barrel1, paste0("Br", 1:10)),
+         barrel2 = fct_relevel(barrel2, paste0("Br", 1:10)))
+```
+
+```{r fig.width = 15, fig.height = 30, echo = FALSE}
+plot_grid(
+  bullet_train_raw_switch %>% 
+    filter(study1 == "Hamby173", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% 
+    filter(study1 == "Hamby173", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "CCFs with lands data"), 
+bullet_train_raw_switch %>% 
+    filter(study1 == "Hamby173", study2 == "Hamby252") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% 
+    filter(study1 == "Hamby173", study2 == "Hamby252") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "CCFs with lands data"),
+bullet_train_raw_switch %>% 
+    filter(study1 == "Hamby252", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% 
+    filter(study1 == "Hamby252", study2 == "Hamby173") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "CCFs with lands data"),
+  bullet_train_raw_switch %>% 
+    filter(study1 == "Hamby252", study2 == "Hamby252") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1,
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "Hamby comparisons data"),
+  ccfs_withlands_expanded %>% 
+    filter(study1 == "Hamby252", study2 == "Hamby252") %>%
+    filter(bullet1 %in% c("B1","B2"), bullet2 %in% c("B1", "B2")) %>% 
+    count(study1, barrel1, bullet1, study2, barrel2, bullet2) %>%
+    ggplot(aes(
+      x = barrel1, y = barrel2, fill = n
+    )) +
+    geom_tile() +
+    facet_grid(study2 + bullet2 ~ study1 + bullet1) +
+    theme(aspect.ratio = 1, 
+          axis.text.x = element_text(angle = 45, vjust = 1, hjust = 1)) + 
+    labs(title = "CCFs with lands data"), 
+  ncol = 2
+)
+```
+
+```{r}
+bullet_train_cleaned <-
+  bullet_train_raw_switch %>%
+  mutate(
+    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
+    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
+  ) %>%
+  select(land_id1, land_id2, rf_features)
+
+ccfs_withlands_cleaned <- ccfs_withlands_expanded %>%
+  mutate(
+    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
+    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
+  ) %>%
+  select(land_id1, land_id2, rf_features)
+```
+
+```{r}
+land_ids_old = bullet_train_cleaned %>% select(land_id1, land_id2)
+land_ids_new = ccfs_withlands_cleaned %>% select(land_id1, land_id2)
+dim(land_ids_old)
+dim(land_ids_new)
+```
+
+```{r}
+extra_leas_in_old <- 
+  anti_join(x = land_ids_old, y = land_ids_new, by = c("land_id1", "land_id2")) %>%
+  separate(land_id1, c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2, c("study2", "barrel2", "bullet2", "land2"))
+dim(extra_leas_in_old)
+```
+
+```{r fig.height = 6, echo = FALSE}
+extra_leas_in_old %>%
+  count(study1, barrel1, study2, barrel2) %>%
+  ggplot(aes(x = barrel1, y = barrel2, fill = n)) +
+  geom_tile() +
+  facet_grid(study2 ~ study1, scales = "free") + 
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+extra_leas_in_new <- 
+  anti_join(x = land_ids_new, y = land_ids_old, by = c("land_id1", "land_id2")) %>%
+  separate(land_id1, c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2, c("study2", "barrel2", "bullet2", "land2"))
+dim(extra_leas_in_new)
+```
+
+```{r fig.height = 6, echo = FALSE}
+extra_leas_in_new %>%
+  count(study1, barrel1, study2, barrel2) %>%
+  ggplot(aes(x = barrel1, y = barrel2, fill = n)) +
+  geom_tile() +
+  facet_grid(study2 ~ study1, scales = "free") + 
+  theme(aspect.ratio = 1)
+```
+
+```{r}
+extra_leas_in_new <- 
+  anti_join(x = land_ids_new, y = land_ids_old, by = c("land_id1", "land_id2")) %>%
+  separate(land_id1, c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(land_id2, c("study2", "barrel2", "bullet2", "land2"))
+dim(extra_leas_in_new)
+```
+
 ## Compare Dimensions to rtrees
 
 The dimensions of the raw data:
@@ -133,6 +595,25 @@ Here, the dimensions to not agree with the number of observations in `rtrees`:
 ```{r}
 dim(bullet_train_eric_filter)
 length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_eric_filter)[1]
+```
+
+```{r}
+bullet_train_eric_filter_v2 <-
+  bullet_train_raw %>%
+  mutate(bbl1 = str_remove(land_id1, pattern = "Hamby252-|Hamby173-"),
+         bbl2 = str_remove(land_id2, pattern = "Hamby252-|Hamby173-")) %>%
+  filter(!(bbl1 %in% c("Br6-B2-L1", "Br9-B2-L4", "BrUnk-BB-L2", "BrUnk-BQ-L4") | 
+           bbl2 %in% c("Br6-B2-L1", "Br9-B2-L4", "BrUnk-BB-L2", "BrUnk-BQ-L4"))) %>%
+  select(-bbl1, -bbl2) %>%
+  separate(col = "land_id1",
+           into = c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(col = "land_id2",
+           into = c("study2", "barrel2", "bullet2", "land2")) %>%
+  filter(study1 != "Hamby173" | bullet1 != "BE") %>%
+  filter(study2 != "Hamby173" | bullet2 != "BE")
+
+dim(bullet_train_eric_filter_v2)
+length(bulletxtrctr::rtrees$predicted) == dim(bullet_train_eric_filter_v2)[1]
 ```
 
 Extracting the predictions on the training data from `rtrees` and using `rtrees` to make predictions on the filtered data:
