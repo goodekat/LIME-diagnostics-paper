@@ -9,6 +9,11 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## To Do
 
+- Move all code and results from our work identifying the data to my LIME-research-journals repo for future reference (including LIME explanations from different training datasets/models)
+- Update 02-data-preparation.Rmd to only include the preparation of the CCFs_withlands data to be used in the paper
+- Update code/figures in paper to train a random forest using CCFs_withlands data (and a set seed) and apply LIME predictions
+- Rewrite Section 4 as needed
+- Prepare for submission
 - Edit dataset descriptions in README and add to the readme.txt document for submission
 - Upload the files for submission and submit
 
