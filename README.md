@@ -130,98 +130,83 @@ readme.txt that is submitted with the manuscript.
 **`bullet-train`**
 
 A dataset with 83028 rows and 14 columns that contains comparison
-features from the Hamby 173 and 252 sets (XXX reference XXX). It
-contains comparisons from 407 bullet-land signatures with some lands
-missing due to tank rash or other reasons. This dataset is created using
-the data available at XXX, which contains XXX. The only changes made to
-the data from XXX were to remove any lands with tank rash, select only
-variables of use for the manuscript, add a case variable, rename
-`same_source` as `samesource`, and attach the random forest scores
-associated with the comparisons. The variables in the data are as
-follows:
+features based on high resolution microscopy scans of fired bullets from
+Hamby sets 173 and 252 \[@hamby\]. This dataset is created from the x3p
+scans of bullet land engraved areas available from the [NIST Ballistics
+Toolmark Research Database](https://tsapps.nist.gov/NRBTD/). It contains
+comparisons from 408 bullet-land signatures. 12 of the overall 420 lands
+(6 lands per bullets, 35 bullets in each set) are excluded from the
+comparison. Six of these lands show so-called “tank rash” - damage to
+the bullets after it exited the barrel (see [tank rash
+scans](LEAscans/tankrash.md)). Another bullet (Bullet E from Hamby 173)
+is excluded because it could not be matched visually to the barrel it
+was supposedly from (see [scans from bullet E](LEAscans/bullete.md)).
+The <b>bullet\_train</b> data is based on a set of features extracted
+from the x3p scans as described in @hare:2016. The raw file of
+comparison features is found [here](data/raw/hamby-comparisons.csv.zip).
+The only changes made to the data were XXX I think the following
+statement needs to be adjusted XXX to select only variables of use for
+the manuscript, add a case variable, rename `same_source` as
+`samesource`, and attach the random forest scores associated with the
+comparisons. The variables in the data are as follows:
 
-  - case = ID number associated with the bullet-land signature
+#### Variables used as key variables:
+
+  - case: ID number associated with the bullet-land signature
     comparison.
-  - land\_id1 = ID associated with the first bullet-land in the
-    comparison. The format is ‘study - barrel number - bullet number -
-    land number’.
-  - land\_id2 = ID associated with the second bullet-land in the
-    comparison. Again, the format is ‘study - barrel number - bullet
-    number - land number’.
-  - ccf = the comparison feature of two signatures of cross correlation.
-  - rough\_cor = the comparison feature of two signatures of rough
-    correlation.
-  - D = the comparison feature of two signatures of distance.
-  - sd\_D = the comparison feature of two signatures of standard
-    deviation of distance.
-  - matches = the comparison feature of two signatures of matches.
-  - mismatches = the comparison feature of two signatures of mismatches.
-  - cms = the comparison feature of two signatures of consecutively
-    matched striae.
-  - non\_cms = the comparison feature of two signatures of
-    non-consecutively matched striae.
-  - sum\_peaks = the comparison feature of two signatures of sum of
-    peaks.
-  - samesource = indicator variable specifying whether the two
-    bullet-lands are a match.
-  - rfscore = the random forest score associated with the comparison in
+  - land\_id1, land\_id2: IDs describing the two land engraved areas in
+    the comparison. The format is ‘study - barrel number - bullet number
+    - land number’.
+
+#### Comparison features
+
+  - ccf: maximized cross-correlation between two LEA signatures.
+  - rough\_cor: correlation after detrending aligned signatures.
+  - D: Euclidean distance (in millimeters) between two aligned
+    signatures.
+  - sd\_D: standard deviation of the previous measure along the
+    signature.
+  - matches, mismatches: number of matching/non-matching peaks and
+    valleys in the aligned signatures.
+  - cms: consecutively matching striae is a measure introduced by
+    @biasotti describing the longest run of matching peaks between two
+    aligned signatures.
+  - non\_cms: the number of consecutively non-matching peaks.
+  - sum\_peaks: the depth of peaks measured as the sum of matching peaks
+    between two aligned signatures (in microns).
+  - samesource: ground truth whether a pair is from the same source
+    (`TRUE`) or from different sources (`FALSE`).
+  - rfscore: the random forest score associated with the comparison in
     support of a match.
 
-For further details about the signatures comparison features, see XXX.
+<!--For further details about the signatures comparison features, see XXX.-->
 
 **`bullet-test`**
 
 A dataset with 364 rows and 14 columns that contains comparison features
-from sets 1 and 11 of the Hamby 224 Clone sets (XXX reference XXX). Each
-test set is arranged as a combination of three bullets: two known
-bullets and a questioned bullet. Each bullet has 6 lands. The data
-contains comparisons of bullet-lands within a set. With three bullets
-with six lands per set, there are a total of (2 sets) x (3\! bullet
-comparisons) x (6^2 land comparisons) = 432 comparisons. However, there
-are only 364 comparisons in the `bullet-test` data. This is due to the
-fact that some of the lands are missing from the data (probably due to
-tank rank): land 4 from the unknown bullet in set 1, land 2 from bullet
-1 in set 11, and land 4 from the unknown bullet in set 11. The variables
-in the data are as follows:
+from test sets 1 and 11 of the Hamby 224 Clone sets. Each test set is
+arranged as a combination of three bullets: two known bullets and a
+questioned bullet. Similar to the training set, each bullet has 6 lands.
+The data contains comparisons of bullet-lands within a set. With three
+bullets with six lands per set, there are a total of (2 sets) x (3\!
+bullet comparisons) x (6^2 land comparisons) = 432 comparisons. However,
+there are only 364 comparisons in the `bullet-test` data. This is due to
+the fact that some of the lands are missing from the data (due to tank
+rash): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in
+set 11, and land 4 from the unknown bullet in set 11. The variables in
+the test data are the same as the training data described above.
 
-  - case = ID number associated with the bullet-land signature
-    comparison.
-  - land\_id1 = ID associated with the first bullet-land in the
-    comparison with a format of ‘study - set number - bullet number -
-    land number’.
-  - land\_id2 = ID associated with the second bullet-land in the
-    comparison with a format of ‘study - set number - bullet number -
-    land number’.
-  - ccf = the comparison feature of two signatures of cross correlation.
-  - rough\_cor = the comparison feature of two signatures of rough
-    correlation.
-  - D = the comparison feature of two signatures of distance.
-  - sd\_D = the comparison feature of two signatures of standard
-    deviation of distance.
-  - matches = the comparison feature of two signatures of matches.
-  - mismatches = the comparison feature of two signatures of mismatches.
-  - cms = the comparison feature of two signatures of consecutively
-    matched striae.
-  - non\_cms = the comparison feature of two signatures of
-    non-consecutively matched striae.
-  - sum\_peaks = the comparison feature of two signatures of sum of
-    peaks.
-  - samesource = indicator variable specifying whether the two
-    bullet-lands are a match.
-  - rfscore = the random forest score associated with the comparison in
-    support of a match.
-
-For further details about the signatures comparison features, see XXX.
+<!-- For further details about the signatures comparison features, see XXX.-->
 
 **`example-signatures`**
 
-Contains the signature data from two bullet-land signatures that are a
-match. The variables in the data are as follows:
+Contains the signature data from aligned signatures of two bullet-lands
+from the same source. The variables in the data are as follows:
 
-  - land = Indicates where the observation corresponds to ‘Signature 1’
-    or ‘Signature 2’
-  - x = The x position of the signature
-  - y = The y position of the signature
+  - land: Indicator variable whether the observation corresponds to
+    ‘Signature 1’ or ‘Signature 2’
+  - x: the (relative) x position of the signature (in microns)
+  - y: the (relative) y position of the signature height (in microns)
 
 ## Figure Font Size Information
 
