@@ -164,8 +164,8 @@ comparisons. The variables in the data are as follows:
   - case: ID number associated with the bullet-land signature
     comparison.
   - land\_id1, land\_id2: IDs describing the two land engraved areas in
-    the comparison. The format is ‘study - barrel number - bullet number
-    - land number’.
+    the comparison. The format is ‘study-barrel number -bullet
+    number-land number’.
 
 #### Comparison features
 

@@ -112,7 +112,7 @@ The <b>bullet_train</b> data is based on a set of features extracted from the x3
 
 #### Variables used as key variables:
 - `r names(bullet_train)[1]`: ID number associated with the bullet-land signature comparison.
-- `r names(bullet_train)[2]`, `r names(bullet_train)[3]`: IDs describing the two land engraved areas in the comparison. The format is 'study - barrel number - bullet number - land number'.
+- `r names(bullet_train)[2]`, `r names(bullet_train)[3]`: IDs describing the two land engraved areas in the comparison. The format is 'study-barrel number -bullet number-land number'.
 
 #### Comparison features
 - `r names(bullet_train)[4]`: maximized cross-correlation between two LEA signatures.
