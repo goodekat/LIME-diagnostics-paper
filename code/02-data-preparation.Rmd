@@ -41,7 +41,9 @@ rtrees_features <- rownames(bulletxtrctr::rtrees$importance)
 Load the training data provided by Heike (from CSAFE data base; see this [R script](https://github.com/erichare/imaging-paper/blob/master/code/full_run.R) for the code used to access the data):
 
 ```{r}
-unzip(zipfile = "../data/raw/CCFs_withlands.csv.zip", exdir = "../data/raw")
+if (!file.exists("../data/raw/CCFs_withlands.csv")) {
+  unzip("../data/raw/CCFs_withlands.csv.zip", exdir = "../data/raw")
+}
 bullet_train_raw = read.csv("../data/raw/CCFs_withlands.csv")
 ```
 
@@ -61,29 +63,41 @@ The code below cleans and prepares the data for use in the paper. The steps take
 3. Convert all categorical variables to characters.
 4. Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions. 
 5. Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.
+6. Create land ID variables that combine study, barrel, bullet, and land labels. 
+7. Add a case variable (just numbering comparisons 1 through `r dim(bullet_train_raw)[1]` based on current order in the data). 
+8. Reorder the variables.
 
 ```{r}
+# Identify the letters used to label barrels 
+all_barrel_labels <- unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))
+letters <- all_barrel_labels[!(all_barrel_labels %in% 1:10)]
+
 bullet_train <- 
   bullet_train_raw %>%
+  # 1. Rename variables
   rename(
     "study1" = "study.x", "barrel1" = "barrel.x", "bullet1" = "bullet.x", "land1" = "land.x",
     "study2" = "study.y", "barrel2" = "barrel.y", "bullet2" = "bullet.y", "land2" = "land.y",
     "same_source"= "match"
   ) %>%
+  # 2. Select variables of interest
   select(
     study1, barrel1, bullet1, land1,
     study2, barrel2, bullet2, land2,
     all_of(rtrees_features), same_source
   ) %>%
+  # 3. Convert categorical variables to characters
   mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character)) %>%
+  # 4. Adjust study, barrel, and bullet labels
   mutate(
     study1 = ifelse(study1 == "Hamby44", "Hamby173", study1),
     study2 = ifelse(study2 == "Hamby44", "Hamby173", study2),
-    bullet1 = ifelse(barrel1 %in% letters, as.character(barrel1), as.character(bullet1)),
-    bullet2 = ifelse(barrel2 %in% letters, as.character(barrel2), as.character(bullet2)),
+    bullet1 = ifelse(barrel1 %in% letters, barrel1, bullet1),
+    bullet2 = ifelse(barrel2 %in% letters, barrel2, bullet2),
     barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
     barrel2 = ifelse(barrel2 %in% letters, "Unk", barrel2)
     ) %>%
+  # 5. Add abbreviations infront of barrel, bullet, and land labels
   mutate(
     barrel1 = paste0("Br", barrel1),
     barrel2 = paste0("Br", barrel2),
@@ -91,10 +105,29 @@ bullet_train <-
     bullet2 = paste0("B", bullet2),
     land1 = paste0("L", land1),
     land2 = paste0("L", land2)
-  )
+  ) %>%
+  # 6. Create land ID variables
+  mutate(
+    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
+    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
+  ) %>%
+  # 7. Add a case variable
+  mutate(case = as.character(1:n())) %>%
+  # 8. Reorder the variables
+  select(land_id1, land_id2, 
+         study1, barrel1, bullet1, study2, land1, barrel2, bullet2, land2,
+         all_of(rtrees_features), same_source)
 ```
 
-| Descriptor | Levels | 
+Check to make sure the number of rows in the data is still the same:
+
+```{r}
+dim(bullet_train)
+```
+
+The updated signature identification labels are included below:
+
+| Descriptor | Labels | 
 | --- | -------------- |
 | Study | `r unique(c(bullet_train$study1, bullet_train$study2))` |
 | Barrel | `r unique(c(bullet_train$barrel1, bullet_train$barrel2))` |
