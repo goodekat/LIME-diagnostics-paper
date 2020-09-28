@@ -147,7 +147,7 @@ described below. Note that this text is also included in the file
 
 ### `bullet-train.csv`
 
-The [<b>bullet\_train</b>](data/bullet-train.csv.zip) data has 83,028
+The [<b>bullet-train.csv</b>](data/bullet-train.csv.zip) data has 83,028
 rows and 13 columns that contain comparison features described in Hare,
 Hofmann, and Carriquiry (2017) based on high resolution microscopy scans
 of fired bullets from Hamby sets 173 and 252 (Hamby, Brundage, and
@@ -162,9 +162,9 @@ Another bullet (Bullet E from Hamby 173) is excluded because it could
 not be matched visually to the barrel it was supposedly from (see [scans
 from bullet E](LEAscans/bullete.md)).
 
-**bullet\_train** is generated from the raw file of comparison features,
+**bullet-train** is generated from the raw file of comparison features,
 which is found [here](data/raw/CCFs_withlands.csv.zip). The steps taken
-to create **bullet\_train** from the raw data are found
+to create **bullet-train** from the raw data are found
 [here](code/02-data-preparation.Rmd). These steps involve renaming some
 variables, selecting the variables of interest for the manuscript, and
 adjusting the land IDs associated with the signatures.
