@@ -45,67 +45,61 @@ unzip(zipfile = "../data/raw/CCFs_withlands.csv.zip", exdir = "../data/raw")
 bullet_train_raw = read.csv("../data/raw/CCFs_withlands.csv")
 ```
 
-## Preparing Data
+The raw data contains `r dim(bullet_train_raw)[1]` observations (comparisons of signatures) and `r dim(bullet_train_raw)[2]` variables. The table below lists the levels of study, barrel, bullet, and land contained within the raw data. One of the study labels is `Hamby44`. CSAFE has determined that these bullets are actually from study `Hamby173`. Additionally, note that the barrel labels contains letters. These barrels are "unknown" barrels, and the new labeling convention used by CSAFE is to use the label for barrel of `BrUnk` and label the bullet using the letter (such as `BA`). 
+
+| Descriptor | Levels | 
+| --- | -------------- |
+| Study | `r unique(c(bullet_train_raw$study.x, bullet_train_raw$study.y))` |
+| Barrel | `r unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))` |
+| Bullet | `r unique(c(bullet_train_raw$bullet.x, bullet_train_raw$bullet.y))` |
+| Land | `r unique(c(bullet_train_raw$land.x, bullet_train_raw$land.y))` |
+
+The code below cleans and prepares the data for use in the paper. The steps taken are as follows:
+
+1. Rename the label variables using numbers instead of letters (e.g. `study.x` and `study.y` become `study1` and `study2`, respectively). 
+2. Select only the variables of interest for the study: signature ID labels (`study1`, `barrel1`, `bullet1`, `land1`, `study2`, `barrel2`, `bullet2`, and `land2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`same_source`).
+3. Convert all categorical variables to characters.
+4. Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions. 
+5. Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.
 
 ```{r}
-bullet_train_select <- 
+bullet_train <- 
   bullet_train_raw %>%
   rename(
-    "study1" = "study.x",
-    "barrel1" = "barrel.x",
-    "bullet1" = "bullet.x",
-    "land1" = "land.x",
-    "study2" = "study.y",
-    "barrel2" = "barrel.y",
-    "bullet2" = "bullet.y",
-    "land2" = "land.y",
+    "study1" = "study.x", "barrel1" = "barrel.x", "bullet1" = "bullet.x", "land1" = "land.x",
+    "study2" = "study.y", "barrel2" = "barrel.y", "bullet2" = "bullet.y", "land2" = "land.y",
     "same_source"= "match"
   ) %>%
   select(
-    study1,
-    barrel1,
-    bullet1,
-    land1,
-    study2,
-    barrel2,
-    bullet2,
-    land2,
-    all_of(rtrees_features),
-    same_source
+    study1, barrel1, bullet1, land1,
+    study2, barrel2, bullet2, land2,
+    all_of(rtrees_features), same_source
   ) %>%
-  mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character))
-```
-
-```{r}
-bullet_train_labelled <- 
-  bullet_train_select %>%
+  mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character)) %>%
   mutate(
     study1 = ifelse(study1 == "Hamby44", "Hamby173", study1),
     study2 = ifelse(study2 == "Hamby44", "Hamby173", study2),
     bullet1 = ifelse(barrel1 %in% letters, as.character(barrel1), as.character(bullet1)),
-    barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
     bullet2 = ifelse(barrel2 %in% letters, as.character(barrel2), as.character(bullet2)),
+    barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
     barrel2 = ifelse(barrel2 %in% letters, "Unk", barrel2)
     ) %>%
   mutate(
     barrel1 = paste0("Br", barrel1),
-    bullet1 = paste0("B", bullet1),
-    land1 = paste0("L", land1),
     barrel2 = paste0("Br", barrel2),
+    bullet1 = paste0("B", bullet1),
     bullet2 = paste0("B", bullet2),
+    land1 = paste0("L", land1),
     land2 = paste0("L", land2)
   )
 ```
 
-```{r}
-bullet_train <-
-  bullet_train_labelled %>%
-  mutate(
-    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
-    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
-  ) %>%
-  select(land_id1, land_id2, all_of(rtrees_features), same_source)
-```
+| Descriptor | Levels | 
+| --- | -------------- |
+| Study | `r unique(c(bullet_train$study1, bullet_train$study2))` |
+| Barrel | `r unique(c(bullet_train$barrel1, bullet_train$barrel2))` |
+| Bullet | `r unique(c(bullet_train$bullet1, bullet_train$bullet2))` |
+| Land | `r unique(c(bullet_train$land1, bullet_train$land2))` |
 
 Determine the number of total study-barrel-bullet-lands in the data:
 
@@ -137,19 +131,22 @@ zip(
 Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):
 
 ```{r}
-if (!file.exists("../data/raw/h224-set1-features.rds")) unzip("../data/raw/h224-set1-features.rds.zip", exdir = "../data/raw")
-if (!file.exists("../data/raw/h224-set11-features.rds")) unzip("../data/raw/h224-set11-features.rds.zip", exdir = "../data/raw")
-
+if (!file.exists("../data/raw/h224-set1-features.rds")) {
+  unzip("../data/raw/h224-set1-features.rds.zip", exdir = "../data/raw")
+}
+if (!file.exists("../data/raw/h224-set11-features.rds")) {
+  unzip("../data/raw/h224-set11-features.rds.zip", exdir = "../data/raw")
+}
 hamby224_set1 <- readRDS("../data/raw/h224-set1-features.rds")
 hamby224_set11 <- readRDS("../data/raw/h224-set11-features.rds")
 ```
 
-The bullet and land names from each of the sets are included below. This indicates that each set contains `r length(unique(hamby224_set1$bulletA))` bullets with `r length(unique(hamby224_set1$landA))` lands each.
+The bullet and land names from each of the sets are included below. This indicates that each set contains `r length(unique(c(hamby224_set1$bulletA, hamby224_set1$bulletB)))` bullets with `r length(unique(c(hamby224_set1$landA, hamby224_set1$landB)))` lands each.
 
 | Set | Bullets | Lands | 
 | --- | -------------- | -------------- | 
-| 1 | `r unique(hamby224_set1$bulletA)` | `r unique(hamby224_set1$landA)` |
-| 11 | `r unique(hamby224_set11$bulletA)` | `r unique(hamby224_set11$landA)` |
+| 1 | `r unique(c(hamby224_set1$bulletA, hamby224_set1$bulletB))` | `r unique(c(hamby224_set1$landA, hamby224_set1$landB))` |
+| 11 | `r unique(c(hamby224_set11$bulletA, hamby224_set11$bulletB))` | `r unique(c(hamby224_set11$landA, hamby224_set11$landB))` |
 
 The dimensions of the datasets are:
 

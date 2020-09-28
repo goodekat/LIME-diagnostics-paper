@@ -1536,62 +1536,107 @@ library(zip)</code></pre>
 <p>Load the training data provided by Heike (from CSAFE data base; see this <a href="https://github.com/erichare/imaging-paper/blob/master/code/full_run.R">R script</a> for the code used to access the data):</p>
 <pre class="r"><code>unzip(zipfile = &quot;../data/raw/CCFs_withlands.csv.zip&quot;, exdir = &quot;../data/raw&quot;)
 bullet_train_raw = read.csv(&quot;../data/raw/CCFs_withlands.csv&quot;)</code></pre>
-<div id="preparing-data" class="section level2">
-<h2>Preparing Data</h2>
-<pre class="r"><code>bullet_train_select &lt;- 
+<p>The raw data contains 83028 observations (comparisons of signatures) and 26 variables. The table below lists the levels of study, barrel, bullet, and land contained within the raw data. One of the study labels is <code>Hamby44</code>. CSAFE has determined that these bullets are actually from study <code>Hamby173</code>. Additionally, note that the barrel labels contains letters. These barrels are “unknown” barrels, and the new labeling convention used by CSAFE is to use the label for barrel of <code>BrUnk</code> and label the bullet using the letter (such as <code>BA</code>).</p>
+<table>
+<colgroup>
+<col width="17%"></col>
+<col width="82%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Descriptor</th>
+<th>Levels</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Study</td>
+<td>Hamby252, Hamby44</td>
+</tr>
+<tr class="even">
+<td>Barrel</td>
+<td>10, 1, 2, 3, 4, 5, 6, 7, 8, 9, B, C, D, E, F, H, J, L, M, Q, S, U, X, Y, Z, A, G, I, N, R, V, W</td>
+</tr>
+<tr class="odd">
+<td>Bullet</td>
+<td>1, 2</td>
+</tr>
+<tr class="even">
+<td>Land</td>
+<td>1, 2, 3, 4, 5, 6</td>
+</tr>
+</tbody>
+</table>
+<p>The code below cleans and prepares the data for use in the paper. The steps taken are as follows:</p>
+<ol style="list-style-type: decimal">
+<li>Rename the label variables using numbers instead of letters (e.g. <code>study.x</code> and <code>study.y</code> become <code>study1</code> and <code>study2</code>, respectively).</li>
+<li>Select only the variables of interest for the study: signature ID labels (<code>study1</code>, <code>barrel1</code>, <code>bullet1</code>, <code>land1</code>, <code>study2</code>, <code>barrel2</code>, <code>bullet2</code>, and <code>land2</code>), features used to train the <code>rtrees</code> random forest model (<code>ccf</code>, <code>rough_cor</code>, <code>D</code>, <code>sd_D</code>, <code>matches</code>, <code>mismatches</code>, <code>cms</code>, <code>non_cms</code>, and <code>sum_peaks</code>), and the variable identifying whether the two signatures are fired from the same gun (<code>same_source</code>).</li>
+<li>Convert all categorical variables to characters.</li>
+<li>Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions.</li>
+<li>Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.</li>
+</ol>
+<pre class="r"><code>bullet_train &lt;- 
   bullet_train_raw %&gt;%
   rename(
-    &quot;study1&quot; = &quot;study.x&quot;,
-    &quot;barrel1&quot; = &quot;barrel.x&quot;,
-    &quot;bullet1&quot; = &quot;bullet.x&quot;,
-    &quot;land1&quot; = &quot;land.x&quot;,
-    &quot;study2&quot; = &quot;study.y&quot;,
-    &quot;barrel2&quot; = &quot;barrel.y&quot;,
-    &quot;bullet2&quot; = &quot;bullet.y&quot;,
-    &quot;land2&quot; = &quot;land.y&quot;,
+    &quot;study1&quot; = &quot;study.x&quot;, &quot;barrel1&quot; = &quot;barrel.x&quot;, &quot;bullet1&quot; = &quot;bullet.x&quot;, &quot;land1&quot; = &quot;land.x&quot;,
+    &quot;study2&quot; = &quot;study.y&quot;, &quot;barrel2&quot; = &quot;barrel.y&quot;, &quot;bullet2&quot; = &quot;bullet.y&quot;, &quot;land2&quot; = &quot;land.y&quot;,
     &quot;same_source&quot;= &quot;match&quot;
   ) %&gt;%
   select(
-    study1,
-    barrel1,
-    bullet1,
-    land1,
-    study2,
-    barrel2,
-    bullet2,
-    land2,
-    all_of(rtrees_features),
-    same_source
+    study1, barrel1, bullet1, land1,
+    study2, barrel2, bullet2, land2,
+    all_of(rtrees_features), same_source
   ) %&gt;%
-  mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character))</code></pre>
-<pre class="r"><code>bullet_train_labelled &lt;- 
-  bullet_train_select %&gt;%
+  mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character)) %&gt;%
   mutate(
     study1 = ifelse(study1 == &quot;Hamby44&quot;, &quot;Hamby173&quot;, study1),
     study2 = ifelse(study2 == &quot;Hamby44&quot;, &quot;Hamby173&quot;, study2),
     bullet1 = ifelse(barrel1 %in% letters, as.character(barrel1), as.character(bullet1)),
-    barrel1 = ifelse(barrel1 %in% letters, &quot;Unk&quot;, barrel1),
     bullet2 = ifelse(barrel2 %in% letters, as.character(barrel2), as.character(bullet2)),
+    barrel1 = ifelse(barrel1 %in% letters, &quot;Unk&quot;, barrel1),
     barrel2 = ifelse(barrel2 %in% letters, &quot;Unk&quot;, barrel2)
     ) %&gt;%
   mutate(
     barrel1 = paste0(&quot;Br&quot;, barrel1),
-    bullet1 = paste0(&quot;B&quot;, bullet1),
-    land1 = paste0(&quot;L&quot;, land1),
     barrel2 = paste0(&quot;Br&quot;, barrel2),
+    bullet1 = paste0(&quot;B&quot;, bullet1),
     bullet2 = paste0(&quot;B&quot;, bullet2),
+    land1 = paste0(&quot;L&quot;, land1),
     land2 = paste0(&quot;L&quot;, land2)
   )</code></pre>
-<pre class="r"><code>bullet_train &lt;-
-  bullet_train_labelled %&gt;%
-  mutate(
-    land_id1 = paste(study1, barrel1, bullet1, land1, sep = &quot;-&quot;),
-    land_id2 = paste(study2, barrel2, bullet2, land2, sep = &quot;-&quot;)
-  ) %&gt;%
-  select(land_id1, land_id2, all_of(rtrees_features), same_source)</code></pre>
+<table>
+<colgroup>
+<col width="17%"></col>
+<col width="82%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th>Descriptor</th>
+<th>Levels</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td>Study</td>
+<td>Hamby252, Hamby173</td>
+</tr>
+<tr class="even">
+<td>Barrel</td>
+<td>Br10, Br1, Br2, Br3, Br4, Br5, Br6, Br7, Br8, Br9, BrB, BrC, BrD, BrE, BrF, BrH, BrJ, BrL, BrM, BrQ, BrS, BrU, BrX, BrY, BrZ, BrA, BrG, BrI, BrN, BrR, BrV, BrW</td>
+</tr>
+<tr class="odd">
+<td>Bullet</td>
+<td>B1, B2</td>
+</tr>
+<tr class="even">
+<td>Land</td>
+<td>L1, L2, L3, L4, L5, L6</td>
+</tr>
+</tbody>
+</table>
 <p>Determine the number of total study-barrel-bullet-lands in the data:</p>
 <pre class="r"><code>length(unique(c(bullet_train$land_id1, bullet_train$land_id2)))</code></pre>
-<pre><code>## [1] 408</code></pre>
+<pre><code>## [1] 0</code></pre>
 <p>Save the prepared data as a csv file:</p>
 <pre class="r"><code>write.csv(
   x = bullet_train, 
@@ -1604,13 +1649,15 @@ bullet_train_raw = read.csv(&quot;../data/raw/CCFs_withlands.csv&quot;)</code></
   files = &quot;../data/bullet-train.csv&quot;
 )</code></pre>
 </div>
-</div>
 <div id="bullet-testing-data" class="section level1">
 <h1>Bullet Testing Data</h1>
 <p>Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):</p>
-<pre class="r"><code>if (!file.exists(&quot;../data/raw/h224-set1-features.rds&quot;)) unzip(&quot;../data/raw/h224-set1-features.rds.zip&quot;, exdir = &quot;../data/raw&quot;)
-if (!file.exists(&quot;../data/raw/h224-set11-features.rds&quot;)) unzip(&quot;../data/raw/h224-set11-features.rds.zip&quot;, exdir = &quot;../data/raw&quot;)
-
+<pre class="r"><code>if (!file.exists(&quot;../data/raw/h224-set1-features.rds&quot;)) {
+  unzip(&quot;../data/raw/h224-set1-features.rds.zip&quot;, exdir = &quot;../data/raw&quot;)
+}
+if (!file.exists(&quot;../data/raw/h224-set11-features.rds&quot;)) {
+  unzip(&quot;../data/raw/h224-set11-features.rds.zip&quot;, exdir = &quot;../data/raw&quot;)
+}
 hamby224_set1 &lt;- readRDS(&quot;../data/raw/h224-set1-features.rds&quot;)
 hamby224_set11 &lt;- readRDS(&quot;../data/raw/h224-set11-features.rds&quot;)</code></pre>
 <p>The bullet and land names from each of the sets are included below. This indicates that each set contains 3 bullets with 6 lands each.</p>
