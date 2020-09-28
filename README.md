@@ -147,7 +147,7 @@ described below. Note that this text is also included in the file
 
 ### `bullet-train.csv`
 
-The [<b>bullet-train.csv</b>](data/bullet-train.csv.zip) data has 83,028
+The [<b>bullet-train</b>](data/bullet-train.csv.zip) data has 83,028
 rows and 13 columns that contain comparison features described in Hare,
 Hofmann, and Carriquiry (2017) based on high resolution microscopy scans
 of fired bullets from Hamby sets 173 and 252 (Hamby, Brundage, and
@@ -202,10 +202,10 @@ the comparison features are found in Hare, Hofmann, and Carriquiry
 
 ### `bullet-test.csv`
 
-[**bullet-test.csv**](data/bullet-test.csv.zip) has 364 rows and 13
-columns that contains comparison features from test sets 1 and 11 of the
-Hamby 224 Clone Test Sets. Each test set is arranged as a combination of
-three bullets: two known bullets and a questioned bullet. Similar to the
+[**bullet-test**](data/bullet-test.csv.zip) has 364 rows and 13 columns
+that contains comparison features from test sets 1 and 11 of the Hamby
+224 Clone Test Sets. Each test set is arranged as a combination of three
+bullets: two known bullets and a questioned bullet. Similar to the
 training set, each bullet has 6 lands. The data contains comparisons of
 bullet-lands within a set. With three bullets with six lands per set,
 there are a total of (2 sets) x (3\! bullet comparisons) x (6^2 land
@@ -213,17 +213,16 @@ comparisons) = 432 comparisons. However, there are only 364 comparisons
 in the `bullet-test` data. This is due to the fact that some of the
 lands are missing from the data (due to tank rash): land 4 from the
 unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from
-the unknown bullet in set 11. **bullet-test.csv** is generated from the
-raw versions of the data for [set
-1](data/raw/h224-set1-features.rds.zip) and [set
-11](data/raw/h224-set11-features.rds.zip). The variables in the test
-data are the same as the training data described above.
+the unknown bullet in set 11. **bullet-test** is generated from the raw
+versions of the data for [set 1](data/raw/h224-set1-features.rds.zip)
+and [set 11](data/raw/h224-set11-features.rds.zip). The variables in the
+test data are the same as the training data described above.
 
 ### `example-signatures.csv`
 
-[**example-signatures.csv**](data/example-signatures.csv.zip) contains
-the signature data from aligned signatures of two bullet-lands from the
-same source. The variables in the data are as follows:
+[**example-signatures**](data/example-signatures.csv.zip) contains the
+signature data from aligned signatures of two bullet-lands from the same
+source. The variables in the data are as follows:
 
   - land: Indicator variable whether the observation corresponds to
     “Signature 1” or “Signature 2”.
