@@ -147,7 +147,7 @@ described below. Note that this text is also included in the file
 
 ### `bullet-train.csv`
 
-The [<b>bullet\_train</b>](data/bullet_train.csv.zip) data has 83,028
+The [<b>bullet\_train</b>](data/bullet-train.csv.zip) data has 83,028
 rows and 13 columns that contain comparison features described in Hare,
 Hofmann, and Carriquiry (2017) based on high resolution microscopy scans
 of fired bullets from Hamby sets 173 and 252 (Hamby, Brundage, and
