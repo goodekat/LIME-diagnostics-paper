@@ -1,6 +1,7 @@
 ---
 output: rmarkdown::github_document
 always_allow_html: yes
+bibliography: references.bib
 ---
 
 ```{r setup, include = FALSE}
@@ -10,9 +11,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ## To Do
 
 - Move all code and results from our work identifying the data to my LIME-research-journals repo for future reference (including LIME explanations from different training datasets/models)
-- Update 02-data-preparation.Rmd to only include the preparation of the CCFs_withlands data to be used in the paper
-- Update code/figures in paper to train a random forest using CCFs_withlands data (and a set seed) and apply LIME predictions
-- Rewrite Section 4 as needed
+- Rewrite Sections 4 and 5 as needed
 - Prepare for submission
 - Edit dataset descriptions in README and add to the readme.txt document for submission
 - Upload the files for submission and submit
@@ -38,9 +37,9 @@ The contents of the folders and main directory are described below:
 
 Contains the R code associated with the manuscript that is not directly included in `paper.Rnw` (such as some external data cleaning and file organization):
 
-- `data-preparation.Rmd` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the manuscript and saves zip versions of the data sets to be uploaded to GitHub
-- `figure-compression.Rmd` contains R code for compressing the static figure used in the manuscript to be uploaded to GitHub
-- `submission-steps.Rmd` contains the to do list and R code for preparing the files for submission to the ASA Data Science Journal.
+- `01-raw-file-compression.Rmd/.html` contains R code for compressing the static figure used in the manuscript and accessing and compressing the raw bullet data to be uploaded to GitHub
+- `02-data-preparation.Rmd/.html` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the manuscript and saves zip versions of the prepared data sets to be uploaded to GitHub
+- `03-submission-steps.Rmd/.html` contains the to do list and R code for preparing the files for submission to the ASA Data Science Journal
 
 **`cover-letter`**
 
@@ -50,32 +49,35 @@ Contains the files associated with the cover letter submitted to the ASA Data Sc
 
 Contains the data used to generate the manuscript:
 
-- `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data used for the bullet examples in the manuscript. Additional information about these files is included below under the heading "Additional Information on Bullet Data".
+- `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data used for the bullet examples in the manuscript. See ""Additional Information on Bullet Data" below for more information about the data.
 - `example-signatures.csv.zip` contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
-- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*
+- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*:
+  - `CCFs_withlands.csv.zip`: raw version of the bullet training data
+  - `h224-set1-features.rds.zip` and `h224-set11-features.rds.zip`: raw versions of the bullet testing data
+  - `signatures.rds.zip`: raw version of the example matching signatures data
+- `readme.txt` contains descriptions of the data files provided with the submission of the paper.
 
 **`figure-static`**
 
-Contains the static figures associated with the project: 
+Contains the static figures associated with the project:
 
 - `figure-08-1.png.zip` is the one figure in the manuscript that is not generated using R code.
-- `figure-readme.png` is a figure used in the readme.
+- `figure-readme.png` is a figure used in this readme.
 
 **`old-version`**
 
-Contains the files associated with an old version of the manuscript that is much longer the the submitted version
+Contains the files associated with an old version of the manuscript that is much longer than the submitted version.
 
 **`submission`**
 
-Contains the files submitted to the ASA Data Science Journal. These files are moved to this folder using code in the file `code/submission-steps.R`. The only figures not included on GitHub are the EPS figures that are submitted due to size constraints.
+Contains the files submitted to the ASA Data Science Journal. These files are moved to this folder using code in the file `code/submission-steps.R`. The only submission files not included on GitHub are the EPS figures due to size constraints.
 
 **Main Directory**
 
 - `.gitignore` contains objects to be ignored by git.
 - `paper.Rnw`, `paper.pdf`, and `paper.tex` are the manuscript. Note that `paper.pdf` and `paper.tex` are generated by `paper.Rnw`.
 - `README.Rmd` and `README.md` are the readme files that generated this output.
-- `readme.txt` contains descriptions of the data files that are included with the submission
-- `references.bib` contains the bibtex information for the references in the manuscript
+- `references.bib` contains the bibtex information for the references in the manuscript.
 - `WileyNJG-AMS.bst` and `WileyNJG-v2.cls` contain the latex formatting specifications for the ASA Data Science Journal.
 
 ## Instructions for Knitting Manuscript
@@ -102,47 +104,44 @@ bullet_test = readr::read_csv("data/bullet-test.csv.zip")
 signatures = readr::read_csv("data/example-signatures.csv.zip")
 ```
 
-The data used in the manuscript for the bullet comparison examples is described below. Note that this text is also included in the file readme.txt that is submitted with the manuscript.
+The data used in the manuscript for the bullet comparison examples is described below. Note that this text is also included in the file `data/readme.txt` that is submitted with the manuscript.
 
-**`bullet-train`**
+### `bullet-train.csv`
 
-A dataset with `r dim(bullet_train)[1]` rows and `r dim(bullet_train)[2]` columns that contains comparison features based on high resolution microscopy scans of fired bullets from Hamby sets 173 and 252 [@hamby]. This dataset is created from the x3p scans of bullet land engraved areas available from the [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/). 
-It contains comparisons from `r length(unique(c(bullet_train$land_id1, bullet_train$land_id2)))` bullet-land signatures. 12 of the overall 420 lands (6 lands per bullets, 35 bullets in each set) are excluded from the comparison. Six of these lands show so-called "tank rash" - damage to the bullets after it exited the barrel (see [tank rash scans](LEAscans/tankrash.md)). Another bullet (Bullet E from Hamby 173) is excluded because it could not be matched visually to the barrel it was supposedly from (see [scans from bullet E](LEAscans/bullete.md)). 
-The <b>bullet_train</b> data is based on a set of features extracted from the x3p scans as described in @hare:2016. The raw file of comparison features is found [here](data/raw/hamby-comparisons.csv.zip). The only changes made to the data were XXX I think the following statement needs to be adjusted XXX to select only variables of use for the manuscript, add a case variable, rename `same_source` as `samesource`, and attach the random forest scores associated with the comparisons. The variables in the data are as follows: 
+The [<b>bullet_train</b>](data/bullet_train.csv) data has `r format(dim(bullet_train)[1], big.mark = ",")` rows and `r dim(bullet_train)[2]` columns that contain comparison features described in @hare:2016 based on high resolution microscopy scans of fired bullets from Hamby sets 173 and 252 [@hamby:2009]. This dataset is created from the x3p scans of bullet land engraved areas available from the [NIST Ballistics Toolmark Research Database](https://tsapps.nist.gov/NRBTD/). It contains comparisons from `r length(unique(c(bullet_train$land_id1, bullet_train$land_id2)))` bullet-land signatures. 12 of the overall 420 lands (6 lands per bullets, 35 bullets in each set) are excluded from the comparison. Six of these lands show so-called "tank rash" - damage to the bullets after it exited the barrel (see [tank rash scans](LEAscans/tankrash.md)). Another bullet (Bullet E from Hamby 173) is excluded because it could not be matched visually to the barrel it was supposedly from (see [scans from bullet E](LEAscans/bullete.md)). 
+
+[<b>bullet_train</b>](data/bullet_train.csv) is generated from the raw file of comparison features, which is found [here](data/raw/CCFs_withlands.csv.zip). The steps taken to create **bullet_train** from the raw data are found [here](code/02-data-preparation.Rmd). These steps involve renaming some variables, selecting the variables of interest for the manuscript, and adjusting the land IDs associated with the signatures.
+
+The variables in the data are described below. Further descriptions of the comparison features are found in @hare:2016.
 
 #### Variables used as key variables:
+
 - `r names(bullet_train)[1]`: ID number associated with the bullet-land signature comparison.
-- `r names(bullet_train)[2]`, `r names(bullet_train)[3]`: IDs describing the two land engraved areas in the comparison. The format is 'study-barrel number -bullet number-land number'.
+- `r names(bullet_train)[2]`, `r names(bullet_train)[3]`: IDs describing the two land engraved areas in the comparison. The format is `study-barrelnumber-bulletnumber-landnumber`.
 
-#### Comparison features
-- `r names(bullet_train)[4]`: maximized cross-correlation between two LEA signatures.
-- `r names(bullet_train)[5]`: correlation after detrending aligned signatures.
+#### Comparison features:
+
+- `r names(bullet_train)[4]`: Maximized cross-correlation between two LEA signatures.
+- `r names(bullet_train)[5]`: Correlation after detrending aligned signatures.
 - `r names(bullet_train)[6]`: Euclidean distance (in millimeters) between two aligned signatures.
-- `r names(bullet_train)[7]`: standard deviation of the previous measure along the signature.
-- `r names(bullet_train)[8]`, `r names(bullet_train)[9]`: number of matching/non-matching peaks and valleys in the aligned signatures.
-- `r names(bullet_train)[10]`: consecutively matching striae is a measure introduced by @biasotti describing the longest run of matching peaks between two aligned signatures.
-- `r names(bullet_train)[11]`: the number of consecutively non-matching peaks.
-- `r names(bullet_train)[12]`: the depth of peaks measured as the sum of matching peaks between two aligned signatures (in microns).
-- `r names(bullet_train)[13]`: ground truth whether a pair is from the same source (`TRUE`) or from different sources (`FALSE`).
-- `r names(bullet_train)[14]`: the random forest score associated with the comparison in support of a match.
+- `r names(bullet_train)[7]`: Standard deviation of the previous measure along the signature.
+- `r names(bullet_train)[8]`, `r names(bullet_train)[9]`: Number of matching/non-matching peaks and valleys in the aligned signatures.
+- `r names(bullet_train)[10]`: Consecutively matching striae is a measure introduced by @biasotti:1959 describing the longest run of matching peaks between two aligned signatures.
+- `r names(bullet_train)[11]`: The number of consecutively non-matching peaks.
+- `r names(bullet_train)[12]`: The depth of peaks measured as the sum of matching peaks between two aligned signatures (in microns).
+- `r names(bullet_train)[13]`: Ground truth whether a pair is from the same source (`TRUE`) or from different sources (`FALSE`).
 
-<!--For further details about the signatures comparison features, see XXX.-->
+### `bullet-test.csv`
 
-**`bullet-test`**
+[**bullet-test.csv**](data/bullet_test.csv.zip) has `r dim(bullet_test)[1]` rows and `r dim(bullet_test)[2]` columns that contains comparison features from test sets 1 and 11 of the Hamby 224 Clone Test Sets. Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Similar to the training set, each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) x (3! bullet comparisons) x (6^2 land comparisons) = `r 2 * (3 + 2 + 1) * 6^2` comparisons. However, there are only `r dim(bullet_test)[1]` comparisons in the `bullet-test` data. This is due to the fact that some of the lands are missing from the data (due to tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. [**bullet-test.csv**](data/bullet_test.csv.zip) is generated from the raw versions of the data found [here](data/raw/h224-set1-features.rds.zip) and [here](data/raw/h224-set11-features.rds.zip). The variables in the test data are the same as the training data described above.
 
-A dataset with `r dim(bullet_test)[1]` rows and `r dim(bullet_test)[2]` columns that contains comparison features from test sets 1 and 11 of the Hamby 224 Clone sets. Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Similar to the training set, each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) x (3! bullet comparisons) x (6^2 land comparisons) = `r 2 * (3 + 2 + 1) * 6^2` comparisons. However, there are only `r dim(bullet_test)[1]` comparisons in the `bullet-test` data. This is due to the fact that some of the lands are missing from the data (due to tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. The variables in the test data are the same as the training data described above.
+### `example-signatures.csv`
 
-<!-- For further details about the signatures comparison features, see XXX.-->
-
-**`example-signatures`**
-
-Contains the signature data from aligned signatures of two bullet-lands from the same source. The variables in the data are as follows:
+[**example-signatures.csv**](data/example-signatures.csv.zip) contains the signature data from aligned signatures of two bullet-lands from the same source. The variables in the data are as follows:
 
 - `r names(signatures)[1]`: Indicator variable whether the observation corresponds to 'Signature 1' or 'Signature 2'
 - `r names(signatures)[2]`: the (relative) x position of the signature (in microns)
 - `r names(signatures)[3]`: the (relative) y position of the signature height (in microns)
-
-
 
 ## Figure Font Size Information
 
