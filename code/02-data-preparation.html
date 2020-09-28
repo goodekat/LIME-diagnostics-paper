@@ -11,7 +11,7 @@
 
 <meta name="author" content="Katherine Goode" />
 
-<meta name="date" content="2020-09-25" />
+<meta name="date" content="2020-09-28" />
 
 <title>Bullet Data Preparation for LIME Diagnostics Paper</title>
 
@@ -1512,7 +1512,7 @@ div.tocify {
 
 <h1 class="title toc-ignore">Bullet Data Preparation for LIME Diagnostics Paper</h1>
 <h4 class="author">Katherine Goode</h4>
-<h4 class="date">September 25, 2020</h4>
+<h4 class="date">September 28, 2020</h4>
 
 </div>
 
@@ -1540,59 +1540,6 @@ library(zip)</code></pre>
 <pre class="r"><code>bullet_train_raw = read_csv(&quot;../data/raw/hamby-comparisons.csv.zip&quot;)</code></pre>
 <p>Load the newest training data provided by Heike (on 9/24/2020 from CSAFE data base):</p>
 <pre class="r"><code>ccfs_withlands_raw = read.csv(&quot;../data/raw/CCFs_withlands.csv&quot;)</code></pre>
-<div id="initial-comparisons" class="section level3">
-<h3>Initial Comparisons</h3>
-<p>Data dimensions:</p>
-<pre class="r"><code>dim(bullet_train_raw)</code></pre>
-<pre><code>## [1] 84666    17</code></pre>
-<pre class="r"><code>dim(ccfs_withlands_raw)</code></pre>
-<pre><code>## [1] 83028    26</code></pre>
-<p>Comparing the distributions of the two datasets:</p>
-<pre class="r"><code>summary(bullet_train_raw %&gt;% filter(flag == FALSE) %&gt;% select(rf_features))</code></pre>
-<pre><code>##       ccf            rough_cor              D                 sd_D      
-##  Min.   :0.01407   Min.   :-0.86978   Min.   : 0.05055   Min.   :0.780  
-##  1st Qu.:0.21297   1st Qu.:-0.18430   1st Qu.: 2.02162   1st Qu.:2.347  
-##  Median :0.27541   Median :-0.05671   Median : 2.76574   Median :2.724  
-##  Mean   :0.28940   Mean   :-0.07166   Mean   : 3.29264   Mean   :2.808  
-##  3rd Qu.:0.34822   3rd Qu.: 0.04999   3rd Qu.: 4.07658   3rd Qu.:3.208  
-##  Max.   :0.98110   Max.   : 0.96355   Max.   :20.79681   Max.   :7.263  
-##     matches         mismatches          cms             non_cms      
-##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.0000   Min.   : 0.000  
-##  1st Qu.: 1.209   1st Qu.: 8.027   1st Qu.: 0.5915   1st Qu.: 3.675  
-##  Median : 2.230   Median : 9.494   Median : 1.1388   Median : 4.848  
-##  Mean   : 2.448   Mean   : 9.756   Mean   : 1.3578   Mean   : 5.345  
-##  3rd Qu.: 3.282   3rd Qu.:11.228   3rd Qu.: 1.7112   3rd Qu.: 6.525  
-##  Max.   :18.656   Max.   :33.684   Max.   :15.2131   Max.   :33.684  
-##    sum_peaks     
-##  Min.   : 0.000  
-##  1st Qu.: 1.638  
-##  Median : 2.764  
-##  Mean   : 3.030  
-##  3rd Qu.: 4.105  
-##  Max.   :25.990</code></pre>
-<pre class="r"><code>summary(ccfs_withlands_raw %&gt;% select(rf_features))</code></pre>
-<pre><code>##       ccf            rough_cor              D                  sd_D         
-##  Min.   :-0.0127   Min.   :-0.89155   Min.   :0.0003513   Min.   :0.001250  
-##  1st Qu.: 0.2124   1st Qu.:-0.20245   1st Qu.:0.0022353   1st Qu.:0.003698  
-##  Median : 0.2750   Median :-0.06423   Median :0.0026339   Median :0.004307  
-##  Mean   : 0.2890   Mean   :-0.08400   Mean   :0.0027578   Mean   :0.004430  
-##  3rd Qu.: 0.3481   3rd Qu.: 0.04686   3rd Qu.:0.0032182   3rd Qu.:0.005088  
-##  Max.   : 0.9811   Max.   : 0.96355   Max.   :0.0072105   Max.   :0.011110  
-##     matches         mismatches          cms             non_cms      
-##  Min.   : 0.000   Min.   : 0.000   Min.   : 0.0000   Min.   : 0.000  
-##  1st Qu.: 1.182   1st Qu.: 7.170   1st Qu.: 0.5893   1st Qu.: 3.218  
-##  Median : 2.197   Median : 8.225   Median : 1.1348   Median : 4.192  
-##  Mean   : 2.403   Mean   : 8.244   Mean   : 1.3432   Mean   : 4.564  
-##  3rd Qu.: 3.249   3rd Qu.: 9.289   3rd Qu.: 1.7082   3rd Qu.: 5.555  
-##  Max.   :18.656   Max.   :14.947   Max.   :15.2131   Max.   :14.161  
-##    sum_peaks     
-##  Min.   : 0.000  
-##  1st Qu.: 1.566  
-##  Median : 2.709  
-##  Mean   : 2.982  
-##  3rd Qu.: 4.062  
-##  Max.   :23.775</code></pre>
-</div>
 <div id="clean-ccfs-with-lands" class="section level3">
 <h3>Clean CCFs with lands</h3>
 <p>Rename some of the variables to match the structure of <code>bullet_train_raw</code>, select only variables of interest, and convert LEA labels to factors (for plotting purposes):</p>
@@ -1677,11 +1624,11 @@ letters</code></pre>
 <h3>Land ID Differences</h3>
 <p>Extract the unique land IDs from the two datasets:</p>
 <pre class="r"><code>ccfs_withlands_ids = unique(c(ccfs_withlands_clean$land_id1, ccfs_withlands_clean$land_id2))
-bullet_train_ids = unique(c(bullet_train_raw$land_id1, bullet_train_raw$land_id1))</code></pre>
+bullet_train_ids = unique(c(bullet_train_raw$land_id1, bullet_train_raw$land_id2))</code></pre>
 <p>Identify the land ID in <code>CCFs_withlands</code> but not in <code>hamby-comparisons</code>:</p>
 <pre class="r"><code>ccfs_withlands_ids[!(ccfs_withlands_ids %in% bullet_train_ids)]</code></pre>
 <pre><code>## [1] &quot;Hamby252-Br6-B2-L1&quot;   &quot;Hamby252-Br9-B1-L2&quot;   &quot;Hamby173-Br3-B2-L1&quot;  
-## [4] &quot;Hamby173-Br4-B2-L1&quot;   &quot;Hamby173-BrUnk-BM-L4&quot; &quot;Hamby252-BrUnk-BZ-L6&quot;</code></pre>
+## [4] &quot;Hamby173-Br4-B2-L1&quot;   &quot;Hamby173-BrUnk-BM-L4&quot;</code></pre>
 <p>Identify the land ID in <code>hamby-comparisons</code> but not in <code>CCFs_withlands</code>:</p>
 <pre class="r"><code>bullet_train_ids[!(bullet_train_ids %in% ccfs_withlands_ids)]</code></pre>
 <pre><code>## [1] &quot;Hamby252-Br10-B1-L2&quot;  &quot;Hamby173-Br5-B2-L1&quot;   &quot;Hamby252-Br7-B2-L1&quot;  
