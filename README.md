@@ -142,8 +142,8 @@ described below. Note that this text is also included in the file
 
 ### `bullet-train.csv`
 
-The [<b>bullet\_train</b>](data/bullet_train.csv) data has 83,028 rows
-and 13 columns that contain comparison features described in Hare,
+The [<b>bullet\_train</b>](data/bullet_train.csv.zip) data has 83,028
+rows and 13 columns that contain comparison features described in Hare,
 Hofmann, and Carriquiry (2017) based on high resolution microscopy scans
 of fired bullets from Hamby sets 173 and 252 (Hamby, Brundage, and
 Thorpe 2009). This dataset is created from the x3p scans of bullet land
@@ -157,10 +157,9 @@ Another bullet (Bullet E from Hamby 173) is excluded because it could
 not be matched visually to the barrel it was supposedly from (see [scans
 from bullet E](LEAscans/bullete.md)).
 
-[<b>bullet\_train</b>](data/bullet_train.csv) is generated from the raw
-file of comparison features, which is found
-[here](data/raw/CCFs_withlands.csv.zip). The steps taken to create
-**bullet\_train** from the raw data are found
+**bullet\_train** is generated from the raw file of comparison features,
+which is found [here](data/raw/CCFs_withlands.csv.zip). The steps taken
+to create **bullet\_train** from the raw data are found
 [here](code/02-data-preparation.Rmd). These steps involve renaming some
 variables, selecting the variables of interest for the manuscript, and
 adjusting the land IDs associated with the signatures.
@@ -198,7 +197,7 @@ the comparison features are found in Hare, Hofmann, and Carriquiry
 
 ### `bullet-test.csv`
 
-[**bullet-test.csv**](data/bullet_test.csv.zip) has 364 rows and 13
+[**bullet-test.csv**](data/bullet-test.csv.zip) has 364 rows and 13
 columns that contains comparison features from test sets 1 and 11 of the
 Hamby 224 Clone Test Sets. Each test set is arranged as a combination of
 three bullets: two known bullets and a questioned bullet. Similar to the
@@ -209,8 +208,7 @@ comparisons) = 432 comparisons. However, there are only 364 comparisons
 in the `bullet-test` data. This is due to the fact that some of the
 lands are missing from the data (due to tank rash): land 4 from the
 unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from
-the unknown bullet in set 11.
-[**bullet-test.csv**](data/bullet_test.csv.zip) is generated from the
+the unknown bullet in set 11. **bullet-test.csv** is generated from the
 raw versions of the data found
 [here](data/raw/h224-set1-features.rds.zip) and
 [here](data/raw/h224-set11-features.rds.zip). The variables in the test
@@ -223,9 +221,9 @@ the signature data from aligned signatures of two bullet-lands from the
 same source. The variables in the data are as follows:
 
   - land: Indicator variable whether the observation corresponds to
-    ‘Signature 1’ or ‘Signature 2’
-  - x: the (relative) x position of the signature (in microns)
-  - y: the (relative) y position of the signature height (in microns)
+    “Signature 1” or “Signature 2”.
+  - x: The (relative) x position of the signature (in microns).
+  - y: The (relative) y position of the signature height (in microns).
 
 ## Figure Font Size Information
 
