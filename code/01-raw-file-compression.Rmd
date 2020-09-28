@@ -31,8 +31,8 @@ Save the raw bullet training data files as zip files:
 
 ```{r}
 zip(
-  zipfile = "../data/raw/hamby-comparisons.csv.zip", 
-  files = "../data/raw/hamby-comparisons.csv"
+  zipfile = "../data/raw/CCFs_withlands.csv.zip", 
+  files = "../../data/raw/CCFs_withlands.csv"
 )
 ```
 
@@ -41,11 +41,11 @@ Save the raw bullet testing data files as zip files:
 ```{r}
 zip(
   zipfile = "../data/raw/h224-set1-features.rds.zip", 
-  files = "../data/raw/h224-set1-features.rds"
+  files = "../../data/raw/h224-set1-features.rds"
 )
 zip(
   zipfile = "../data/raw/h224-set11-features.rds.zip", 
-  files = "../data/raw/h224-set11-features.rds"
+  files = "../../data/raw/h224-set11-features.rds"
 )
 ```
 
@@ -54,7 +54,7 @@ Save the raw data with an example of matching signatures as a zip file:
 ```{r}
 zip(
   zipfile = "../data/raw/signatures.rds.zip", 
-  files = "../data/raw/signatures.rds"
+  files = "../../data/raw/signatures.rds"
 )
 ```
 

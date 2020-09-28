@@ -33,72 +33,84 @@ library(zip)
 Obtain features used when fitting the rtrees random forest:
 
 ```{r}
-rf_features <- rownames(bulletxtrctr::rtrees$importance)
+rtrees_features <- rownames(bulletxtrctr::rtrees$importance)
 ```
 
 # Bullet Training Data
 
-## Comparing Training Datasets
-
-We are trying to determine which of two datasets were used to train `rtrees` in `bulletxtrctr`.
-
-Load the raw version of the Hamby 172 and 252 bullet comparison data (provided by Heike and CSAFE):
+Load the training data provided by Heike (from CSAFE data base; see this [R script](https://github.com/erichare/imaging-paper/blob/master/code/full_run.R) for the code used to access the data):
 
 ```{r}
-bullet_train_raw = read_csv("../data/raw/hamby-comparisons.csv.zip")
-```
-
-Load the newest training data provided by Heike (on 9/24/2020 from CSAFE data base):
-
-```{r}
-ccfs_withlands_raw = read.csv("../data/raw/CCFs_withlands.csv")
+unzip(zipfile = "../data/raw/CCFs_withlands.csv.zip", exdir = "../data/raw")
+bullet_train_raw = read.csv("../data/raw/CCFs_withlands.csv")
 ```
 
 ## Preparing Data
 
+```{r}
+bullet_train_select <- 
+  bullet_train_raw %>%
+  rename(
+    "study1" = "study.x",
+    "barrel1" = "barrel.x",
+    "bullet1" = "bullet.x",
+    "land1" = "land.x",
+    "study2" = "study.y",
+    "barrel2" = "barrel.y",
+    "bullet2" = "bullet.y",
+    "land2" = "land.y",
+    "same_source"= "match"
+  ) %>%
+  select(
+    study1,
+    barrel1,
+    bullet1,
+    land1,
+    study2,
+    barrel2,
+    bullet2,
+    land2,
+    all_of(rtrees_features),
+    same_source
+  ) %>%
+  mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character))
+```
+
+```{r}
+bullet_train_labelled <- 
+  bullet_train_select %>%
+  mutate(
+    study1 = ifelse(study1 == "Hamby44", "Hamby173", study1),
+    study2 = ifelse(study2 == "Hamby44", "Hamby173", study2),
+    bullet1 = ifelse(barrel1 %in% letters, as.character(barrel1), as.character(bullet1)),
+    barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
+    bullet2 = ifelse(barrel2 %in% letters, as.character(barrel2), as.character(bullet2)),
+    barrel2 = ifelse(barrel2 %in% letters, "Unk", barrel2)
+    ) %>%
+  mutate(
+    barrel1 = paste0("Br", barrel1),
+    bullet1 = paste0("B", bullet1),
+    land1 = paste0("L", land1),
+    barrel2 = paste0("Br", barrel2),
+    bullet2 = paste0("B", bullet2),
+    land2 = paste0("L", land2)
+  )
+```
+
+```{r}
+bullet_train <-
+  bullet_train_labelled %>%
+  mutate(
+    land_id1 = paste(study1, barrel1, bullet1, land1, sep = "-"),
+    land_id2 = paste(study2, barrel2, bullet2, land2, sep = "-")
+  ) %>%
+  select(land_id1, land_id2, all_of(rtrees_features), same_source)
+```
+
 Determine the number of total study-barrel-bullet-lands in the data:
 
 ```{r}
-length(unique(bullet_train_raw %>% pull(land_id1)))
-```
-
-Determine the number of total study-barrel-bullet-lands in the data when observations with tank rash are excluded:
-
-```{r}
-length(unique(bullet_train_raw %>% filter(flag == FALSE) %>% pull(land_id1)))
-```
-
-There is only one less land id when the cases with tank rash are excluded. The code below shows that this case is `Hamby252-Br9-B2-L4` since there are no rows in the filtered data without `Hamby252-Br9-B2-L4` as one of the land ids:
-
-```{r}
-length(unique(
-  bullet_train_raw %>% filter(flag == TRUE) %>% filter(
-    land_id1 != "Hamby252-Br9-B2-L4",
-    land_id2 != "Hamby252-Br9-B2-L4"
-  ) %>% pull(land_id1)
-))
-```
-
-Using the data with the flagged lands removed, select only variables of use for the paper, add a case variable, and rename `same_source` as `samesource`:
-
-```{r}
-bullet_train <- 
-  bullet_train_filtered %>%
-  select(-lag, -abs_lag, -overlap, -signature_length, -flag) %>%
-  mutate(case = factor(1:n())) %>%
-  rename("samesource" = "same_source") %>%
-  select(case, land_id1, land_id2, everything())
-```
-
-Add a variable to the training data with the random forest probability in support of a match using the random forest model `rtrees` from `bulletxtrctr`:
-
-```{r}
-bullet_features <- rownames(bulletxtrctr::rtrees$importance)
-bullet_train$rfscore <- 
-  bulletxtrctr::rtrees %>%
-  predict(bullet_train %>% select(all_of(bullet_features)), type = "prob") %>%
-  data.frame() %>%
-  pull(TRUE.)
+length(unique(c(bullet_train$land_id1, bullet_train$land_id2)))
 ```
 
 Save the prepared data as a csv file:
@@ -125,8 +137,8 @@ zip(
 Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):
 
 ```{r}
-if (!file.exists("../data/raw/h224-set1-features.rds")) unzip("../data/raw/h224-set1-features.rds.zip")
-if (!file.exists("../data/raw/h224-set11-features.rds")) unzip("../data/raw/h224-set11-features.rds.zip")
+if (!file.exists("../data/raw/h224-set1-features.rds")) unzip("../data/raw/h224-set1-features.rds.zip", exdir = "../data/raw")
+if (!file.exists("../data/raw/h224-set11-features.rds")) unzip("../data/raw/h224-set11-features.rds.zip", exdir = "../data/raw")
 
 hamby224_set1 <- readRDS("../data/raw/h224-set1-features.rds")
 hamby224_set11 <- readRDS("../data/raw/h224-set11-features.rds")
@@ -200,7 +212,7 @@ hamby224_set1_cleaned <-
     land2 = paste0("L", land2)
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource, rfscore)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rtrees_features), samesource)
 
 hamby224_set11_cleaned <- 
   hamby224_set11 %>%
@@ -224,7 +236,7 @@ hamby224_set11_cleaned <-
     land2 = str_remove(land2, "and ")
   ) %>%
   # Order the variables as desired
-  select(study, set, bullet1, land1, bullet2, land2, all_of(rf_features), samesource, rfscore)
+  select(study, set, bullet1, land1, bullet2, land2, all_of(rtrees_features), samesource)
 ```
 
 Plots show that the number of observations is still the same after cleaning:
@@ -274,7 +286,7 @@ bullet_test_extra_vars <-
 
 # Select and order variables to keep for analysis
 bullet_test <- bullet_test_extra_vars %>%
-  select(case, land_id1, land_id2, all_of(rf_features), samesource, rfscore)
+  select(case, land_id1, land_id2, all_of(rtrees_features), samesource)
 ```
 
 Remaining comparisons included in the test data after the duplicate comparisons are removed:
@@ -333,7 +345,7 @@ The following code trims the data provided by Heike of two matching bullet-land 
 Import the data (provided by Heike and CSAFE):
 
 ```{r}
-if (!file.exists("../data/raw/signatures.rds")) unzip("../data/raw/signatures.rds.zip")
+if (!file.exists("../data/raw/signatures.rds")) unzip("../data/raw/signatures.rds.zip", exdir = "../data/raw")
 signatures <- readRDS("../data/raw/signatures.rds")
 ```
 
