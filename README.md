@@ -214,9 +214,9 @@ in the `bullet-test` data. This is due to the fact that some of the
 lands are missing from the data (due to tank rash): land 4 from the
 unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from
 the unknown bullet in set 11. **bullet-test.csv** is generated from the
-raw versions of the data found
-[here](data/raw/h224-set1-features.rds.zip) and
-[here](data/raw/h224-set11-features.rds.zip). The variables in the test
+raw versions of the data for [set
+1](data/raw/h224-set1-features.rds.zip) and [set
+11](data/raw/h224-set11-features.rds.zip). The variables in the test
 data are the same as the training data described above.
 
 ### `example-signatures.csv`
