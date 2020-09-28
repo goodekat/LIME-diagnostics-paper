@@ -65,7 +65,7 @@ Contains the data used to generate the manuscript:
     to generate a figure in the manuscript.
   - [`raw`](data/raw) contains the raw versions of the data files (from
     Heike and CSAFE) that the above datasets are derived from. *Do not
-    alter the data in these files.*:
+    alter the data in these files*:
       - [`CCFs_withlands.csv.zip`](data/raw/CCFs_withlands.csv.zip): raw
         version of the bullet training data
       - [`h224-set1-features.rds.zip`](data/raw/h224-set1-features.rds.zip)
@@ -100,8 +100,9 @@ is much longer than the submitted version.
 
 Contains the files submitted to the ASA Data Science Journal. These
 files are moved to this folder using code in the file
-`code/submission-steps.R`. The only submission files not included on
-GitHub are the EPS figures due to size constraints.
+[`code/03-submission-steps.R`](code/03-submission-steps.Rmd). The only
+submission files not included on GitHub are the EPS figures due to size
+constraints.
 
 **Main Directory**
 
@@ -143,13 +144,14 @@ remotes::install_github("goodekat/lime")
 remotes::install_github("goodekat/limeaid")
 ```
 
-3.  Knit manuscript (via the `paper.Rnw` file).
+3.  Knit manuscript (via the [`paper.Rnw`](paper.Rnw) file).
 
 ## Additional Information on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
 described below. Note that this text is also included in the file
-`data/readme.txt` that is submitted with the manuscript.
+[`data/readme.txt`](data/readme.txt) that is submitted with the
+manuscript.
 
 ### `bullet-train.csv`
 
@@ -261,6 +263,8 @@ pt.
 Note: The only figure that does not follow these values is Figure 11
 where the facet labels were set to font size 5 (Helvetica) in order for
 them to fit appropriately.
+
+## References
 
 <div id="refs" class="references">
 

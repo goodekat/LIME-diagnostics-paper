@@ -50,7 +50,7 @@ Contains the data used to generate the manuscript:
 
 - [`bullet-train.csv.zip`](data/bullet-train.csv.zip) and [`bullet-test.csv.zip`](data/bullet-test.csv.zip) contain the data used for the bullet examples in the manuscript. See ""Additional Information on Bullet Data" below for more information about the data.
 - [`example-signatures.csv.zip`](data/example-signatures.csv.zip) contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
-- [`raw`](data/raw) contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*:
+- [`raw`](data/raw) contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files*:
   - [`CCFs_withlands.csv.zip`](data/raw/CCFs_withlands.csv.zip): raw version of the bullet training data
   - [`h224-set1-features.rds.zip`](data/raw/h224-set1-features.rds.zip) and [`h224-set11-features.rds.zip`](data/raw/h224-set11-features.rds.zip): raw versions of the bullet testing data
   - [`signatures.rds.zip`](data/raw/signatures.rds.zip): raw version of the example matching signatures data
@@ -73,7 +73,7 @@ Contains the files associated with an old version of the manuscript that is much
 
 [**`submission`**](submission)
 
-Contains the files submitted to the ASA Data Science Journal. These files are moved to this folder using code in the file `code/submission-steps.R`. The only submission files not included on GitHub are the EPS figures due to size constraints.
+Contains the files submitted to the ASA Data Science Journal. These files are moved to this folder using code in the file [`code/03-submission-steps.R`](code/03-submission-steps.Rmd). The only submission files not included on GitHub are the EPS figures due to size constraints.
 
 **Main Directory**
 
@@ -97,7 +97,7 @@ remotes::install_github("goodekat/lime")
 remotes::install_github("goodekat/limeaid")
 ```
 
-3. Knit manuscript (via the `paper.Rnw` file).
+3. Knit manuscript (via the [`paper.Rnw`](paper.Rnw) file).
 
 ## Additional Information on Bullet Data
 
@@ -107,7 +107,7 @@ bullet_test = readr::read_csv("data/bullet-test.csv.zip")
 signatures = readr::read_csv("data/example-signatures.csv.zip")
 ```
 
-The data used in the manuscript for the bullet comparison examples is described below. Note that this text is also included in the file `data/readme.txt` that is submitted with the manuscript.
+The data used in the manuscript for the bullet comparison examples is described below. Note that this text is also included in the file [`data/readme.txt`](data/readme.txt) that is submitted with the manuscript.
 
 ### `bullet-train.csv`
 
@@ -165,3 +165,4 @@ The font sizes in the figures are calculated based on how the figures are scaled
 
 Note: The only figure that does not follow these values is Figure 11 where the facet labels were set to font size 5 (Helvetica) in order for them to fit appropriately.
   
+## References
