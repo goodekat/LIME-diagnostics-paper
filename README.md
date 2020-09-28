@@ -6,8 +6,6 @@
     explanations from different training datasets/models)
   - Rewrite Sections 4 and 5 as needed
   - Prepare for submission
-  - Edit dataset descriptions in README and add to the readme.txt
-    document for submission
   - Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
