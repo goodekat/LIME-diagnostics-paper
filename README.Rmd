@@ -10,7 +10,7 @@ knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 
 ## To Do
 
-- Move all code and results from our work identifying the data to my LIME-research-journals repo for future reference (including LIME explanations from different training datasets/models)
+- Finish documenting the identification of the training data for rtrees in research journals (including LIME explanations from different training datasets/models)
 - Rewrite Sections 4 and 5 as needed
 - Prepare for submission
 - Upload the files for submission and submit
@@ -32,56 +32,56 @@ This repository contains the files associated with the manuscript "Visual Diagno
 
 The contents of the folders and main directory are described below:
 
-**`code`**
+[**`code`**](code)
 
 Contains the R code associated with the manuscript that is not directly included in `paper.Rnw` (such as some external data cleaning and file organization):
 
-- `01-raw-file-compression.Rmd/.html` contains R code for compressing the static figure used in the manuscript and accessing and compressing the raw bullet data to be uploaded to GitHub
-- `02-data-preparation.Rmd/.html` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the manuscript and saves zip versions of the prepared data sets to be uploaded to GitHub
-- `03-submission-steps.Rmd/.html` contains the to do list and R code for preparing the files for submission to the ASA Data Science Journal
+- [`01-raw-file-compression.Rmd`](code/01-raw-file-compression.Rmd)/`.html` contains R code for compressing the static figure used in the manuscript and accessing and compressing the raw bullet data to be uploaded to GitHub
+- [`02-data-preparation.Rmd`](code/02-data-preparation.Rmd)`/.html` contains R code for preparing the raw bullet data (bullet training data, bullet testing data, and example matching signatures) to be used in the manuscript and saves zip versions of the prepared data sets to be uploaded to GitHub
+- [`03-submission-steps.Rmd`](code/03-submission-steps.Rmd)`/.html` contains the to do list and R code for preparing the files for submission to the ASA Data Science Journal
 
-**`cover-letter`**
+[**`cover-letter`**](cover-letter)
 
 Contains the files associated with the cover letter submitted to the ASA Data Science journal.
 
-**`data`**
+[**`data`**](data/)
 
 Contains the data used to generate the manuscript:
 
-- `bullet-test.csv.zip` and `bullet-test.csv.zip` contain the data used for the bullet examples in the manuscript. See ""Additional Information on Bullet Data" below for more information about the data.
-- `example-signatures.csv.zip` contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
-- `raw` contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*:
-  - `CCFs_withlands.csv.zip`: raw version of the bullet training data
-  - `h224-set1-features.rds.zip` and `h224-set11-features.rds.zip`: raw versions of the bullet testing data
-  - `signatures.rds.zip`: raw version of the example matching signatures data
-- `readme.txt` contains descriptions of the data files provided with the submission of the paper.
+- [`bullet-train.csv.zip`](data/bullet-train.csv.zip) and [`bullet-test.csv.zip`](data/bullet-test.csv.zip) contain the data used for the bullet examples in the manuscript. See ""Additional Information on Bullet Data" below for more information about the data.
+- [`example-signatures.csv.zip`](data/example-signatures.csv.zip) contains signature data from two matching bullet lands that is used to generate a figure in the manuscript.
+- [`raw`](data/raw) contains the raw versions of the data files (from Heike and CSAFE) that the above datasets are derived from. *Do not alter the data in these files.*:
+  - [`CCFs_withlands.csv.zip`](data/raw/CCFs_withlands.csv.zip): raw version of the bullet training data
+  - [`h224-set1-features.rds.zip`](data/raw/h224-set1-features.rds.zip) and [`h224-set11-features.rds.zip`](data/raw/h224-set11-features.rds.zip): raw versions of the bullet testing data
+  - [`signatures.rds.zip`](data/raw/signatures.rds.zip): raw version of the example matching signatures data
+- [`readme.txt`](data/readme.txt) contains descriptions of the data files (and code files) provided with the submission of the paper.
 
-**`figure-static`**
+[**`figure-static`**](figure-static/)
 
 Contains the static figures associated with the project:
 
-- `figure-08-1.png.zip` is the one figure in the manuscript that is not generated using R code.
-- `figure-readme.png` is a figure used in this readme.
+- [`figure-08-1.png.zip`](figure-static/figure-08-1.png.zip) is the one figure in the manuscript that is not generated using R code.
+- [`figure-readme.png`](figure-static/figure-readme.png) is a figure used in this readme.
 
-**`LEAscans`**
+[**`LEAscans`**](LEAscans/)
 
 Contains information on the land engraved areas (LEAs) excluded from the Hamby bullets used to create the training data.
 
-**`old-version`**
+[**`old-version`**](old-version/)
 
 Contains the files associated with an old version of the manuscript that is much longer than the submitted version.
 
-**`submission`**
+[**`submission`**](submission)
 
 Contains the files submitted to the ASA Data Science Journal. These files are moved to this folder using code in the file `code/submission-steps.R`. The only submission files not included on GitHub are the EPS figures due to size constraints.
 
 **Main Directory**
 
-- `.gitignore` contains objects to be ignored by git.
-- `paper.Rnw`, `paper.pdf`, and `paper.tex` are the manuscript. Note that `paper.pdf` and `paper.tex` are generated by `paper.Rnw`.
-- `README.Rmd` and `README.md` are the readme files that generated this output.
-- `references.bib` contains the bibtex information for the references in the manuscript.
-- `WileyNJG-AMS.bst` and `WileyNJG-v2.cls` contain the latex formatting specifications for the ASA Data Science Journal.
+- [`.gitignore`](.gitignore) contains objects to be ignored by git.
+- [`paper.Rnw`](paper.Rnw), [`paper.pdf`](paper.pdf), and [`paper.tex`](paper.tex) are the manuscript. Note that `paper.pdf` and `paper.tex` are generated by `paper.Rnw`.
+- [`README.Rmd`](README.Rmd) and [`README.md`](README.md) are the readme files that generated this output.
+- [`references.bib`](references.bib) contains the bibtex information for the references in the manuscript.
+- [`WileyNJG-AMS.bst`](WileyNJD-AMS.bst) and [`WileyNJG-v2.cls`](WileyNJD-v2.cls) contain the latex formatting specifications for the ASA Data Science Journal.
 
 ## Instructions for Knitting Manuscript
 
