@@ -82,6 +82,11 @@ Contains the static figures associated with the project:
     not generated using R code.
   - `figure-readme.png` is a figure used in this readme.
 
+**`LEAscans`**
+
+Contains information on the land engraved areas (LEAs) excluded from the
+Hamby bullets used to create the training data.
+
 **`old-version`**
 
 Contains the files associated with an old version of the manuscript that
@@ -271,7 +276,7 @@ Countries.” *AFTE Journal* 41 (2): 99–110.
 
 </div>
 
-<div id="ref-hare:2016">
+<div id="ref-hare:2017">
 
 Hare, Eric, Heike Hofmann, and Alicia Carriquiry. 2017. “Automatic
 Matching of Bullet Land Impressions.” *Annals of Applied Statistics* 11
