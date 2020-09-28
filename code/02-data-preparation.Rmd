@@ -58,14 +58,14 @@ The raw data contains `r dim(bullet_train_raw)[1]` observations (comparisons of 
 
 The code below cleans and prepares the data for use in the paper. The steps taken are as follows:
 
-1. Rename the label variables using numbers instead of letters (e.g. `study.x` and `study.y` become `study1` and `study2`, respectively). 
-2. Select only the variables of interest for the study: signature ID labels (`study1`, `barrel1`, `bullet1`, `land1`, `study2`, `barrel2`, `bullet2`, and `land2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`same_source`).
+1. Rename the label variables using numbers instead of letters (e.g. `study.x` and `study.y` become `study1` and `study2`, respectively), and rename `match` as `samesource`. 
+2. Select only the variables of interest for the study: signature ID labels (`study1`, `barrel1`, `bullet1`, `land1`, `study2`, `barrel2`, `bullet2`, and `land2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`samesource`).
 3. Convert all categorical variables to characters.
 4. Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions. 
 5. Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.
 6. Create land ID variables that combine study, barrel, bullet, and land labels. 
 7. Add a case variable (just numbering comparisons 1 through `r dim(bullet_train_raw)[1]` based on current order in the data). 
-8. Reorder the variables.
+8. Select final variables for data to use in paper: number assinged to signature (`case`), land IDs (`land_ID1`, `land_ID2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`samesource`).
 
 ```{r}
 # Identify the letters used to label barrels 
@@ -78,13 +78,13 @@ bullet_train <-
   rename(
     "study1" = "study.x", "barrel1" = "barrel.x", "bullet1" = "bullet.x", "land1" = "land.x",
     "study2" = "study.y", "barrel2" = "barrel.y", "bullet2" = "bullet.y", "land2" = "land.y",
-    "same_source"= "match"
+    "samesource"= "match"
   ) %>%
   # 2. Select variables of interest
   select(
     study1, barrel1, bullet1, land1,
     study2, barrel2, bullet2, land2,
-    all_of(rtrees_features), same_source
+    all_of(rtrees_features), samesource
   ) %>%
   # 3. Convert categorical variables to characters
   mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character)) %>%
@@ -97,7 +97,7 @@ bullet_train <-
     barrel1 = ifelse(barrel1 %in% letters, "Unk", barrel1),
     barrel2 = ifelse(barrel2 %in% letters, "Unk", barrel2)
     ) %>%
-  # 5. Add abbreviations infront of barrel, bullet, and land labels
+  # 5. Add abbreviations in front of barrel, bullet, and land labels
   mutate(
     barrel1 = paste0("Br", barrel1),
     barrel2 = paste0("Br", barrel2),
@@ -113,10 +113,8 @@ bullet_train <-
   ) %>%
   # 7. Add a case variable
   mutate(case = as.character(1:n())) %>%
-  # 8. Reorder the variables
-  select(land_id1, land_id2, 
-         study1, barrel1, bullet1, study2, land1, barrel2, bullet2, land2,
-         all_of(rtrees_features), same_source)
+  # 8. Select final variables
+  select(case, land_id1, land_id2, all_of(rtrees_features), samesource)
 ```
 
 Check to make sure the number of rows in the data is still the same:
@@ -125,14 +123,21 @@ Check to make sure the number of rows in the data is still the same:
 dim(bullet_train)
 ```
 
-The updated signature identification labels are included below:
+The land IDs in the cleaned bullet training data are separated in the code below, so that the updated signature identification labels can be included in the table below: 
+
+```{r}
+bullet_train_expanded <- 
+  bullet_train %>% 
+  separate(col = land_id1, into = c("study1", "barrel1", "bullet1", "land1")) %>%
+  separate(col = land_id2, into = c("study2", "barrel2", "bullet2", "land2"))
+```
 
 | Descriptor | Labels | 
 | --- | -------------- |
-| Study | `r unique(c(bullet_train$study1, bullet_train$study2))` |
-| Barrel | `r unique(c(bullet_train$barrel1, bullet_train$barrel2))` |
-| Bullet | `r unique(c(bullet_train$bullet1, bullet_train$bullet2))` |
-| Land | `r unique(c(bullet_train$land1, bullet_train$land2))` |
+| Study | `r unique(c(bullet_train_expanded$study1, bullet_train_expanded$study2))` |
+| Barrel | `r unique(c(bullet_train_expanded$barrel1, bullet_train_expanded$barrel2))` |
+| Bullet | `r unique(c(bullet_train_expanded$bullet1, bullet_train_expanded$bullet2))` |
+| Land | `r unique(c(bullet_train_expanded$land1, bullet_train_expanded$land2))` |
 
 Determine the number of total study-barrel-bullet-lands in the data:
 

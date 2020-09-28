@@ -1571,29 +1571,36 @@ bullet_train_raw = read.csv(&quot;../data/raw/CCFs_withlands.csv&quot;)</code></
 </table>
 <p>The code below cleans and prepares the data for use in the paper. The steps taken are as follows:</p>
 <ol style="list-style-type: decimal">
-<li>Rename the label variables using numbers instead of letters (e.g. <code>study.x</code> and <code>study.y</code> become <code>study1</code> and <code>study2</code>, respectively).</li>
-<li>Select only the variables of interest for the study: signature ID labels (<code>study1</code>, <code>barrel1</code>, <code>bullet1</code>, <code>land1</code>, <code>study2</code>, <code>barrel2</code>, <code>bullet2</code>, and <code>land2</code>), features used to train the <code>rtrees</code> random forest model (<code>ccf</code>, <code>rough_cor</code>, <code>D</code>, <code>sd_D</code>, <code>matches</code>, <code>mismatches</code>, <code>cms</code>, <code>non_cms</code>, and <code>sum_peaks</code>), and the variable identifying whether the two signatures are fired from the same gun (<code>same_source</code>).</li>
+<li>Rename the label variables using numbers instead of letters (e.g. <code>study.x</code> and <code>study.y</code> become <code>study1</code> and <code>study2</code>, respectively), and rename <code>match</code> as <code>samesource</code>.</li>
+<li>Select only the variables of interest for the study: signature ID labels (<code>study1</code>, <code>barrel1</code>, <code>bullet1</code>, <code>land1</code>, <code>study2</code>, <code>barrel2</code>, <code>bullet2</code>, and <code>land2</code>), features used to train the <code>rtrees</code> random forest model (<code>ccf</code>, <code>rough_cor</code>, <code>D</code>, <code>sd_D</code>, <code>matches</code>, <code>mismatches</code>, <code>cms</code>, <code>non_cms</code>, and <code>sum_peaks</code>), and the variable identifying whether the two signatures are fired from the same gun (<code>samesource</code>).</li>
 <li>Convert all categorical variables to characters.</li>
 <li>Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions.</li>
 <li>Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.</li>
-<li>Create land ID variables that combine study, barrel, bullet, and land labels, and reorder the variables.</li>
+<li>Create land ID variables that combine study, barrel, bullet, and land labels.</li>
+<li>Add a case variable (just numbering comparisons 1 through 83028 based on current order in the data).</li>
+<li>Select final variables for data to use in paper: number assinged to signature (<code>case</code>), land IDs (<code>land_ID1</code>, <code>land_ID2</code>), features used to train the <code>rtrees</code> random forest model (<code>ccf</code>, <code>rough_cor</code>, <code>D</code>, <code>sd_D</code>, <code>matches</code>, <code>mismatches</code>, <code>cms</code>, <code>non_cms</code>, and <code>sum_peaks</code>), and the variable identifying whether the two signatures are fired from the same gun (<code>samesource</code>).</li>
 </ol>
-<pre class="r"><code>all_barrel_labels &lt;- unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))
+<pre class="r"><code># Identify the letters used to label barrels 
+all_barrel_labels &lt;- unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))
 letters &lt;- all_barrel_labels[!(all_barrel_labels %in% 1:10)]
 
 bullet_train &lt;- 
   bullet_train_raw %&gt;%
+  # 1. Rename variables
   rename(
     &quot;study1&quot; = &quot;study.x&quot;, &quot;barrel1&quot; = &quot;barrel.x&quot;, &quot;bullet1&quot; = &quot;bullet.x&quot;, &quot;land1&quot; = &quot;land.x&quot;,
     &quot;study2&quot; = &quot;study.y&quot;, &quot;barrel2&quot; = &quot;barrel.y&quot;, &quot;bullet2&quot; = &quot;bullet.y&quot;, &quot;land2&quot; = &quot;land.y&quot;,
-    &quot;same_source&quot;= &quot;match&quot;
+    &quot;samesource&quot;= &quot;match&quot;
   ) %&gt;%
+  # 2. Select variables of interest
   select(
     study1, barrel1, bullet1, land1,
     study2, barrel2, bullet2, land2,
-    all_of(rtrees_features), same_source
+    all_of(rtrees_features), samesource
   ) %&gt;%
+  # 3. Convert categorical variables to characters
   mutate(across(c(barrel1, bullet1, land1, barrel2, bullet2, land2), as.character)) %&gt;%
+  # 4. Adjust study, barrel, and bullet labels
   mutate(
     study1 = ifelse(study1 == &quot;Hamby44&quot;, &quot;Hamby173&quot;, study1),
     study2 = ifelse(study2 == &quot;Hamby44&quot;, &quot;Hamby173&quot;, study2),
@@ -1602,6 +1609,7 @@ bullet_train &lt;-
     barrel1 = ifelse(barrel1 %in% letters, &quot;Unk&quot;, barrel1),
     barrel2 = ifelse(barrel2 %in% letters, &quot;Unk&quot;, barrel2)
     ) %&gt;%
+  # 5. Add abbreviations in front of barrel, bullet, and land labels
   mutate(
     barrel1 = paste0(&quot;Br&quot;, barrel1),
     barrel2 = paste0(&quot;Br&quot;, barrel2),
@@ -1610,13 +1618,23 @@ bullet_train &lt;-
     land1 = paste0(&quot;L&quot;, land1),
     land2 = paste0(&quot;L&quot;, land2)
   ) %&gt;%
+  # 6. Create land ID variables
   mutate(
     land_id1 = paste(study1, barrel1, bullet1, land1, sep = &quot;-&quot;),
     land_id2 = paste(study2, barrel2, bullet2, land2, sep = &quot;-&quot;)
   ) %&gt;%
-  select(land_id1, land_id2, 
-         study1, barrel1, bullet1, study2, land1, barrel2, bullet2, land2,
-         all_of(rtrees_features), same_source)</code></pre>
+  # 7. Add a case variable
+  mutate(case = as.character(1:n())) %&gt;%
+  # 8. Select final variables
+  select(case, land_id1, land_id2, all_of(rtrees_features), samesource)</code></pre>
+<p>Check to make sure the number of rows in the data is still the same:</p>
+<pre class="r"><code>dim(bullet_train)</code></pre>
+<pre><code>## [1] 83028    13</code></pre>
+<p>The land IDs in the cleaned bullet training data are separated in the code below, so that the updated signature identification labels can be included in the table below:</p>
+<pre class="r"><code>bullet_train_expanded &lt;- 
+  bullet_train %&gt;% 
+  separate(col = land_id1, into = c(&quot;study1&quot;, &quot;barrel1&quot;, &quot;bullet1&quot;, &quot;land1&quot;)) %&gt;%
+  separate(col = land_id2, into = c(&quot;study2&quot;, &quot;barrel2&quot;, &quot;bullet2&quot;, &quot;land2&quot;))</code></pre>
 <table>
 <colgroup>
 <col width="17%"></col>
@@ -1625,7 +1643,7 @@ bullet_train &lt;-
 <thead>
 <tr class="header">
 <th>Descriptor</th>
-<th>Levels</th>
+<th>Labels</th>
 </tr>
 </thead>
 <tbody>
