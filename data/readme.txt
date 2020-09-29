@@ -16,7 +16,7 @@ The bullet-train data has 83,028 rows and 13 columns that contain comparison fea
 Variables used as key variables:
 
 - case: ID number associated with the bullet-land signature comparison.
-- land_id1, land_id2: IDs describing the two land engraved areas in the comparison. The format is study-barrelnumber-bulletnumber-landnumber.
+- land_id1, land_id2: IDs describing the two land engraved areas in the comparison. The format is study-barrel-bullet-land.
 
 Comparison features:
 
@@ -41,3 +41,11 @@ example-signatures contains the signature data from aligned signatures of two bu
 - land: Indicator variable whether the observation corresponds to “Signature 1” or “Signature 2”.
 - x: The (relative) x position of the signature (in microns).
 - y: The (relative) y position of the signature height (in microns).
+
+#### References ####
+
+Biasotti, Alfred A. 1959. “A Statistical Study of the Individual Characteristics of Fired Bullets.” Journal of Forensic Sciences 4 (1): 34–50.
+
+Hamby, James E., David J. Brundage, and James W. Thorpe. 2009. “The Identification of Bullets Fired from 10 Consecutively Rifled 9mm Ruger Pistol Barrels: A Research Project Involving 507 Participants from 20 Countries.” AFTE Journal 41 (2): 99–110.
+
+Hare, Eric, Heike Hofmann, and Alicia Carriquiry. 2017. “Automatic Matching of Bullet Land Impressions.” Annals of Applied Statistics 11 (4): 2332–56. https://doi.org/10.1214/17-AOAS1080.
