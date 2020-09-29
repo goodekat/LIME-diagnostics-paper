@@ -187,7 +187,7 @@ the comparison features are found in Hare, Hofmann, and Carriquiry
     comparison.
   - **land\_id1**, **land\_id2**: IDs describing the two land engraved
     areas in the comparison. The format is
-    “study-barrelnumber-bulletnumber-landnumber”.
+    “study-barrel-bullet-land”.
 
 #### Comparison features:
 
