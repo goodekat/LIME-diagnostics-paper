@@ -120,7 +120,7 @@ The variables in the data are described below. Further descriptions of the compa
 #### Variables used as key variables:
 
 - **`r names(bullet_train)[1]`**: ID number associated with the bullet-land signature comparison.
-- **`r names(bullet_train)[2]`**, **`r names(bullet_train)[3]`**: IDs describing the two land engraved areas in the comparison. The format is "study-barrelnumber-bulletnumber-landnumber".
+- **`r names(bullet_train)[2]`**, **`r names(bullet_train)[3]`**: IDs describing the two land engraved areas in the comparison. The format is "study-barrel-bullet-land".
 
 #### Comparison features:
 
