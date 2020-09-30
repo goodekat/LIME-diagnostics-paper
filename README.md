@@ -1,9 +1,6 @@
 
 ## To Do
 
-  - Finish documenting the identification of the training data for
-    rtrees in research journals (including LIME explanations from
-    different training datasets/models)
   - Rewrite Sections 4 and 5 as needed
   - Prepare for submission
   - Upload the files for submission and submit
