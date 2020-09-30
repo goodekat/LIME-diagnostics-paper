@@ -1720,10 +1720,16 @@ fb2_ls = 0.5 * (fb2_fw / fb2_ow)
 # Create the explanation scatterplot: case M, kernel density
 bullet_es_M <-
   plot_explain_scatter(
-    bullet_explain_perms[16:18,] %>% mutate(case = "NM"),
+    bullet_explain_perms[16:18, ] %>% mutate(case = "NM"),
     alpha = 0.75,
-    title.opt = TRUE, 
+    title.opt = TRUE,
     line_size = fb2_ls
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
   ) +
   theme_bw(base_family = ff, base_size = fb2_fs) +
   theme(
@@ -1741,6 +1747,12 @@ bullet_es_NM <-
     alpha = 0.75,
     title.opt = TRUE, 
     line_size = fb2_ls
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
   ) +
   theme_bw(base_family = ff, base_size = fb2_fs) +
   theme(
