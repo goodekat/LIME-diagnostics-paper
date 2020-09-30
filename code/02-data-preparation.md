@@ -1,21 +1,20 @@
----
-title: "Bullet Data Preparation for LIME Diagnostics Paper"
-author: "Katherine Goode"
-date: "<br>`r format(Sys.time(), '%B %d, %Y')`"
-output: rmarkdown::github_document
----
+Bullet Data Preparation for LIME Diagnostics Paper
+================
+Katherine Goode
+<br>September 30, 2020
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, fig.align = "center")
-```
+This document contains code for preparing the raw bullet data sets
+(training, testing, and example matching signatures) to be used the
+paper “Visual Diagnostics of a Model Explainer – Tools for the
+Assessment of LIME Explanations”.
 
-This document contains code for preparing the raw bullet data sets (training, testing, and example matching signatures) to be used the paper "Visual Diagnostics of a Model Explainer -- Tools for the Assessment of LIME Explanations".
-
-**NOTE** The code chunks where the prepared data versions are shared have `eval = FALSE`. These code chunks must be run manually. This is done to help avoid any accidental changes of the data.
+**NOTE** The code chunks where the prepared data versions are shared
+have `eval = FALSE`. These code chunks must be run manually. This is
+done to help avoid any accidental changes of the data.
 
 Load R packages:
 
-```{r}
+``` r
 library(cowplot)
 library(dplyr)
 library(forcats)
@@ -29,42 +28,72 @@ library(zip)
 
 Obtain features used when fitting the rtrees random forest:
 
-```{r}
+``` r
 rtrees_features <- rownames(bulletxtrctr::rtrees$importance)
 ```
 
 # Bullet Training Data
 
-Load the training data provided by Heike (from CSAFE data base; see this [R script](https://github.com/erichare/imaging-paper/blob/master/code/full_run.R) for the code used to access the data):
+Load the training data provided by Heike (from CSAFE data base; see this
+[R
+script](https://github.com/erichare/imaging-paper/blob/master/code/full_run.R)
+for the code used to access the data):
 
-```{r}
+``` r
 if (!file.exists("../data/raw/CCFs_withlands.csv")) {
   unzip("../data/raw/CCFs_withlands.csv.zip", exdir = "../data/raw")
 }
 bullet_train_raw = read.csv("../data/raw/CCFs_withlands.csv")
 ```
 
-The raw data contains `r dim(bullet_train_raw)[1]` observations (comparisons of signatures) and `r dim(bullet_train_raw)[2]` variables. The table below lists the levels of study, barrel, bullet, and land contained within the raw data. One of the study labels is `Hamby44`. CSAFE has determined that these bullets are actually from study `Hamby173`. Additionally, note that the barrel labels contains letters. These barrels are "unknown" barrels, and the new labeling convention used by CSAFE is to use the label for barrel of `BrUnk` and label the bullet using the letter (such as `BA`). 
+The raw data contains 83028 observations (comparisons of signatures) and
+26 variables. The table below lists the levels of study, barrel, bullet,
+and land contained within the raw data. One of the study labels is
+`Hamby44`. CSAFE has determined that these bullets are actually from
+study `Hamby173`. Additionally, note that the barrel labels contains
+letters. These barrels are “unknown” barrels, and the new labeling
+convention used by CSAFE is to use the label for barrel of `BrUnk` and
+label the bullet using the letter (such as `BA`).
 
-| Descriptor | Levels | 
-| --- | -------------- |
-| Study | `r unique(c(bullet_train_raw$study.x, bullet_train_raw$study.y))` |
-| Barrel | `r unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))` |
-| Bullet | `r unique(c(bullet_train_raw$bullet.x, bullet_train_raw$bullet.y))` |
-| Land | `r unique(c(bullet_train_raw$land.x, bullet_train_raw$land.y))` |
+| Descriptor | Levels                                                                                          |
+| ---------- | ----------------------------------------------------------------------------------------------- |
+| Study      | Hamby252, Hamby44                                                                               |
+| Barrel     | 10, 1, 2, 3, 4, 5, 6, 7, 8, 9, B, C, D, E, F, H, J, L, M, Q, S, U, X, Y, Z, A, G, I, N, R, V, W |
+| Bullet     | 1, 2                                                                                            |
+| Land       | 1, 2, 3, 4, 5, 6                                                                                |
 
-The code below cleans and prepares the data for use in the paper. The steps taken are as follows:
+The code below cleans and prepares the data for use in the paper. The
+steps taken are as follows:
 
-1. Rename the label variables using numbers instead of letters (e.g. `study.x` and `study.y` become `study1` and `study2`, respectively), and rename `match` as `samesource`. 
-2. Select only the variables of interest for the study: signature ID labels (`study1`, `barrel1`, `bullet1`, `land1`, `study2`, `barrel2`, `bullet2`, and `land2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`samesource`).
-3. Convert all categorical variables to characters.
-4. Change the study labels to the correct studies and the barrel and bullet variable labels to the new CSAFE labeling conventions. 
-5. Add letters to the barrel, bullet, and land labels to conform to the CSAFE labeling conventions.
-6. Create land ID variables that combine study, barrel, bullet, and land labels. 
-7. Add a case variable (just numbering comparisons 1 through `r dim(bullet_train_raw)[1]` based on current order in the data). 
-8. Select final variables for data to use in paper: number assinged to signature (`case`), land IDs (`land_ID1`, `land_ID2`), features used to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the variable identifying whether the two signatures are fired from the same gun (`samesource`).
+1.  Rename the label variables using numbers instead of letters
+    (e.g. `study.x` and `study.y` become `study1` and `study2`,
+    respectively), and rename `match` as `samesource`.
+2.  Select only the variables of interest for the study: signature ID
+    labels (`study1`, `barrel1`, `bullet1`, `land1`, `study2`,
+    `barrel2`, `bullet2`, and `land2`), features used to train the
+    `rtrees` random forest model (`ccf`, `rough_cor`, `D`, `sd_D`,
+    `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`), and the
+    variable identifying whether the two signatures are fired from the
+    same gun (`samesource`).
+3.  Convert all categorical variables to characters.
+4.  Change the study labels to the correct studies and the barrel and
+    bullet variable labels to the new CSAFE labeling conventions.
+5.  Add letters to the barrel, bullet, and land labels to conform to the
+    CSAFE labeling conventions.
+6.  Create land ID variables that combine study, barrel, bullet, and
+    land labels.
+7.  Add a case variable (just numbering comparisons 1 through 83028
+    based on current order in the data).
+8.  Select final variables for data to use in paper: number assinged to
+    signature (`case`), land IDs (`land_ID1`, `land_ID2`), features used
+    to train the `rtrees` random forest model (`ccf`, `rough_cor`, `D`,
+    `sd_D`, `matches`, `mismatches`, `cms`, `non_cms`, and `sum_peaks`),
+    and the variable identifying whether the two signatures are fired
+    from the same gun (`samesource`).
 
-```{r}
+<!-- end list -->
+
+``` r
 # Identify the letters used to label barrels 
 all_barrel_labels <- unique(c(bullet_train_raw$barrel.x, bullet_train_raw$barrel.y))
 letters <- all_barrel_labels[!(all_barrel_labels %in% 1:10)]
@@ -116,35 +145,41 @@ bullet_train <-
 
 Check to make sure the number of rows in the data is still the same:
 
-```{r}
+``` r
 dim(bullet_train)
 ```
 
-The land IDs in the cleaned bullet training data are separated in the code below, so that the updated signature identification labels can be included in the table below: 
+    ## [1] 83028    13
 
-```{r}
+The land IDs in the cleaned bullet training data are separated in the
+code below, so that the updated signature identification labels can be
+included in the table below:
+
+``` r
 bullet_train_expanded <- 
   bullet_train %>% 
   separate(col = land_id1, into = c("study1", "barrel1", "bullet1", "land1")) %>%
   separate(col = land_id2, into = c("study2", "barrel2", "bullet2", "land2"))
 ```
 
-| Descriptor | Labels | 
-| --- | -------------- |
-| Study | `r unique(c(bullet_train_expanded$study1, bullet_train_expanded$study2))` |
-| Barrel | `r unique(c(bullet_train_expanded$barrel1, bullet_train_expanded$barrel2))` |
-| Bullet | `r unique(c(bullet_train_expanded$bullet1, bullet_train_expanded$bullet2))` |
-| Land | `r unique(c(bullet_train_expanded$land1, bullet_train_expanded$land2))` |
+| Descriptor | Labels                                                                                         |
+| ---------- | ---------------------------------------------------------------------------------------------- |
+| Study      | Hamby252, Hamby173                                                                             |
+| Barrel     | Br10, Br1, Br2, Br3, Br4, Br5, Br6, Br7, Br8, Br9, BrUnk                                       |
+| Bullet     | B1, B2, BB, BC, BD, BE, BF, BH, BJ, BL, BM, BQ, BS, BU, BX, BY, BZ, BA, BG, BI, BN, BR, BV, BW |
+| Land       | L1, L2, L3, L4, L5, L6                                                                         |
 
 Determine the number of total study-barrel-bullet-lands in the data:
 
-```{r}
+``` r
 length(unique(c(bullet_train$land_id1, bullet_train$land_id2)))
 ```
 
+    ## [1] 408
+
 Save the prepared data as a csv file:
 
-```{r eval = FALSE}
+``` r
 write.csv(
   x = bullet_train, 
   file = "../data/bullet-train.csv", 
@@ -152,9 +187,10 @@ write.csv(
 )
 ```
 
-Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+Also, save the original and prepared data as a zip files (for uploading
+to the GitHub repository):
 
-```{r eval = FALSE}
+``` r
 zip(
   zipfile = "../data/bullet-train.csv.zip", 
   files = "../data/bullet-train.csv"
@@ -163,9 +199,10 @@ zip(
 
 # Bullet Testing Data
 
-Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and CSAFE):
+Load in the raw Hamby 224 datasets (sets 1 and 11; provided by Heike and
+CSAFE):
 
-```{r}
+``` r
 if (!file.exists("../data/raw/h224-set1-features.rds")) {
   unzip("../data/raw/h224-set1-features.rds.zip", exdir = "../data/raw")
 }
@@ -176,23 +213,28 @@ hamby224_set1 <- readRDS("../data/raw/h224-set1-features.rds")
 hamby224_set11 <- readRDS("../data/raw/h224-set11-features.rds")
 ```
 
-The bullet and land names from each of the sets are included below. This indicates that each set contains `r length(unique(c(hamby224_set1$bulletA, hamby224_set1$bulletB)))` bullets with `r length(unique(c(hamby224_set1$landA, hamby224_set1$landB)))` lands each.
+The bullet and land names from each of the sets are included below. This
+indicates that each set contains 3 bullets with 6 lands each.
 
-| Set | Bullets | Lands | 
-| --- | -------------- | -------------- | 
-| 1 | `r unique(c(hamby224_set1$bulletA, hamby224_set1$bulletB))` | `r unique(c(hamby224_set1$landA, hamby224_set1$landB))` |
-| 11 | `r unique(c(hamby224_set11$bulletA, hamby224_set11$bulletB))` | `r unique(c(hamby224_set11$landA, hamby224_set11$landB))` |
+| Set | Bullets                      | Lands                                          |
+| --- | ---------------------------- | ---------------------------------------------- |
+| 1   | 1, 2, Q                      | 1, 2, 3, 4, 5, 6                               |
+| 11  | Bullet 1, Bullet 2, Bullet I | Land 1, Land 3, Land 4, Land 5, Land 6, Land 2 |
 
 The dimensions of the datasets are:
 
-| Set | Number of Rows | Number of Columns | 
-| --- | -------------- | -------------- | 
-| 1 | `r dim(hamby224_set1)[1]` | `r dim(hamby224_set1)[2]` |
-| 11 | `r dim(hamby224_set11)[1]` | `r dim(hamby224_set11)[2]` |
+| Set | Number of Rows | Number of Columns |
+| --- | -------------- | ----------------- |
+| 1   | 289            | 29                |
+| 11  | 256            | 29                |
 
-The number of rows in each of these datasets indicates that there are some lands missing since a complete set with 3 bullets and 6 lands would contains 3 bullets x 3 bullets x 6 lands x 6 lands  = `r 6 * 6 * 3 * 3` comparisons. The figures below show that set 1 is missing land 4 from bullet Q, and set 11 is missing land2 from bullet 1 and land 4 from bullet I.
+The number of rows in each of these datasets indicates that there are
+some lands missing since a complete set with 3 bullets and 6 lands would
+contains 3 bullets x 3 bullets x 6 lands x 6 lands = 324 comparisons.
+The figures below show that set 1 is missing land 4 from bullet Q, and
+set 11 is missing land2 from bullet 1 and land 4 from bullet I.
 
-```{r fig.width = 10, fig.height = 4.5}
+``` r
 plot_grid(
   hamby224_set1 %>%
     count(bulletA, bulletB, landA, landB) %>%
@@ -219,9 +261,11 @@ plot_grid(
 )
 ```
 
+<img src="02-data-preparation_files/figure-gfm/unnamed-chunk-11-1.png" style="display: block; margin: auto;" />
+
 Preparing the data from sets 1 and 11 for analysis:
 
-```{r}
+``` r
 hamby224_set1_cleaned <-
   hamby224_set1 %>%
   # Remove unneeded variables
@@ -271,9 +315,10 @@ hamby224_set11_cleaned <-
   select(study, set, bullet1, land1, bullet2, land2, all_of(rtrees_features), samesource)
 ```
 
-Plots show that the number of observations is still the same after cleaning:
+Plots show that the number of observations is still the same after
+cleaning:
 
-```{r fig.width = 10, fig.height = 4.5}
+``` r
 plot_grid(
   hamby224_set1_cleaned %>%
     count(bullet1, bullet2, land1, land2) %>%
@@ -299,9 +344,13 @@ plot_grid(
 )
 ```
 
-Join the two cleaned Hamby 224 sets into one testing set, remove duplicate comparisons, create a case variable, and create land ids based on the study, set, bullet, and land (remove those variables afterwards):
+<img src="02-data-preparation_files/figure-gfm/unnamed-chunk-13-1.png" style="display: block; margin: auto;" />
 
-```{r}
+Join the two cleaned Hamby 224 sets into one testing set, remove
+duplicate comparisons, create a case variable, and create land ids based
+on the study, set, bullet, and land (remove those variables afterwards):
+
+``` r
 bullet_test_extra_vars <-
   # Join the two data sets
   bind_rows(hamby224_set1_cleaned, hamby224_set11_cleaned) %>%
@@ -321,9 +370,10 @@ bullet_test <- bullet_test_extra_vars %>%
   select(case, land_id1, land_id2, all_of(rtrees_features), samesource)
 ```
 
-Remaining comparisons included in the test data after the duplicate comparisons are removed:
+Remaining comparisons included in the test data after the duplicate
+comparisons are removed:
 
-```{r fig.width = 10, fig.height = 4.5}
+``` r
 plot_grid(
   bullet_test_extra_vars %>%
     filter(set == "Set1") %>%
@@ -351,9 +401,11 @@ plot_grid(
 )
 ```
 
+<img src="02-data-preparation_files/figure-gfm/unnamed-chunk-15-1.png" style="display: block; margin: auto;" />
+
 Save the test data as a csv file:
 
-```{r eval = FALSE}
+``` r
 write.csv(
   x = bullet_test, 
   file = "../data/bullet-test.csv", 
@@ -361,9 +413,10 @@ write.csv(
 )
 ```
 
-Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+Also, save the original and prepared data as a zip files (for uploading
+to the GitHub repository):
 
-```{r eval = FALSE}
+``` r
 zip(
   zipfile = "../data/bullet-test.csv.zip", 
   files = "../data/bullet-test.csv"
@@ -372,24 +425,35 @@ zip(
 
 # Example Matching Signatures
 
-The following code trims the data provided by Heike of two matching bullet-land signatures.
+The following code trims the data provided by Heike of two matching
+bullet-land signatures.
 
 Import the data (provided by Heike and CSAFE):
 
-```{r}
+``` r
 if (!file.exists("../data/raw/signatures.rds")) unzip("../data/raw/signatures.rds.zip", exdir = "../data/raw")
 signatures <- readRDS("../data/raw/signatures.rds")
 ```
 
 Structure of the data:
 
-```{r}
+``` r
 signatures %>% str()
 ```
 
-Create a land variable based on the source variable, select only variables necessary for the manuscript, and rename sig as y:
+    ## tibble [2,244 × 7] (S3: tbl_df/tbl/data.frame)
+    ##  $ source : chr [1:2244] "README_files/data/Bullet1/Hamby252_Barrel1_Bullet1_Land3.x3p" "README_files/data/Bullet1/Hamby252_Barrel1_Bullet1_Land3.x3p" "README_files/data/Bullet1/Hamby252_Barrel1_Bullet1_Land3.x3p" "README_files/data/Bullet1/Hamby252_Barrel1_Bullet1_Land3.x3p" ...
+    ##  $ x      : num [1:2244] 333 334 336 338 339 ...
+    ##  $ y      : num [1:2244] 75 75 75 75 75 75 75 75 75 75 ...
+    ##  $ value  : num [1:2244] 102 102 103 102 102 ...
+    ##  $ raw_sig: num [1:2244] -2.17 -2 -1.85 -2.37 -2.86 ...
+    ##  $ se     : num [1:2244] 0.184 0.183 0.182 0.181 0.18 ...
+    ##  $ sig    : num [1:2244] -2.41 -2.3 -2.2 -2.11 -2.02 ...
 
-```{r}
+Create a land variable based on the source variable, select only
+variables necessary for the manuscript, and rename sig as y:
+
+``` r
 signatures_trimmed <-
   signatures %>%
   mutate(land = c("Signature 1", "Signature 2")[as.factor(source)]) %>%
@@ -399,7 +463,7 @@ signatures_trimmed <-
 
 Export the trimmed data as a csv file:
 
-```{r eval = FALSE}
+``` r
 write.csv(
   x = signatures_trimmed,
   file = "../data/example-signatures.csv",
@@ -407,12 +471,12 @@ write.csv(
 )
 ```
 
-Also, save the original and prepared data as a zip files (for uploading to the GitHub repository):
+Also, save the original and prepared data as a zip files (for uploading
+to the GitHub repository):
 
-```{r eval = FALSE}
+``` r
 zip(
   zipfile = "../data/example-signatures.csv.zip", 
   files = "../data/example-signatures.csv"
 )
 ```
-

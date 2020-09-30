@@ -1,26 +1,23 @@
----
-title: "Compression of Raw Files"
-author: "Katherine Goode"
-date: "<br>`r format(Sys.time(), '%B %d, %Y')`"
-output: rmarkdown::github_document
----
+Compression of Raw Files
+================
+Katherine Goode
+<br>September 30, 2020
 
-```{r setup, include = FALSE}
-knitr::opts_chunk$set(echo = TRUE, message = FALSE, eval = FALSE)
-```
+This document contains code for compressing the raw files (data and
+figure) associated with the manuscript.
 
-This document contains code for compressing the raw files (data and figure) associated with the manuscript.
+**NOTE** All code chunks in this document have `eval = FALSE` and must
+be run manually from within the Rmd file. This is done to avoid an
+accidental change of files.
 
-**NOTE** All code chunks in this document have `eval = FALSE` and must be run manually from within the Rmd file. This is done to avoid an accidental change of files.
-
-```{r}
+``` r
 # Load packages
 library(zip)
 ```
 
-Save the bullet image used in the paper as a zip file: 
+Save the bullet image used in the paper as a zip file:
 
-```{r}
+``` r
 zip(
   zipfile = "../figure-static/figure-08-1.png.zip",
   files =  "../figure-static/figure-08-1.png"
@@ -29,7 +26,7 @@ zip(
 
 Save the raw bullet training data files as zip files:
 
-```{r}
+``` r
 zip(
   zipfile = "../data/raw/CCFs_withlands.csv.zip", 
   files = "../../data/raw/CCFs_withlands.csv"
@@ -38,7 +35,7 @@ zip(
 
 Save the raw bullet testing data files as zip files:
 
-```{r}
+``` r
 zip(
   zipfile = "../data/raw/h224-set1-features.rds.zip", 
   files = "../../data/raw/h224-set1-features.rds"
@@ -51,10 +48,9 @@ zip(
 
 Save the raw data with an example of matching signatures as a zip file:
 
-```{r}
+``` r
 zip(
   zipfile = "../data/raw/signatures.rds.zip", 
   files = "../../data/raw/signatures.rds"
 )
 ```
-
