@@ -8,7 +8,6 @@
 *.bbl
 *.blg
 *.csv
-*.eps
 *.gz
 *.log
 *.pag
@@ -18,6 +17,8 @@
 
 code/renv*
 figure/
+figure-static/figure-08-1.eps
+figure-static/figure-10-1.eps
 figure-static/lime-screen-shot-explain.png
 figure-static/lime-screen-shot-lime.png
 figure-08-1.png
