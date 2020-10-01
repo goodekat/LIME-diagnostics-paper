@@ -35,9 +35,13 @@ This is done to be safe about not deleting or replacing files.
     file.remove("../data/example-signatures.csv.zip")
     file.remove("../data/sine-lime-explain.rds")
     file.remove("../data/raw/h224-set1-features.rds")
+    file.remove("../data/raw/h224-set1-features.rds.zip")
     file.remove("../data/raw/h224-set11-features.rds")
+    file.remove("../data/raw/h224-set11-features.rds.zip")
     file.remove("../data/raw/CCFs_withlands.csv")
+    file.remove("../data/raw/CCFs_withlands.csv.zip")
     file.remove("../data/raw/signatures.rds")
+    file.remove("../data/raw/signatures.rds.zip")
     file.remove("../figure-static/figure-08-1.eps")
     file.remove("../figure-static/figure-08-1.png.zip")
     file.remove("../figure-static/figure-10-1.eps")
@@ -48,14 +52,15 @@ This is done to be safe about not deleting or replacing files.
     unlink("../submission", recursive = TRUE)
     ```
 
-2.  Manually run the code in `code/01-raw-file-compression.Rmd` to
-    compress the raw versions of the data files and static figure. Also,
-    knit the file to make sure the html version is up to date.
+2.  Manually run the code in `code/01-raw-file-compression.Rmd` to add
+    compressed versions of the raw data files and to compress the static
+    figure for the manuscript. Also, knit the file to make sure the md
+    version is up to date.
 
 3.  Manually run the code in `code/02-data-preparation.Rmd` to create
     the versions of the data to be used in the manuscript and submitted
-    with the manuscript. Also, knit the file to make sure the html
-    version is up to date.
+    with the manuscript. Also, knit the file to make sure the md version
+    is up to date.
 
 4.  Knit the file `paper.Rnw`.
 
@@ -84,7 +89,7 @@ This is done to be safe about not deleting or replacing files.
     # Create a vector with code and data files to be included for submission 
     data_files <-
       c(
-        "../readme.txt",
+        "../data/readme.txt",
         "../data/bullet-test.csv.zip",
         "../data/bullet-train.csv.zip",
         "../data/example-signatures.csv.zip"
@@ -131,9 +136,9 @@ This is done to be safe about not deleting or replacing files.
     `\includegraphics[width=6.5in]{figure/figure-01-1}` to
     `\includegraphics[width=6.5in]{figure-01-1}`.
 
-7.  Compile the file `paper.tex` (using LaTex, then bibTex, then LaTeX
-    twice more) to make sure it compiles correctly (especially
-    references).
+7.  Compile the file `paper.tex` to make sure it compiles correctly
+    (especially references). (If using texShop, make sure to compile
+    using LaTex, then bibTex, then LaTeX twice more.)
 
 8.  Besides for `paper.pdf`, delete all other files generated when
     `paper.tex` was compiled. This includes other paper files and pdf
@@ -168,3 +173,7 @@ This is done to be safe about not deleting or replacing files.
   - `references.bib`
   - `WileyNJD-AMS.bst`
   - `WileyNJD-v2.cls`
+
+<!-- end list -->
+
+10. Knit this document to make sure the md version is up to date.
