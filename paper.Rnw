@@ -18,7 +18,7 @@
 
 % Set up for ASA data science journal
 \articletype{Research Article}
-\received{XX XX 2020}
+\received{XX XX XXXX}
 \revised{XX XX XXXX}
 \accepted{XX XX XXXX}
 \raggedbottom
@@ -827,7 +827,7 @@ The explanation scatterplot is built by plotting the LIME simulated data for the
 
 An explanation scatterplot corresponding to the LIME explanation depicted on the left in \autoref{fig:figure-04} is shown on the right hand side of \autoref{fig:figure-04}. By juxtaposing the random forest predictions and the explainer model boundaries, we are able to assess the faithfulness and localness of the explainer model. 
 
-First, consider the claim of localness. The weights decay relatively slowly  outside of the intersection of the 2-quantil-bin suggesting that the LIME explanation is highly influenced by points outside of the bins containing the prediction of interest. However, it is  difficult to say if the claim of localness has been violated, because a definition of a local region is not specified. Depending on what region a viewer considers to be local, an argument could be made in favor of or against a violation of localness. The explanation scatterplot raises awareness of the unclear definition of a local region with LIME. Nevertheless, it is possible to say that the weights assigned to the simulated data do not capture  the local region identified by the intersection of the quantile bins. 
+First, consider the claim of localness. The weights decay relatively slowly outside of the intersection of the 2-quantile-bin suggesting that the LIME explanation is highly influenced by points outside of the bins containing the prediction of interest. However, it is difficult to say if the claim of localness has been violated, because a definition of a local region is not specified. Depending on what region a viewer considers to be local, an argument could be made in favor of or against a violation of localness. The explanation scatterplot raises awareness of the unclear definition of a local region with LIME. Nevertheless, it is possible to say that the weights assigned to the simulated data do not capture  the local region identified by the intersection of the quantile bins. 
 
 Now, consider the claim of faithfulness: It can be said that the majority of the points in the $x_2$ quantile support a prediction of blue, which is captured by the bar supporting a prediction of blue in the LIME explanation, and a similar statement can be made about the $x_1$-quantile-bin. These statements validate the explanation produced by LIME. However, the explanation scatterplot plot shows that the random forest performs well at capturing the sine curve classification boundary by creating various sized rectangles consisting of predictions with similar probabilities, which the LIME explanation does not pick up on. Thus, LIME does provide an explanation for the prediction, but it is a very poor explanation in terms of faithfulness to the random forest prediction regions.
 
@@ -1060,7 +1060,7 @@ if (!file.exists(bullet_rf_file)) {
   bullet_rf <-
     randomForest(
       y = factor(bullet_train$samesource),
-      x = bullet_train %>% select(bullet_features),
+      x = bullet_train %>% select(all_of(bullet_features)),
       ntree = bullet_rf_ntrees,
       mtry = bullet_rf_mtry
     )  
@@ -1249,11 +1249,14 @@ knitr::include_graphics(pcp_file_name_eps)
 Since firearm identification is commonly used as evidence for convictions in court cases, it is important to be able to understand and assess a model used to quantify the probability that a bullet is fired from a gun. LIME explanations would provide a local explanation for an individual prediction, but just as it is important to assess the model for this high-stakes application, it is also important to assess the LIME explanations. We will demonstrate an assessment of LIME explanations using the visual diagnostics introduced in this paper.
 
 
-\hh{XXX minor change to emphasize that this is not a completly new model, just an expanded training set - otherwise you open yourself up to criticism of not using a validated model. The bulletxtrctr model was used in an external validation in \citet{validation}. }
-\hh{Here, we train a } random forest model using the same nine comparison features as \citet{hare:2017} to predict whether  \hh{two lands come from the same source} (i.e.\ are a match) in an expanded set of \Sexpr{format(dim(bullet_train)[1], big.mark = ",")} land-to-land comparisons from \hh{two sets of} bullets in the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}. We apply the trained random forest model to 6 bullets from \hh{another set of} the Hamby study with \Sexpr{dim(bullet_test)[1]} rows of land comparisons. See the supporting information for further descriptions of the data.
+%XXX minor change to emphasize that this is not a completely new model, just an expanded training set - otherwise you open yourself up to criticism of not using a validated model. The bulletxtrctr model was used in an external validation in \citet{vanderplas:2020b}. 
 
-\hh{XXX mention overall goodness of fit or oob error rates?}
-We first consider a global visualization of the relationship between the random forest predictions and the model features with a parallel coordinate plot of the training data (top facet) and testing data (bottom facets)  (\autoref{fig:figure-10}).  In the training data we observe a clear difference in feature values based on whether the corresponding random forest scores are close to 1 or 0. High values of rough correlation, cross correlation function, and number of matches are indicative of random forest scores close to 1; similarly, low values of mismatches, distance, and non-consecutively matching striae are also associated with random forest scores close to 1.
+\kgc{Your comment about not training a whole new model made lost of sense. Are my changes okay?}
+
+\kge{A random forest model fit to an expanded dataset of \Sexpr{format(dim(bullet_train)[1], big.mark = ",")} land-to-land comparisons from two sets of bullets in the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009} was validated in \citet{vanderplas:2020b}. Here, we train a random forest model to mimic the one validated in model \citet{vanderplas:2020b} using the same data, model structure, and features (the nine similarity measures developed in \citet{hare:2017})}. %Here, we train a random forest model using the same \kge{data, features (the nine similarity measures developed in \citet{hare:2017}), and model structure as a random forest validated in \citet{vanderplas:2020b}} \kge{\sout{nine comparison features as \citet{hare:2017}}} to predict whether two lands come from the same source (i.e.\ are a match) in an expanded set of \Sexpr{format(dim(bullet_train)[1], big.mark = ",")} land-to-land comparisons from two sets of bullets in the James Hamby Consecutively Rifled Ruger Barrel Study \citep{hamby:2009}. 
+We apply the trained random forest model to 6 bullets from another set of the Hamby study with \Sexpr{dim(bullet_test)[1]} rows of land comparisons. See the supporting information for further descriptions of the data.
+
+\hh{XXX mention overall goodness of fit or oob error rates?} We first consider a global visualization of the relationship between the random forest predictions and the model features with a parallel coordinate plot of the training data (top facet) and testing data (bottom facets)  (\autoref{fig:figure-10}).  In the training data we observe a clear difference in feature values based on whether the corresponding random forest scores are close to 1 or 0. High values of rough correlation, cross correlation function, and number of matches are indicative of random forest scores close to 1; similarly, low values of mismatches, distance, and non-consecutively matching striae are also associated with random forest scores close to 1.
 Observations in the test data that are classified incorrectly by the random forest tend to have feature values similar to observations in the training data with similar random forest scores. For example, the observations in the test set known to be a match but have a random forest score below 0.5 have relatively low values of rough correlation, cross correlation function, and matches and relatively large values of mismatches, distance, and non-consecutively matching striae compared to observations with a random forest probability close to 1.
 
 LIME is applied to all test set observations using different tuning parameter values: 12 sampling methods (2 to 6 equally spaced bins, 2 to 6 quantile-bins, kernel density estimation, and normal approximation) and 3 Gower exponents (0.5, 1, and 10). Thus, a total of $12\times 3=36$ different applications of LIME are performed. We specify that each LIME explanation return 3 features and feature selection is performed by selecting the features with the highest weights in a ridge regression model (default option).
@@ -1479,9 +1482,11 @@ To try to identify a set of LIME tuning parameter values with the most trustwort
 
 To provide a more detailed view of explanations obtained using different tuning parameter values, we take a closer look at explanations for two observations of interest, which will be referred to as case M (a known match) and case NM (a known non-match), using explanation scatterplots. Figure~\ref{fig:figure-13} includes the visual representation plots of explanations (from \emph{lime}) and explanation scatterplots for cases M and NM. Plots for 4-equal-bins and 4-quantile-bins are included to depict tuning parameter values with good (4-equal-bins) and mediocre (4-quantile-bins) performance based on the assessment metric plot. Plots for the kernel density simulation method are included in Appendix~\ref{exp-scatter_plus} (Figure \ref{fig:figure-B2}). 
 
-First, focus on the explanation for case NM with 4-quantile-bins. The explanation plot from \emph{lime} shows that observed values with rough correlation (rough\_cor) greater than 0.05 and mismatches value less than or equal to 7.17 support a random forest prediction in favor of a match, and the scatter plots show that many of the simulated values with rough correlation greater than 0.05 and mismatches less than 7.17 have random forest predictions greater than 0.5. Additionally, the LIME explanation indicates that a value of cross correlation function (ccf) greater than 0.28 and less than or equal to 0.35 supports a non-match, and the scatter plots shows that the simulated values within this region have mostly random forest predictions less than 0.5.  However, the random forest assigns a probability of 0.19 to case NM, which is not explained by the LIME explanation. Instead, consider that a better explanation based on the scatterplots would be that the random forest assigned a prediction probably close to 0 since the observation has a rough correlation less than 0.5, mismatches greater than 4, and cross correlation function 0.6.
+\kge{We \sout{First,}} focus on the explanation for case NM with 4-quantile-bins. The explanation plot from \emph{lime} shows that \kge{the} observed values \kge{of NM of \sout{with}} \kge{mismatches less than or equal to 7.17, rough correlation (rough\_cor) greater than 0.05, and D less than or equal to 0.002 support a random forest prediction in favor of a match. The scatter plots show that many of the simulated values in the rectangular regions with mismatches less than 7.17, rough correlation greater than 0.05, and distance less than or equal to 0.002 have random forest predictions greater than 0.5.} %rough correlation (rough\_cor) greater than 0.05 and mismatches value less than or equal to 7.17 support a random forest prediction in favor of a match, and the scatter plots show that many of the simulated values with rough correlation greater than 0.05 and mismatches less than 7.17 have random forest predictions greater than 0.5. Additionally, the LIME explanation indicates that a value of cross correlation function (ccf) greater than 0.28 and less than or equal to 0.35 supports a non-match, and the scatter plots shows that the simulated values within this region have mostly random forest predictions less than 0.5. 
+However, the random forest assigns a probability of 0.21 to case NM, which is not explained by the LIME explanation \kge{that provides all explanations in support of a match}. Instead, consider that a better explanation based on the scatterplots would be that the random forest assigned a prediction probably \kge{below 0.5 \sout{close to 0}} since \kge{NM has observed values of mismatches less than 5, rough correlation greater than 0.25, and distance greater than 0.001.}%the observation has a rough correlation less than 0.5, mismatches greater than 4, and cross correlation function 0.6.
 
-The other explanation scatterplots can be interpreted in a similar manner. Overall, the plots identify that the 4-quantile-bin explanations are not faithful to the random forest model predictions. The 4-equal-bin explanations are more faithful to the random forest, but the regions captured by the bins do not align well with the regions containing  similar probabilities produced by the random forest.
+The other explanation scatterplots can be interpreted in a similar manner. \kge{\sout{Overall, t} T}he \kge{three plots depict situations where the explanations are faithful} %plots identify that the 4-quantile-bin explanations are not faithful to the random forest model predictions. The 4-equal-bin explanations are more faithful 
+to the random forest, but the regions captured by the \kge{intersections of the} bins do not align well with the regions containing similar probabilities produced by the random forest.
 
 \begin{figure*}[!thp]
 <<figure-13, out.width = '6.25in', fig.width = 13, fig.height = 17.5, message = FALSE>>=
@@ -1639,7 +1644,7 @@ The authors declare no potential conflict of interests.
 
 \section*{Supporting information}
 
-The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}. \hh{\sout{ Additional information about the bullet matching data are available at XXX.}}
+The code used to produce the manuscript and the data from examples in Section \ref{application} are available in the following GitHub Repository: \href{https://github.com/goodekat/LIME-diagnostics-paper}{https://github.com/goodekat/LIME-diagnostics-paper}.
 
 \bibliography{references}
 
@@ -1768,7 +1773,7 @@ bullet_es_NM <-
 plot_grid(bullet_es_NM, bullet_es_M, nrow = 2)
 
 @
-\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M and NM of the bullet comparison.}
+\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M and NM of the bullet comparison test data.}
 \label{fig:figure-B2}
 \end{figure*}
 
