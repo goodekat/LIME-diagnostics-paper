@@ -1,7 +1,7 @@
 Sumbission Steps
 ================
 Katherine Goode
-<br>September 30, 2020
+<br>October 06, 2020
 
 This document contains the steps to follow to make sure all guidelines
 are met for submission to the ASA Data Science Journal.
@@ -89,7 +89,7 @@ This is done to be safe about not deleting or replacing files.
     # Create a vector with code and data files to be included for submission 
     data_files <-
       c(
-        "../data/readme.txt",
+        "../data/README.txt",
         "../data/bullet-test.csv.zip",
         "../data/bullet-train.csv.zip",
         "../data/example-signatures.csv.zip"
