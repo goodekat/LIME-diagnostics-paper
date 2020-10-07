@@ -1,7 +1,7 @@
 Sumbission Steps
 ================
 Katherine Goode
-<br>October 06, 2020
+<br>October 07, 2020
 
 This document contains the steps to follow to make sure all guidelines
 are met for submission to the ASA Data Science Journal.
