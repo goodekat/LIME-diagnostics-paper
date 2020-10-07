@@ -98,6 +98,8 @@
 
 \maketitle
 
+
+
 \section{Introduction}
 
 In the field of statistics, there are two main uses for models: inference and prediction. Machine learning models are often used for the latter purpose. These models have proven to perform well in a wide range of prediction problems, but the accuracy of many machine learning models comes at the cost of interpretability due to their algorithmic complexity (hence the phrase "black-box models"). Model interpretability allows for the understanding and assessment of how a model produces predictions. The lack of the ability to understand and assess a model makes it difficult to trust the model, especially in areas with high stakes decisions such as medical and forensics sciences. The increased use of machine learning models in applications and the introduction of the General Data Protection Regulation (GDPR) in 2018 \citep{goodman:2016} has resulted in a dramatic increase in explainable machine learning research, which focuses on developing ways to explain output from machine learning algorithms.
@@ -110,16 +112,36 @@ LIME (local interpretable model-agnostic explanations) is a method that uses a s
 
 While some model explainers focus on understanding a model at the global level, LIME claims to provide explanations for individual predictions (local). Additionally, LIME is designed to work with any model (model-agnostic) and to produce easily understandable results (explanations) \citep{ribeiro:2016}. Conceptually, LIME fits a simple (interpretable) model, the explainer model,  meant to capture the behavior of the (complex) black-box model in a local region around a prediction of interest. The  simple model then provides interpretable estimates for variables that most influenced the prediction made by the complex model.
 
+
+
+
+
 \begin{figure*}[!thp]
-\centering 
-\includegraphics[width=6.5in]{figure-01-1}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=6.5in]{figure-01-1} 
+
+}
+
+
+
+\end{knitrout}
 \caption{A conceptual depiction of a faithful LIME explainer model in the immediate neighborhood of a prediction of interest. The predictions from a hypothetical black-box model are plotted against the standardized values of the two hypothetical predictor variables. The diamond shaped points represent the location of a prediction of interest. The size and opacity of the circular points indicate the weight assigned based on the distance to the prediction of interest computed using the inverse of the Gower distance metric raised to the power of 50. The black lines represent  a weighted ridge regression model used as an explainer model that reasonably captures the relationship between the black-box predictions and the features in a local region around the prediction of interest. That is, the explainer is faithful to the complex model and produces a reasonable explanation that Feature 1 plays a more important role in the prediction of interest than Feature 2 since the magnitude of the slope associated with Feature 1 is larger.}
 \label{fig:figure-01}
 
 \vspace*{\floatsep}
  
-\centering 
-\includegraphics[width=6.5in]{figure-02-1} 
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=6.5in]{figure-02-1} 
+
+}
+
+
+
+\end{knitrout}
 \caption{A conceptual depiction of an unfaithful local explainer model in the immediate neighborhood of a prediction of interest. A ridge regression model is fit to the same hypothetical black-box model predictions and predictor variables as in \autoref{fig:figure-01}, but the weights are computed using a Gower exponent of 1. The explainer model is unfaithful to the complex model in any immediate neighborhood of the prediction of interest.}
 \label{fig:figure-02}
 \end{figure*}
@@ -387,20 +409,15 @@ In response, \citet{hare:2017} proposed an automated machine learning method for
 
 \subsection{Application of LIME to Bullet Matching Data}
 
-\begin{figure*}[!thp]
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-
-{\centering \includegraphics[width=6.5in]{figure-10-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Parallel coordinate plots of the \citet{hare:2017} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
-\label{fig:figure-10}
-\end{figure*}
+% \begin{figure*}[!thp]
+% \begin{knitrout}
+% \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+% {\centering \includegraphics[width=6.5in]{figure-10-1} 
+% }
+% \end{knitrout}
+% \caption{Parallel coordinate plots of the \citet{hare:2017} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
+% \label{fig:figure-10}
+% \end{figure*}
 
 Since firearm identification is commonly used as evidence for convictions in court cases, it is important to be able to understand and assess a model used to quantify the probability that a bullet is fired from a gun. LIME explanations would provide a local explanation for an individual prediction, but just as it is important to assess the model for this high-stakes application, it is also important to assess the LIME explanations. We will demonstrate an assessment of LIME explanations using the visual diagnostics introduced in this paper.
 
