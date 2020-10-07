@@ -1,7 +1,6 @@
 
 ## To Do
 
-  - Final proof read of sections 4 and 5
   - Prepare for submission (make sure to update date on cover letter)
   - Upload the files for submission and submit
   - Save a “snapshot” of the repo in the CyBox folder
