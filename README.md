@@ -1,8 +1,8 @@
 
 ## To Do
 
-  - Rewrite Sections 4 and 5 as needed
-  - Prepare for submission
+  - Final clean up and proof read of sections 4 and 5
+  - Prepare for submission (make sure to update date on cover letter)
   - Upload the files for submission and submit
 
 # LIME Diagnostics Manuscript
