@@ -1,7 +1,7 @@
 Bullet Data Preparation for LIME Diagnostics Paper
 ================
 Katherine Goode
-<br>September 30, 2020
+<br>October 07, 2020
 
 This document contains code for preparing the raw bullet data sets
 (training, testing, and example matching signatures) to be used the
