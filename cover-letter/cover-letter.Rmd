@@ -26,7 +26,7 @@ Editor-In-Chief
 Statistical Analysis and Data Mining  
 
 ::: date
-October 9, 2020
+October 7, 2020
 :::
 
 Dear Dr. Jia Li and other editors of Statistical Analysis and Data Mining,
