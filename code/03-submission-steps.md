@@ -90,9 +90,9 @@ This is done to be safe about not deleting or replacing files.
     data_files <-
       c(
         "../data/README.txt",
-        "../data/bullet-test.csv.zip",
-        "../data/bullet-train.csv.zip",
-        "../data/example-signatures.csv.zip"
+        "../data/bullet-test.csv",
+        "../data/bullet-train.csv",
+        "../data/example-signatures.csv"
       )
     
     # Copy the submission files to the temporary folder

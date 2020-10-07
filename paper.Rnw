@@ -1071,8 +1071,8 @@ if (!file.exists(bullet_rf_file)) {
 
 # Add variables to both training and testing data with the random forest probability
 # that the signatures are a match from the model bullet_rf
-bullet_train$rfscore = predict(bullet_rf, bullet_train %>% select(bullet_features), type = "prob")[,2]
-bullet_test$rfscore = predict(bullet_rf, bullet_test %>% select(bullet_features), type = "prob")[,2]
+bullet_train$rfscore = predict(bullet_rf, bullet_train %>% select(all_of(bullet_features)), type = "prob")[,2]
+bullet_test$rfscore = predict(bullet_rf, bullet_test %>% select(all_of(bullet_features)), type = "prob")[,2]
 
 # Compute OOB model metrics
 bullet_rf_oob_acc = round(sum(predict(bullet_rf) == bullet_train$samesource) / length(bullet_train$samesource), 2)
@@ -1080,7 +1080,7 @@ bullet_rf_oob_fp = round(bullet_rf$confusion[,3][2], 2)
 bullet_rf_oob_fn = round(bullet_rf$confusion[,3][1], 4)
 
 # Obtain model predictions and confusion matrix from test data
-bullet_test_pred = predict(bullet_rf, bullet_test %>% select(bullet_features))
+bullet_test_pred = predict(bullet_rf, bullet_test %>% select(all_of(bullet_features)))
 bullet_test_confus = table(bullet_test_pred, bullet_test$samesource)
 
 # Compute test data model metrics
@@ -1243,7 +1243,7 @@ if (!file.exists(pcp_file_name_png) | !file.exists(pcp_file_name_eps)) {
     width = 7.5,
     height = 3.5,
     units = "in",
-    dpi = 1200
+    dpi = 400
   )
 
   # Load the figure and then save as an EPS file

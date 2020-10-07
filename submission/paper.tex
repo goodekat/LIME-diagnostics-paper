@@ -409,15 +409,20 @@ In response, \citet{hare:2017} proposed an automated machine learning method for
 
 \subsection{Application of LIME to Bullet Matching Data}
 
-% \begin{figure*}[!thp]
-% \begin{knitrout}
-% \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-% {\centering \includegraphics[width=6.5in]{figure-10-1} 
-% }
-% \end{knitrout}
-% \caption{Parallel coordinate plots of the \citet{hare:2017} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
-% \label{fig:figure-10}
-% \end{figure*}
+\begin{figure*}[!thp]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=6.5in]{figure-10-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Parallel coordinate plots of the \citet{hare:2017} random forest predictions from the training (top facet) and testing (bottom facet) data. The observations are separated by known matching (right column) and non-matching (left column) signatures. The y-axis shows the standardized feature values, and the x-axis shows the features used to fit the random forest (ordered by random forest impurity based feature importance). Each line corresponds to an observation, and the line color represents the associated random forest probability. There are clear relationships between the feature values and the random forest probabilities.}
+\label{fig:figure-10}
+\end{figure*}
 
 Since firearm identification is commonly used as evidence for convictions in court cases, it is important to be able to understand and assess a model used to quantify the probability that a bullet is fired from a gun. LIME explanations would provide a local explanation for an individual prediction, but just as it is important to assess the model for this high-stakes application, it is also important to assess the LIME explanations. We will demonstrate an assessment of LIME explanations using the visual diagnostics introduced in this paper.
 
