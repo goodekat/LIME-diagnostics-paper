@@ -115,16 +115,15 @@ constraints.
     [WileyNJG-v2.cls](WileyNJD-v2.cls) contain the latex formatting
     specifications for the ASA Data Science Journal.
 
-## Instructions for Knitting Manuscript
+## Instructions for Compiling Manuscript
 
-When the manuscript is knit, various files will be generated (such as
-data-bullet-explain.rds and figure-10-1.png). The first time the
-manuscript is knit, it will take a while (possibly up to several hours).
-Once these files have been generated during the first knit, the
-manuscript will take much less time to knit (approximately a few
-minutes).
+When the manuscript is compiled, various files will be generated (such
+as data-bullet-explain.rds and figure-10-1.png). The first time the
+manuscript is compiled, it will take a while (possibly up to several
+hours). Once these files have been generated, the manuscript will take
+much less time to compile (approximately a few minutes).
 
-Follow these instructions to knit the manuscript:
+Follow these instructions to compile the manuscript:
 
 1.  Pull the repository from GitHub.
 2.  Install R packages [goodekat/lime](https://github.com/goodekat/lime)
@@ -141,7 +140,7 @@ remotes::install_github("goodekat/lime")
 remotes::install_github("goodekat/limeaid")
 ```
 
-3.  Knit manuscript (via the [paper.Rnw](paper.Rnw) file).
+3.  Compile manuscript (via the [paper.Rnw](paper.Rnw) file).
 
 ## Additional Information on Bullet Data
 
