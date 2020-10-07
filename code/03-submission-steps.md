@@ -84,7 +84,7 @@ This is done to be safe about not deleting or replacing files.
     dir.create(code_data_folder) 
     
     # Extract the R code from the files paper.Rnw to be used for submission
-    knitr::purl("../paper.Rnw", output = paste0(code_data_folder, "/paper.R"))
+    knitr::purl("../paper.Rnw", output = paste0(code_data_folder, "/code.R"))
     
     # Create a vector with code and data files to be included for submission 
     data_files <-
