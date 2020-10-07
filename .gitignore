@@ -16,6 +16,7 @@
 *.Rproj
 
 code/renv*
+cover-letter/signature.png
 figure/
 figure-static/figure-08-1.eps
 figure-static/figure-10-1.eps
@@ -24,4 +25,5 @@ figure-static/lime-screen-shot-lime.png
 figure-08-1.png
 figure-10-1.png
 paper-concordance.tex
+
 
