@@ -8,12 +8,6 @@ bibliography: references.bib
 knitr::opts_chunk$set(echo = TRUE, warning = FALSE, message = FALSE)
 ```
 
-## To Do
-
-- Prepare for submission (make sure to update date on cover letter)
-- Upload the files for submission and submit
-- Save a "snapshot" of the repo in the CyBox folder
-
 # LIME Diagnostics Manuscript
 
 ```{r echo = FALSE}

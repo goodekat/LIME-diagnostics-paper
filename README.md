@@ -1,10 +1,4 @@
 
-## To Do
-
-  - Prepare for submission (make sure to update date on cover letter)
-  - Upload the files for submission and submit
-  - Save a “snapshot” of the repo in the CyBox folder
-
 # LIME Diagnostics Manuscript
 
 <img src="figure-static/figure-readme.png" width="3600" />
