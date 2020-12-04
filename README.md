@@ -24,18 +24,18 @@ Contains the R code associated with the manuscript that is not directly
 included in [paper.Rnw](paper.Rnw) (such as some external data cleaning
 and file organization):
 
-  - [01-raw-file-compression.Rmd](code/01-raw-file-compression.Rmd)/[.md](code/01-raw-file-compression.md)
-    contains R code for compressing the static figure used in the
-    manuscript and accessing and compressing the raw bullet data to be
+  - [01-raw-file-compression](code/01-raw-file-compression.md) contains
+    R code for compressing the static figure used in the manuscript and
+    accessing and compressing the raw bullet data to be uploaded to
+    GitHub
+  - [02-data-preparation](code/02-data-preparation.md) contains R code
+    for preparing the raw bullet data (bullet training data, bullet
+    testing data, and example matching signatures) to be used in the
+    manuscript and saves zip versions of the prepared data sets to be
     uploaded to GitHub
-  - [02-data-preparation.Rmd](code/02-data-preparation.Rmd)/[.md](code/02-data-preparation.md)
-    contains R code for preparing the raw bullet data (bullet training
-    data, bullet testing data, and example matching signatures) to be
-    used in the manuscript and saves zip versions of the prepared data
-    sets to be uploaded to GitHub
-  - [03-submission-steps.Rmd](code/03-submission-steps.Rmd)/[.md](code/03-submission-steps.md)
-    contains the to do list and R code for preparing the files for
-    submission to the ASA Data Science Journal
+  - [03-submission-steps](code/03-submission-steps.md) contains the to
+    do list and R code for preparing the files for submission to the ASA
+    Data Science Journal
 
 [**cover-letter**](cover-letter)
 
