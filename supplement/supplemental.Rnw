@@ -1,0 +1,276 @@
+\documentclass{article}
+
+\title{Supplemental Material for the manuscript titled "Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
+
+\begin{document}
+
+\maketitle
+
+<<setup, echo = FALSE, include = FALSE>>=
+# Specify global options
+knitr::opts_chunk$set(
+  warning = FALSE,
+  message = FALSE,
+  echo = FALSE,
+  fig.keep = 'high',
+  fig.align = 'center',
+  dev = c("cairo_pdf", "cairo_ps"),
+  dev.args = list(fallback_resolution = 800),
+  dpi = 1200
+)
+
+# Load packages
+library(Cairo)
+library(cowplot)
+library(dplyr)
+library(forcats)
+library(ggplot2)
+library(gretchenalbrecht) #remotes::install_github("dicook/gretchenalbrecht")
+library(tidyr)
+
+# Specify the (base) font size (fs) and font (ff) for all plots
+fs = 7
+ff = "Helvetica"
+@
+
+\section{Extreme Feature Heatmap Scenarios} \label{feat-heat-ex}
+
+Two hypothetical examples of feature heatmaps are included in Figure \ref{fig:figure-s1}. The plots are created with the assumption that LIME is applied to select the top feature out of $p=4$  features for $n=10$ cases with $t=5$ sets of tuning parameter values. Situation 1 is an example where the features selected are consistent across tuning parameter values within a case but vary across cases within a tuning parameter value. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 is an example where the selected features vary across tuning parameter values within a case but are consistent across cases within a tuning parameter value. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations may not be  local, because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
+
+\begin{figure}
+<<figure-s1, out.width = '3.125in', fig.width = 6, fig.height = 3>>=
+
+# Specify the figure size (for determining font size)
+fs1_ow = 3.125
+fs1_fw = 6
+fs1_fs = fs * (fs1_fw / fs1_ow)
+
+# Specify the number of cases and LIME input options
+ncases = 10
+ninputs = 5
+
+# Create a good case of chosen feature example data
+set.seed(20191008)
+heatmap_data_good <-
+  tibble(
+    case = factor(rep(1:ncases, each = ninputs),
+                  levels = ncases:1),
+    input = factor(rep(1:ninputs, ncases)),
+    feature = factor(c(
+      rep(1, 5),
+      rep(2, 5),
+      rep(3, 5),
+      rep(1, 5),
+      rep(1, 5),
+      rep(4, 5),
+      rep(1, 5),
+      rep(3, 5),
+      rep(1, 5),
+      rep(4, 5)
+    ))
+  ) %>%
+  mutate(input = forcats::fct_recode(
+    input,
+    "A" = "1",
+    "B" = "2",
+    "C" = "3",
+    "D" = "4",
+    "E" = "5"
+  ))
+
+# Create the conceptual good heatmap
+heatmap_plot_good <- ggplot(data = heatmap_data_good,
+                            mapping = aes(
+                              x = input,
+                              y = case,
+                              fill = feature,
+                              color = feature
+                            )) +
+  geom_tile() +
+  labs(
+    x = "Tuning Parameter Value",
+    y = "Case",
+    fill = "Feature",
+    color = "Feature",
+    title = "Situation 1",
+    subtitle = "Consistent Explanations"
+  ) +
+  theme_bw(base_family = ff, base_size = fs1_fs) +
+  scale_fill_grey() +
+  scale_color_grey() +
+  theme(legend.position = "none", 
+        plot.title = element_text(size = fs1_fs))
+
+# Create a bad case of chosen feature example data
+set.seed(20190627)
+heatmap_data_bad <- tibble(
+  case = factor(rep(1:ncases, ninputs),
+                levels = ncases:1),
+  input = factor(rep(1:ninputs, each = ncases)),
+  feature = factor(rep(c(1, 2, 4, 3, 2), each = 10))
+) %>%
+  mutate(input = forcats::fct_recode(
+    input,
+    "A" = "1",
+    "B" = "2",
+    "C" = "3",
+    "D" = "4",
+    "E" = "5"
+  ))
+
+# Create the conceptual bad heat map
+heatmap_plot_bad <- ggplot(data = heatmap_data_bad,
+                           mapping = aes(
+                             x = input,
+                             y = case,
+                             fill = feature,
+                             color = feature
+                           )) +
+  geom_tile() +
+  labs(
+    x = "Tuning Parameter Value",
+    y = "Case",
+    fill = "Feature",
+    color = "Feature",
+    title = "Situation 2",
+    subtitle = "Inconsistent Explanations"
+  ) +
+  theme_bw(base_family = ff, base_size = fs1_fs) +
+  theme(plot.title = element_text(size = fs1_fs)) +
+  scale_fill_grey() +
+  scale_color_grey()
+
+heatmap_leg <- get_legend(heatmap_plot_bad)
+heatmap_plot_bad <-
+  heatmap_plot_bad + theme(legend.position = 'none')
+
+# Join the plots
+plot_grid(
+  heatmap_plot_good,
+  heatmap_plot_bad,
+  heatmap_leg,
+  nrow = 1,
+  rel_widths = c(0.43, 0.43, 0.14)
+)
+
+@
+\caption{Hypothetical examples of feature heatmaps in two possible situations.  Situation 1 is the ideal, because the explanations vary across cases but do not dependent on specific tuning parameter values. Situation 2 suggests global explanations and extreme explanation dependence on the tuning parameter values.}
+\label{fig:figure-s1}
+\end{figure}
+
+\section{Additional Bullet Matching Explanation Scatterplots} \label{bullets-plus}
+
+Figure \ref{fig:figure-s2} includes visual representations of LIME explanation from the \emph{lime} R package and explanation scatterplots for a known match observation in the the bullet example referred to as cases M for two different data simulation methods: 4-quantile-bins (left column) and 4-equal-bins (right column). Both explanations appear to be more faithful to the random forest than those associated with case NM in Section \ref{bullet-assess-ex}, but the intersections of the bins could be better aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s3} includes explanation scatterplots for bullet example cases M and NM when the kernel density simulation method is used.
+
+\begin{figure*}[!t]
+<<figure-s2, out.width = '6.25in', fig.width = 13, fig.height = 8.5, message = FALSE, echo = FALSE, eval = FALSE>>=
+
+# Specify the figure size (for determining font size)
+fs2_ow = 6.25
+fs2_fw = 13
+fs2_fs = fs * (fs2_fw / fs2_ow)
+fs2_ls = 0.5 * (fs2_fw / fs2_ow)
+
+# Create the lime explanation visualizations
+pfM_3qb <- plot_features(bullet_explain_perms_clean[1:3,]) + bullet_explain_plot_theme
+pfM_3eb <- plot_features(bullet_explain_perms_clean[7:9,]) + bullet_explain_plot_theme
+
+# Create the explanation scatterplots
+eoiM_3qb <-
+  plot_explain_scatter(
+    bullet_explain_perms_clean[1:3, ],
+    alpha = 0.9,
+    weights = TRUE,
+    line_size = fs2_ls
+  ) +
+  bullet_eoi_plot_theme +
+  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
+eoiM_3eb <-
+  plot_explain_scatter(
+    bullet_explain_perms_clean[7:9, ],
+    alpha = 0.9,
+    weights = TRUE,
+    line_size = fs2_ls
+  ) +
+  bullet_eoi_plot_theme + 
+  guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
+
+# Join the plots
+plot_grid(
+  pfM_3qb,
+  pfM_3eb,
+  eoiM_3qb,
+  eoiM_3eb,
+  nrow = 2,
+  rel_heights = c(0.2, 0.3)
+)
+
+@
+\caption{Plots of LIME explanations (first row) and explanation scatterplots (second row) for case M in the bullet test data for two tuning parameter values: 4-quantile-bins (first column) and 4-equal-bins (second column).}
+\label{fig:figure-s2}
+\end{figure*}
+
+\begin{figure*}[!thp]
+<<figure-s3, out.width = '6.5in', fig.width = 12, fig.height = 10, fig.align = "center", echo = FALSE, eval = FALSE>>=
+
+# Specify the figure size (for determining font size and line size)
+fs3_ow = 6.5
+fs3_fw = 12
+fs3_fs = fs * (fs3_fw / fs3_ow)
+fs3_ls = 0.5 * (fs3_fw / fs3_ow)
+
+# Create the explanation scatterplot: case M, kernel density
+bullet_es_M <-
+  plot_explain_scatter(
+    bullet_explain_perms[16:18, ] %>% mutate(case = "NM"),
+    alpha = 0.75,
+    title.opt = TRUE,
+    line_size = fs3_ls
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  theme_bw(base_family = ff, base_size = fs3_fs) +
+  theme(
+    aspect.ratio = 1,
+    strip.background = element_rect(fill = "white", color = "white"),
+    strip.placement = "outside",
+    strip.text.x = element_text(size = fs3_fs),
+    plot.title = element_text(size = fs3_fs)
+  )
+
+# Create the explanation scatterplot: case NM, kernel density
+bullet_es_NM <-
+  plot_explain_scatter(
+    bullet_explain_perms[13:15, ] %>% mutate(case = "M"),
+    alpha = 0.75,
+    title.opt = TRUE, 
+    line_size = fs3_ls
+  ) +
+  scale_fill_gradient2(
+    low = "grey50",
+    high = "darkorange",
+    midpoint = 0.5,
+    limits = c(0, 1)
+  ) +
+  theme_bw(base_family = ff, base_size = fs3_fs) +
+  theme(
+    aspect.ratio = 1,
+    strip.background = element_rect(fill = "white", color = "white"),
+    strip.placement = "outside",
+    strip.text.x = element_text(size = fs3_fs), 
+    plot.title = element_text(size = fs3_fs)
+  )
+
+# Join the plots
+plot_grid(bullet_es_M, bullet_es_NM, nrow = 2)
+
+@
+\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M and NM of the bullet comparison test data.}
+\label{fig:figure-s3}
+\end{figure*}
+
+\end{document}

@@ -104,10 +104,6 @@
 
 
 
-
-
-
-
 \begin{figure*}[!thp]
 \begin{knitrout}
 \definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
@@ -137,18 +133,9 @@ To demonstrate the effect of a tuning parameter on LIME, we consider two differe
 
 On the left, the distance between an observation and the prediction of interest is computed using the Gower distance metric \citep{gower:1971} and then raised to the power of \ensuremath{5\times 10^{-17}} to emphasize a very local region. The distances are subtracted from 1 to obtain a proximity. Here, the explainer model is faithful to the complex model since it captures the linear relationship between the black-box predictions in an immediate neighborhood of the prediction of interest. The slope  explains that the black-box predictions increase as the feature increases in the local region around the prediction of interest.
 
-For the scenario on the right, the computation of the proximities is the same except the distances are raised to a power of 1 (the default exponent in the \emph{lime} R package \citep{pedersen:2020}). This causes the observations that are further away from the prediction of interest to be given larger weights than the scenario on the left. Here, the explainer model does not capture the linear trend near the prediction of interest, but instead, the explainer captures a more global trend. Without an assessment of this explainer model, the slope incorrectly suggests that the predictions decrease as the feature increases near the prediction of interest. %\sout{This cannot be said of the explainer model in \autoref{fig:figure-02}. In addition, the magnitude of the slope associated with Feature 2  () is larger than that of Feature 1 (). Thus, this explainer model actually provides a misleading explanation that Feature 2 plays a more important role in the prediction of interest.}
+For the scenario on the right, the computation of the proximities is the same except the distances are raised to a power of 1 (the default exponent in the \emph{lime} R package \citep{pedersen:2020}). This causes the observations that are further away from the prediction of interest to be given larger weights than the scenario on the left. Here, the explainer model does not capture the linear trend near the prediction of interest, but instead, the explainer captures a more global trend. Without an assessment of this explainer model, the slope incorrectly suggests that the predictions decrease as the feature increases near the prediction of interest.
 
-%\kge{To demonstrate the effect of tuning parameters on LIME,we consider two different explainer models applied to the same prediction. Suppose a hypothetical black-box model is trained using one feature. Both plots in Figure1show the black-box model predictions versus the feature used to train the model.The diamond shaped point in the plots indicates the location of the prediction of interest to explain. A weight ridge regression with the black-box predictions as the response variable and standardized versions the features as predictor variables will be used as the explainer model in both scenarios, but the weights will vary. Note that the standardized features allow for direct comparisons of the model coefficients.}
-
-
-
-
-
-
-
-
-\autoref{fig:figure-01} demonstrates a simple example in which the explanation quality varies drastically when different weights are used. Other concerns with LIME have been raised in the literature: \citet{laugel:2018} and \citet{molnar:2019} discuss the difficulty specifying a local region with LIME due to both  an unclear definition of what is a "local region" and how to apply LIME to achieve an appropriate local region. \citet{laugel:2018} also present examples of LIME explanations that are clearly global and not local. A different concern about LIME is raised by \citet{alvarezmelis:2018}  pertaining to the robustness of explanations from LIME and other explainer models : they find that even small changes in predictor variables can lead to very different LIME explanations. Even the original authors of LIME,  \citet{ribeiro:2016}, acknowledge that if a linear model is used as the explainer, LIME relies on a linear approximation of the explainer model to the complex model and state "if the underlying model is highly non-linear even in the locality of the prediction, there may not be a faithful explanation".
+\autoref{fig:figure-01} demonstrates a simple example in which the explanation quality varies drastically when different weights are used. Other concerns with LIME have been raised in the literature: \citet{laugel:2018} and \citet{molnar:2019} discuss the difficulty specifying a local region with LIME due to both  an unclear definition of what is a "local region" and how to apply LIME to achieve an appropriate local region. \citet{laugel:2018} also present examples of LIME explanations that are clearly global and not local. A different concern about LIME is raised by \citet{alvarezmelis:2018}  pertaining to the robustness of explanations from LIME and other explainer models : they find that even small changes in predictor variables can lead to very different LIME explanations. Even the original authors of LIME, \citet{ribeiro:2016}, acknowledge that if a linear model is used as the explainer, LIME relies on a linear approximation of the explainer model to the complex model and state "if the underlying model is highly non-linear even in the locality of the prediction, there may not be a faithful explanation".
 
  Without an assessment of the LIME explainer model, the user is putting trust in another black-box procedure to explain the complex black-box model. In this paper, we stress the importance of assessing the LIME explainer model. To do this, we lay out the set of claims about LIME made by \citet{ribeiro:2016}, and we provide a toolkit of visual diagnostics  for the assessment of these claims: (1) \emph{explanation scatterplots}, (2) \emph{feature heatmaps}, (3) \emph{assessment metric plots}. Using these visual diagnostics, we demonstrate problematic examples of LIME explanations where the claims about LIME are not met and the explanations are highly dependent on tuning parameter values without a clear way to identify a set of tuning parameter values that produce the "best" explanations.
 
@@ -501,7 +488,7 @@ Without an assessment of the LIME explanations, the default method would produce
 
 This paper highlights that while an explainer model is meant to provide clarity, it actually adds another layer of complexity to predictive models by requiring yet another model that needs to be assessed. Without an assessment of the explainer model, LIME is a black-box procedure  requiring blind trust in the explainer model. We suggest the use of visual diagnostics to counteract the black-box nature of LIME. We provide three diagnostic plots  intended to assess whether LIME explanations meet the claims made by \citet{ribeiro:2016}. The examples in this paper bring to light many scenarios in which the claims are not met or are difficult to assess. We reconsider each of the claims and how the visual diagnostics identify their failings.
 
-As previously discussed, the \textbf{interpretability} of the LIME explanations is controllable  by the complexity of the explainer model. For example, the number of bins selected for simulation can control the interpretability of the explanations. If too many bins are selected, the bin range that is reported in the LIME explanation will be too small to be meaningful in the context of the feature. An appropriate choice of the number of bins will keep the bin range meaningful. Thus, the claim of interpretability does not need to be assessed using the visualizations. However, diagnostic visualizations do present a different perspective on the meaning of interpretability.
+As previously discussed, the \textbf{interpretability} of the LIME explanations is controllable by the complexity of the explainer model. For example, the number of bins selected for simulation controls the interpretability of the explanations. If too many bins are selected, the bin range that is reported in the LIME explanation will be too small to be meaningful in the context of the feature. An appropriate choice of the number of bins will keep the bin range meaningful. Thus, the claim of interpretability does not need to be assessed using the visualizations. However, diagnostic visualizations do present a different perspective on the meaning of interpretability.
 
 Even though an explanation will be interpretable if  the complexity of the explainer model is appropriately chosen, a lack of understanding of the explainer model  could lead to an incorrect interpretation of the explanation. For example, the visualization of a LIME explanation  from the \emph{lime} R package \citep{pedersen:2020} (\autoref{fig:figure-03} left;   \autoref{fig:figure-11} top) is a  simplification of the explainer model, which could lead to  misinterpreted LIME explanations. Supplementing \citet{pedersen:2020}'s compact visualization of the explanation with an explanation scatterplot that shows a more detailed visualization of the explainer model promotes a more complete understanding of the explanation (Figures~\ref{fig:figure-03} right;   \ref{fig:figure-11} bottom).
 
@@ -519,7 +506,7 @@ These diagnostic visualizations are a starting point that already highlight seem
 
 The largest limitation to the diagnostic visualizations is the dimensionality of the data shown, both in the number of dimensions or features as well as the number of observations. Fortunately, in the situation of LIME, both of these aspects are rather well controlled: LIME relies heavily on simulations to generate data scenarios that are close to the data observed but exhibit variability. Effects from overplotting should be relatively mild, because output from simulations is shown, which is expected to be (relatively) continuous such that overplotting only occurs for points with (relatively) similar values. In that respect, the diagnostics shown for the \data \ and the bullet example are representative of what is expected. But in cases where overplotting does become problematic, the user could either simply reduce the size of the simulations or use some well-studied binning techniques in the visualizations, as discussed for example in \citet{carr:1987} or \citet{unwin:2006}. 
 
-While it would be ideal if LIME could be used as a method to provide easily understandable explanations for black-box models as \citet{ribeiro:2016} claim, that dream is not yet a reality. The examples using diagnostic plots to assess LIME in this paper show frequent instances when the claims about LIME are not met . We hope that our plots provide motivation to assess LIME explanations, to not blindly use the default settings (even if it is not clear how to tune the parameters), and to encourage work  improving LIME, so that it can be a lime and not a lemon.
+While it would be ideal if LIME could be used as a method to provide easily understandable explanations for black-box models as \citet{ribeiro:2016} claim, that dream is not yet a reality. The examples using diagnostic plots to assess LIME in this paper show frequent instances when the claims about LIME are not met. We hope that our plots provide motivation to assess LIME explanations, to not blindly use the default settings (even if how to tune the parameters is not clear), and to encourage work improving LIME, so that it can be a lime and not a lemon.
 
 \section*{Acknowledgments}
 
@@ -589,7 +576,7 @@ The \emph{lime} R package uses a ridge regression fit using the \emph{glmnet} R 
 \label{fig:figure-B1}
 \end{figure*}
 
-\section{Explanation Scatterplots Under  Density Simulation Scenarios} \label{exp-scatter_plus}
+\section{Explanation Scatterplots Under Density Simulation Scenarios} \label{exp-scatter_plus}
 
 Section \ref{exp-scatter} introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: 4-quantile-bins. The structure of an explanation scatterplot remains the same if any bin based simulation method is used, i.e., any number of quantile or equally spaced bins. However, if the kernel density or normal approximation simulation methods are used, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
 
@@ -614,25 +601,6 @@ When the kernel density or normal approximation simulation methods are applied, 
 \end{figure}
 
 In order to assess the claim of linearity for the \data \ prediction of interest discussed in Section \ref{exp-scatter}, we use one of the most basic diagnostics in a statistician's tool box and draw a residual plot for the explainer model. This is shown in \autoref{fig:figure-C2} with the explainer model residuals on the y-axis and explainer model predictions on the x-axis. The points along the x-axis have been jittered to ease the effect of the over-plotted points. There is a clear increasing trend in the residuals as the explainer model predictions increase, which indicates a violation of the ridge regression linearity assumption.
-
-\section{Extreme Feature Heatmap Scenarios} \label{feat-heat-ex}
-
-Two hypothetical examples of feature heatmaps are included in \autoref{fig:figure-D3}. The plots are created with the assumption that LIME is applied to select the top feature out of $p=4$  features for $n=10$ cases with $t=5$ sets of tuning parameter values. Situation 1 is an example where the features selected are consistent across tuning parameter values within a case but vary across cases within a tuning parameter value. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 is an example where the selected features vary across tuning parameter values within a case but are consistent across cases within a tuning parameter value. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations may not be  local, because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
-
-\begin{figure}[!t]
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-
-{\centering \includegraphics[width=3.125in]{figure/figure-D3-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Hypothetical examples of feature heatmaps in two possible situations.  Situation 1 is the ideal, because the explanations vary across cases but do not dependent on specific tuning parameter values. Situation 2 suggests global explanations and extreme explanation dependence on the tuning parameter values.}
-\label{fig:figure-D3}
-\end{figure}
 
 \section{Details on Assessment Metrics} \label{metric-details}
 
@@ -659,39 +627,5 @@ For a set of $E$ explanations and a set of tuning parameter values $t$, we defin
 \emph{Mean squared explanation error} is denoted by MSEE and computed as
 
 $$MSEE=\frac{1}{E}\sum_{e=1}^E\left(f\left(x_e\right)-g_{e,t}\left(z_{e,t}\right)\right)^2.$$
-
-\section{Additional Bullet Matching Explanation Scatterplots} \label{bullets-plus}
-
-\autoref{fig:figure-F4} includes visual representations of LIME explanation from the \emph{lime} R package and explanation scatterplots for a known match observation in the the bullet example referred to as cases M for two different data simulation methods: 4-quantile-bins (left column) and 4-equal-bins (right column). Both explanations appear to be more faithful to the random forest than those associated with case NM in Section \ref{bullet-assess-ex}, but the intersections of the bins could be better aligned with the regions containing similar probabilities produced by the random forest. \autoref{fig:figure-F5} includes explanation scatterplots for bullet example cases M and NM when the kernel density simulation method is used.
-
-\begin{figure*}[!t]
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-
-{\centering \includegraphics[width=6.25in]{figure/figure-F4-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Plots of LIME explanations (first row) and explanation scatterplots (second row) for case M in the bullet test data for two tuning parameter values: 4-quantile-bins (first column) and 4-equal-bins (second column).}
-\label{fig:figure-F4}
-\end{figure*}
-
-\begin{figure*}[!thp]
-\begin{knitrout}
-\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
-
-{\centering \includegraphics[width=6.5in]{figure/figure-F5-1} 
-
-}
-
-
-
-\end{knitrout}
-\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M and NM of the bullet comparison test data.}
-\label{fig:figure-F5}
-\end{figure*}
 
 \end{document}
