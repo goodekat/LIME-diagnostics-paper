@@ -2,7 +2,10 @@
 
 \usepackage[margin=1in]{geometry}
 
+\newcommand{\data}{sine data}
+
 \title{Supporting Information Corresponding to ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
+
 \date{}
 
 \begin{document}
@@ -38,20 +41,69 @@ fs = 7
 ff = "Helvetica"
 @
 
-\section{Extreme Feature Heatmap Scenarios} \label{feat-heat-ex}
+\section{Explanation Scatterplots Under Density Simulation Scenarios}
 
-Two hypothetical examples of feature heatmaps are included in Figure \ref{fig:figure-s1}. The plots are created with the assumption that LIME is applied to select the top feature out of $p=4$  features for $n=10$ cases with $t=5$ sets of tuning parameter values. Situation 1 (left) is an example where the features selected are consistent across tuning parameter values within a case but vary across cases within a tuning parameter value. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 (right) is an example where the selected features vary across tuning parameter values within a case but are consistent across cases within a tuning parameter value. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations may not be  local, because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
+The manuscript introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: 4-quantile-bins. The structure of an explanation scatterplot remains the same if any bin based simulation method is used, i.e., any number of quantile or equally spaced bins. However, if the kernel density or normal approximation simulation methods are used, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
+
+When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
+
+Figure \ref{fig:figure-s1} provides example explanation scatterplots for the \data \ prediction of interest when the kernel density simulation method is used. The plots show the relationships between the random forest prediction and the selected features of $x_1$ and $x_2$ on the left and right, respectively.  
 
 \vspace{0.5cm}
 
 \renewcommand{\thefigure}{S1}
+\begin{figure*}[!thp]
+<<figure-s1, out.width = '6.5in', fig.width = 12, fig.height = 5, fig.align = "center">>=
+
+# Load the testing sine data
+sine_data_test <- readRDS("../data/sine-data-test.rds")
+
+# Load the sine data explanations
+sine_lime_explain <- readRDS("../data/sine-lime-explain.rds")
+
+# Extract the prediction of interest from the sine test data
+sine_poi <- sine_data_test %>% filter(y != rfpred, x1 > 0, x1 < 5, x2 > 5)
+
+# Specify the figure size (for determining font size and line size)
+fs1_ow = 6.5
+fs1_fw = 12
+fs1_fs = fs * (fs1_fw / fs1_ow)
+fs1_ls = 0.5 * (fs1_fw / fs1_ow)
+
+# Create the explanation scatterplot
+plot_explain_scatter(
+  sine_lime_explain$explain %>%
+    filter(sim_method == "kernel_density", case == sine_poi %>% pull(case)),
+  alpha = 0.75,
+  title.opt = FALSE, 
+  line_size = fs1_ls 
+) +
+  theme_bw(base_family = ff, base_size = fs1_fs) +
+  theme(
+    strip.background = element_rect(fill = "white", color = "white"),
+    strip.placement = "outside",
+    strip.text.x = element_text(size = fs1_fs)
+  )
+
+@
+\caption{Explanation scatterplots for the \data \ prediction of interest with the kernel density simulation method.}
+\label{fig:figure-s1}
+\end{figure*}
+
+\section{Extreme Feature Heatmap Scenarios}
+
+Two hypothetical examples of feature heatmaps are included in Figure \ref{fig:figure-s2}. The plots are created with the assumption that LIME is applied to select the top feature out of $p=4$  features for $n=10$ cases with $t=5$ sets of tuning parameter values. Situation 1 (left) is an example where the features selected are consistent across tuning parameter values within a case but vary across cases within a tuning parameter value. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 (right) is an example where the selected features vary across tuning parameter values within a case but are consistent across cases within a tuning parameter value. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations may not be  local, because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
+
+\vspace{0.5cm}
+
+\renewcommand{\thefigure}{S2}
 \begin{figure}[!h]
-<<figure-s1, out.width = '4.5in', fig.width = 8, fig.height = 3.5>>=
+<<figure-s2, out.width = '4.5in', fig.width = 8, fig.height = 3.5>>=
 
 # Specify the figure size (for determining font size)
-fs1_ow = 4.5
-fs1_fw = 8
-fs1_fs = fs * (fs1_fw / fs1_ow)
+fs2_ow = 4.5
+fs2_fw = 8
+fs2_fs = fs * (fs2_fw / fs2_ow)
 
 # Specify the number of cases and LIME input options
 ncases = 10
@@ -103,11 +155,11 @@ heatmap_plot_good <- ggplot(data = heatmap_data_good,
     title = "Situation 1",
     subtitle = "Consistent Explanations"
   ) +
-  theme_bw(base_family = ff, base_size = fs1_fs) +
+  theme_bw(base_family = ff, base_size = fs2_fs) +
   scale_fill_grey() +
   scale_color_grey() +
   theme(legend.position = "none", 
-        plot.title = element_text(size = fs1_fs))
+        plot.title = element_text(size = fs2_fs))
 
 # Create a bad case of chosen feature example data
 set.seed(20190627)
@@ -143,8 +195,8 @@ heatmap_plot_bad <- ggplot(data = heatmap_data_bad,
     title = "Situation 2",
     subtitle = "Inconsistent Explanations"
   ) +
-  theme_bw(base_family = ff, base_size = fs1_fs) +
-  theme(plot.title = element_text(size = fs1_fs)) +
+  theme_bw(base_family = ff, base_size = fs2_fs) +
+  theme(plot.title = element_text(size = fs2_fs)) +
   scale_fill_grey() +
   scale_color_grey()
 
@@ -163,12 +215,12 @@ plot_grid(
 
 @
 \caption{Hypothetical examples of feature heatmaps in two possible situations. (Left) Situation 1 is the ideal, because the explanations vary across cases but do not depend on tuning parameter values. (Right) Situation 2 suggests global explanations and extreme explanation dependence on tuning parameter values.}
-\label{fig:figure-s1}
+\label{fig:figure-s2}
 \end{figure}
 
-\section{Additional Bullet Matching Explanation Scatterplots} \label{bullets-plus}
+\section{Additional Bullet Matching Explanation Scatterplots}
 
-Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} are obtained using 4-quantile-bins and Figure 4-equal-bins, respectively. The explanations appear to be faithful to the random forest than those associated with the known non-match (case NM) in Section 4 of ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations". However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s4} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
+Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} are obtained using 4-quantile-bins and Figure 4-equal-bins, respectively. The explanations appear to be faithful to the random forest than those associated with the known non-match (case NM) shown in the manuscript. However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s5} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
 
 \vspace{0.5cm}
 
@@ -177,23 +229,23 @@ Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} include visual representatio
 bullet_explain_perms_clean <- readRDS("../data/bullet-explain-perms-clean.rds")
 @
 
-\renewcommand{\thefigure}{S2}
+\renewcommand{\thefigure}{S3}
 \begin{figure*}[!h]
-<<figure-s2, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
+<<figure-s3, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
 
 # Specify the figure size (for determining font size)
-fs2_ow = 6.5
-fs2_fw = 14
-fs2_fs = fs * (fs2_fw / fs2_ow)
-fs2_ls = 0.5 * (fs2_fw / fs2_ow)
+fs3_ow = 6.5
+fs3_fw = 14
+fs3_fs = fs * (fs3_fw / fs3_ow)
+fs3_ls = 0.5 * (fs3_fw / fs3_ow)
 
 # Create a theme for the lime explanation visualizations
 bullet_explain_plot_theme <-
   list(
     scale_fill_manual(values = c("darkorange", "grey50")),
     theme(
-      text = element_text(family = ff, size = fs2_fs),
-      strip.text.x = element_text(face = "plain", size = fs2_fs),
+      text = element_text(family = ff, size = fs3_fs),
+      strip.text.x = element_text(face = "plain", size = fs3_fs),
       aspect.ratio = 1
     )
   )
@@ -213,12 +265,12 @@ bullet_eoi_plot_theme <-
       midpoint = 0.5,
       limits = c(0, 1)
     ),
-    theme_bw(base_family = ff, base_size = fs2_fs),
+    theme_bw(base_family = ff, base_size = fs3_fs),
     theme(
       aspect.ratio = 1,
-      plot.title = element_text(size = fs2_fs),
-      strip.text.x = element_text(size = fs2_fs),
-      strip.text.y = element_text(size = fs2_fs),
+      plot.title = element_text(size = fs3_fs),
+      strip.text.x = element_text(size = fs3_fs),
+      strip.text.y = element_text(size = fs3_fs),
       strip.placement = "outside",
       strip.background = element_rect(color = "white", fill = "white")
     ),
@@ -235,7 +287,7 @@ eoiM_3qb <-
     bullet_explain_perms_clean[1:3, ],
     alpha = 0.9,
     weights = TRUE,
-    line_size = fs2_ls
+    line_size = fs3_ls
   ) +
   bullet_eoi_plot_theme +
   guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
@@ -250,18 +302,18 @@ plot_grid(
 
 @
 \caption{Explanation plot from \emph{lime} R package (left) and explanation scatterplot (right) for case M in the bullet test data for 4-quantile-bins.}
-\label{fig:figure-s2}
+\label{fig:figure-s3}
 \end{figure*}
 
-\renewcommand{\thefigure}{S3}
+\renewcommand{\thefigure}{S4}
 \begin{figure*}[!h]
-<<figure-s3, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
+<<figure-s4, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
 
 # Specify the figure size (for determining font size)
-fs3_ow = 6.5
-fs3_fw = 14
-fs3_fs = fs * (fs3_fw / fs3_ow)
-fs3_ls = 0.5 * (fs3_fw / fs3_ow)
+fs4_ow = 6.5
+fs4_fw = 14
+fs4_fs = fs * (fs4_fw / fs4_ow)
+fs4_ls = 0.5 * (fs4_fw / fs4_ow)
 
 # Create the lime explanation visualizations
 pfM_3eb <- plot_features(bullet_explain_perms_clean[7:9,]) + bullet_explain_plot_theme
@@ -272,7 +324,7 @@ eoiM_3eb <-
     bullet_explain_perms_clean[7:9, ],
     alpha = 0.9,
     weights = TRUE,
-    line_size = fs3_ls
+    line_size = fs4_ls
   ) +
   bullet_eoi_plot_theme + 
   guides(linetype = guide_legend(override.aes = list(color = c("darkorange"))))
@@ -287,18 +339,18 @@ plot_grid(
 
 @
 \caption{Explanation plot from \emph{lime} R package (left) and explanation scatterplot (right) for case M in the bullet test data for 4-equal-bins.}
-\label{fig:figure-s3}
+\label{fig:figure-s4}
 \end{figure*}
 
-\renewcommand{\thefigure}{S4}
+\renewcommand{\thefigure}{S5}
 \begin{figure*}[!h]
-<<figure-s4, out.width = '6.5in', fig.width = 12, fig.height = 10>>=
+<<figure-s5, out.width = '6.5in', fig.width = 12, fig.height = 10>>=
 
 # Specify the figure size (for determining font size and line size)
-fs4_ow = 6.5
-fs4_fw = 12
-fs4_fs = fs * (fs4_fw / fs4_ow)
-fs4_ls = 0.5 * (fs4_fw / fs4_ow)
+fs5_ow = 6.5
+fs5_fw = 12
+fs5_fs = fs * (fs5_fw / fs5_ow)
+fs5_ls = 0.5 * (fs5_fw / fs5_ow)
 
 # Create the explanation scatterplot: case M, kernel density
 bullet_es_M <-
@@ -306,7 +358,7 @@ bullet_es_M <-
     bullet_explain_perms_clean %>% filter(case == "M", sim_method == "kernel_density"),
     alpha = 0.75,
     title.opt = TRUE,
-    line_size = fs4_ls
+    line_size = fs5_ls
   ) +
   scale_fill_gradient2(
     low = "grey50",
@@ -314,13 +366,13 @@ bullet_es_M <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = ff, base_size = fs4_fs) +
+  theme_bw(base_family = ff, base_size = fs5_fs) +
   theme(
     aspect.ratio = 1,
     strip.background = element_rect(fill = "white", color = "white"),
     strip.placement = "outside",
-    strip.text.x = element_text(size = fs4_fs),
-    plot.title = element_text(size = fs4_fs)
+    strip.text.x = element_text(size = fs5_fs),
+    plot.title = element_text(size = fs5_fs)
   )
 
 # Create the explanation scatterplot: case NM, kernel density
@@ -329,7 +381,7 @@ bullet_es_NM <-
     bullet_explain_perms_clean %>% filter(case == "NM", sim_method == "kernel_density"),
     alpha = 0.75,
     title.opt = TRUE, 
-    line_size = fs4_ls
+    line_size = fs5_ls
   ) +
   scale_fill_gradient2(
     low = "grey50",
@@ -337,13 +389,13 @@ bullet_es_NM <-
     midpoint = 0.5,
     limits = c(0, 1)
   ) +
-  theme_bw(base_family = ff, base_size = fs4_fs) +
+  theme_bw(base_family = ff, base_size = fs5_fs) +
   theme(
     aspect.ratio = 1,
     strip.background = element_rect(fill = "white", color = "white"),
     strip.placement = "outside",
-    strip.text.x = element_text(size = fs4_fs), 
-    plot.title = element_text(size = fs4_fs)
+    strip.text.x = element_text(size = fs5_fs), 
+    plot.title = element_text(size = fs5_fs)
   )
 
 # Join the plots
@@ -351,7 +403,7 @@ plot_grid(bullet_es_M, bullet_es_NM, nrow = 2)
 
 @
 \caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M (top) and NM (bottom) of the bullet comparison test data.}
-\label{fig:figure-s4}
+\label{fig:figure-s5}
 \end{figure*}
 
 \end{document}
