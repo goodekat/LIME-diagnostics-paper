@@ -2,7 +2,7 @@
 
 \usepackage[margin=1in]{geometry}
 
-\title{Supplemental Material Corresponding to ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
+\title{Supporting Information Corresponding to ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
 \date{}
 
 \begin{document}
@@ -168,7 +168,7 @@ plot_grid(
 
 \section{Additional Bullet Matching Explanation Scatterplots} \label{bullets-plus}
 
-Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} are obtained using 4-quantile-bins and Figure 4-equal-bins, respectively. The explanations appear to be faithful to the random forest than those associated with case NM in Section 4 of ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations". However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s4} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
+Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s2} and \ref{fig:figure-s3} are obtained using 4-quantile-bins and Figure 4-equal-bins, respectively. The explanations appear to be faithful to the random forest than those associated with the known non-match (case NM) in Section 4 of ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations". However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s4} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
 
 \vspace{0.5cm}
 
