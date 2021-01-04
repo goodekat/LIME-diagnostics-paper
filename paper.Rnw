@@ -1194,10 +1194,6 @@ Figure~\ref{fig:figure-11} (top right) shows the LIME explanation for case NM wh
 
 Without an assessment of the LIME explanations, the default method would produce poor explanations such as the one shown in Figure~\ref{fig:figure-11} (left column). Our assessment here led to better explanations when the four equal bins are used. However, the explanation quality is still lacking from the one prediction considered. Additional investigations using explanations scatterplots would help to determine whether to trust this set of explanations, continue tuning the LIME parameters, or use another approach to provide better insight.
 
-
-
-
-
 \begin{figure*}[!thp]
 <<figure-11, out.width = '6.25in', fig.width = 13, fig.height = 8.5, message = FALSE>>=
 
@@ -1210,6 +1206,11 @@ f11_ls = 0.5 * (f11_fw / f11_ow)
 # Adjust names of the cases
 bullet_explain_perms_clean <- bullet_explain_perms %>%
   mutate(case = ifelse(case == bullet_poi_nonmatch, "NM", "M"))
+
+# Save the cleaned explanations to use with the supplemental material
+if(!file.exists("data/bullet-explain-perms-clean.rds")) {
+ saveRDS(bullet_explain_perms_clean, "data/bullet-explain-perms-clean.rds") 
+}
 
 # Create a theme for the lime explanation visualizations
 bullet_explain_plot_theme <-
