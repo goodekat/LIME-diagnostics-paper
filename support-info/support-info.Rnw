@@ -1,16 +1,16 @@
-\documentclass[9pt]{article}
-
-\usepackage[margin=1in]{geometry}
-
+\documentclass{article}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{placeins}
+\bibliographystyle{unsrtnat}
 \newcommand{\data}{sine data}
-
-\title{Supporting Information Corresponding to ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
-
+\title{Supporting Information for the Manuscript ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
 \date{}
 
 \begin{document}
 
 \maketitle
+\tableofcontents
 
 <<setup, echo = FALSE, include = FALSE>>=
 # Specify global options
@@ -37,7 +37,7 @@ library(limeaid) #remotes::install_github("goodekat/limeaid")
 library(tidyr)
 
 # Specify the (base) font size (fs) and font (ff) for all plots
-fs = 7
+fs = 6
 ff = "Helvetica"
 @
 
@@ -45,7 +45,7 @@ ff = "Helvetica"
 
 The manuscript introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: 4-quantile-bins. The structure of an explanation scatterplot remains the same if any bin based simulation method is used, i.e., any number of quantile or equally spaced bins. However, if the kernel density or normal approximation simulation methods are used, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
 
-When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature selected in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
+When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
 
 Figure \ref{fig:figure-s1} provides example explanation scatterplots for the \data \ prediction of interest when the kernel density simulation method is used. The plots show the relationships between the random forest prediction and the selected features of $x_1$ and $x_2$ on the left and right, respectively.  
 
@@ -53,7 +53,7 @@ Figure \ref{fig:figure-s1} provides example explanation scatterplots for the \da
 
 \renewcommand{\thefigure}{S1}
 \begin{figure*}[!thp]
-<<figure-s1, out.width = '6.5in', fig.width = 12, fig.height = 5, fig.align = "center">>=
+<<figure-s1, out.width = '4.5in', fig.width = 12, fig.height = 5.75, fig.align = "center">>=
 
 # Load the testing sine data
 sine_data_test <- readRDS("../data/sine-data-test.rds")
@@ -65,7 +65,7 @@ sine_lime_explain <- readRDS("../data/sine-lime-explain.rds")
 sine_poi <- sine_data_test %>% filter(y != rfpred, x1 > 0, x1 < 5, x2 > 5)
 
 # Specify the figure size (for determining font size and line size)
-fs1_ow = 6.5
+fs1_ow = 4.5
 fs1_fw = 12
 fs1_fs = fs * (fs1_fw / fs1_ow)
 fs1_ls = 0.5 * (fs1_fw / fs1_ow)
@@ -82,7 +82,8 @@ plot_explain_scatter(
   theme(
     strip.background = element_rect(fill = "white", color = "white"),
     strip.placement = "outside",
-    strip.text.x = element_text(size = fs1_fs)
+    strip.text.x = element_text(size = fs1_fs),
+    aspect.ratio = 1
   )
 
 @
@@ -98,10 +99,10 @@ Two hypothetical examples of feature heatmaps are included in Figure \ref{fig:fi
 
 \renewcommand{\thefigure}{S2}
 \begin{figure}[!h]
-<<figure-s2, out.width = '4.5in', fig.width = 8, fig.height = 3.5>>=
+<<figure-s2, out.width = '4in', fig.width = 8, fig.height = 3.5>>=
 
 # Specify the figure size (for determining font size)
-fs2_ow = 4.5
+fs2_ow = 4
 fs2_fw = 8
 fs2_fs = fs * (fs2_fw / fs2_ow)
 
@@ -159,7 +160,8 @@ heatmap_plot_good <- ggplot(data = heatmap_data_good,
   scale_fill_grey() +
   scale_color_grey() +
   theme(legend.position = "none", 
-        plot.title = element_text(size = fs2_fs))
+        plot.title = element_text(size = fs2_fs),
+        aspect.ratio = 0.85)
 
 # Create a bad case of chosen feature example data
 set.seed(20190627)
@@ -196,7 +198,8 @@ heatmap_plot_bad <- ggplot(data = heatmap_data_bad,
     subtitle = "Inconsistent Explanations"
   ) +
   theme_bw(base_family = ff, base_size = fs2_fs) +
-  theme(plot.title = element_text(size = fs2_fs)) +
+  theme(plot.title = element_text(size = fs2_fs), 
+        aspect.ratio = 0.85) +
   scale_fill_grey() +
   scale_color_grey()
 
@@ -218,23 +221,65 @@ plot_grid(
 \label{fig:figure-s2}
 \end{figure}
 
+\section{Additional Information on the Bullet Matching Data}
+
+\subsection{Training Data}
+
+The bullet matching training data has 83,028 rows and 13 columns that contain comparison features described in \citet{hare:2017} based on high resolution microscopy scans of fired bullets from Hamby sets 173 and 252 \citep{hamby:2009}. This dataset is created from the x3p scans of bullet land engraved areas available from the NIST Ballistics Toolmark Research Database\footnote{\url{https://tsapps.nist.gov/NRBTD/}}. It contains comparisons from 408 bullet-land signatures. 12 of the overall 420 lands (6 lands per bullets, 35 bullets in each set) are excluded from the comparison. Six of these lands show so-called "tank rash" - damage to the bullets after it exited the barrel.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/LEAscans/tankrash.md}} Another bullet (Bullet E from Hamby 173) is excluded because it could not be matched visually to the barrel it was supposedly from.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/LEAscans/bullete.md}}
+
+The training data used in the manuscript it generated from a raw file of comparison features.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/CCFs\_withlands.zip}} The steps taken to create the bullet training data from the raw data involve renaming some variables, selecting the variables of interest for the manuscript, and adjusting the land IDs associated with the signatures.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/code/02-data-preparation.Rmd}} 
+
+\subsection{Testing Data}
+
+The bullet test data has 364 rows and 13 columns that contains comparison features from test sets 1 and 11 of the Hamby 224 Clone Test Sets. Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Similar to the training set, each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) $\times$ (3! bullet comparisons) $\times$ ($6^2$ land comparisons) = 432 comparisons. However, there are only 364 comparisons in the bullet-test data. This is due to the fact that some of the lands are missing from the data (due to tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. The test data set using in the manuscript is generated from the raw versions of the data for set 1 and set 11.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/h224-set1-features.rds.zip} and \url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/h224-set11-features.rds.zip}}
+
+\subsection{Variable Definitions}
+
+The variables included in the bullet training and testing data sets are defined below. Further descriptions of the comparison features are found in \citet{hare:2017}.\\
+
+\noindent Index variables:
+
+\begin{itemize}
+\item \textbf{case}: ID number associated with the bullet-land signature comparison.
+\item \textbf{land\_id1}, \textbf{land\_id2}: IDs describing the two land engraved areas in the comparison. The format is study-barrel-bullet-land.
+\end{itemize}
+
+\noindent Predictor (comparison) variables:
+
+\begin{itemize}
+\item \textbf{ccf}: Maximized cross-correlation between two LEA signatures.
+\item \textbf{rough\_cor}: Correlation after detrending aligned signatures.
+\item \textbf{D}: Euclidean distance (in millimeters) between two aligned signatures.
+\item \textbf{sd\_D}: Standard deviation of the previous measure along the signature.
+\item \textbf{matches}, \textbf{mismatches}: Number of matching/non-matching peaks and valleys in the aligned signatures.
+\item \textbf{cms}: Consecutively matching striae is a measure introduced by \citet{biasotti:1959} describing the longest run of matching peaks between two aligned signatures.
+\item \textbf{non\_cms}: The number of consecutively non-matching peaks.
+\item \textbf{sum\_peaks}: The depth of peaks measured as the sum of matching peaks between two aligned signatures (in microns).
+\end{itemize}
+
+\noindent Response variable:
+
+\begin{itemize}
+\item \textbf{samesource}: Ground truth whether a pair is from the same source (TRUE) or from different sources (FALSE).
+\end{itemize}
+
 \section{Additional Bullet Matching Explanation Scatterplots}
 
-Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} are obtained using 4-quantile-bins and Figure 4-equal-bins, respectively. The explanations appear to be faithful to the random forest than those associated with the known non-match (case NM) shown in the manuscript. However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s5} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
+Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} are obtained using 4-quantile-bins and 4-equal-bins, respectively. The explanations appear to be more faithful to the random forest than those associated with the known non-match (case NM) shown in the manuscript. However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s5} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
 
 \vspace{0.5cm}
 
-<<>>=
+<<bullet-perm-data>>=
 # Load the cleaned explanations
 bullet_explain_perms_clean <- readRDS("../data/bullet-explain-perms-clean.rds")
 @
 
 \renewcommand{\thefigure}{S3}
 \begin{figure*}[!h]
-<<figure-s3, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
+<<figure-s3, out.width = '4.5in', fig.width = 14, fig.height = 7>>=
 
 # Specify the figure size (for determining font size)
-fs3_ow = 6.5
+fs3_ow = 4.5
 fs3_fw = 14
 fs3_fs = fs * (fs3_fw / fs3_ow)
 fs3_ls = 0.5 * (fs3_fw / fs3_ow)
@@ -297,7 +342,7 @@ plot_grid(
   pfM_3qb,
   eoiM_3qb,
   nrow = 1,
-  rel_widths = c(0.35, 0.65)
+  rel_widths = c(0.4, 0.6)
 )
 
 @
@@ -307,10 +352,10 @@ plot_grid(
 
 \renewcommand{\thefigure}{S4}
 \begin{figure*}[!h]
-<<figure-s4, out.width = '6.5in', fig.width = 14, fig.height = 7>>=
+<<figure-s4, out.width = '4.5in', fig.width = 14, fig.height = 7>>=
 
 # Specify the figure size (for determining font size)
-fs4_ow = 6.5
+fs4_ow = 4.5
 fs4_fw = 14
 fs4_fs = fs * (fs4_fw / fs4_ow)
 fs4_ls = 0.5 * (fs4_fw / fs4_ow)
@@ -334,20 +379,20 @@ plot_grid(
   pfM_3eb,
   eoiM_3eb,
   nrow = 1,
-  rel_widths = c(0.35, 0.65)
+  rel_widths = c(0.4, 0.6)
 )
 
 @
 \caption{Explanation plot from \emph{lime} R package (left) and explanation scatterplot (right) for case M in the bullet test data for 4-equal-bins.}
 \label{fig:figure-s4}
-\end{figure*}
+
+\vspace*{\floatsep}
 
 \renewcommand{\thefigure}{S5}
-\begin{figure*}[!h]
-<<figure-s5, out.width = '6.5in', fig.width = 12, fig.height = 10>>=
+<<figure-s5, out.width = '4.5in', fig.width = 12, fig.height = 10.5>>=
 
 # Specify the figure size (for determining font size and line size)
-fs5_ow = 6.5
+fs5_ow = 4.5
 fs5_fw = 12
 fs5_fs = fs * (fs5_fw / fs5_ow)
 fs5_ls = 0.5 * (fs5_fw / fs5_ow)
@@ -402,8 +447,12 @@ bullet_es_NM <-
 plot_grid(bullet_es_M, bullet_es_NM, nrow = 2)
 
 @
-\caption{Explanation scatterplots for LIME explanations using kernel density simulation for the cases M (top) and NM (bottom) of the bullet comparison test data.}
+\caption{Explanation scatterplots for LIME explanations using kernel density simulation for cases M (top) and NM (bottom) of the bullet comparison test data.}
 \label{fig:figure-s5}
 \end{figure*}
+
+\FloatBarrier
+
+\bibliography{references}
 
 \end{document}
