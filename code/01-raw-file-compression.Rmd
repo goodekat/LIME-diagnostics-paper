@@ -22,8 +22,8 @@ Save the bullet image used in the paper as a zip file:
 
 ```{r}
 zip(
-  zipfile = "../figure-static/figure-08-1.png.zip",
-  files =  "../figure-static/figure-08-1.png"
+  zipfile = "../figure-static/figure-06-1.png.zip",
+  files =  "../figure-static/figure-06-1.png"
 )
 ```
 

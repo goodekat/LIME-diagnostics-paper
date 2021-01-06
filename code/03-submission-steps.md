@@ -1,7 +1,7 @@
 Sumbission Steps
 ================
 Katherine Goode
-<br>October 07, 2020
+<br>January 05, 2021
 
 This document contains the steps to follow to make sure all guidelines
 are met for submission to the ASA Data Science Journal.
@@ -23,8 +23,15 @@ This is done to be safe about not deleting or replacing files.
     code below.
     
     ``` r
+    # Specify date of submission folder
+    submission_date = "2021-01-06"
+    
+    # Create a submission folder file path:
+    submission_folder <- paste0("../submissions/", submission_date)
+    
     # Individual files to delete
     file.remove("../data/bullet-explain.rds")
+    file.remove("../data/bullet-explain-perms-clean.rds")
     file.remove("../data/bullet-lime.rds")
     file.remove("../data/bullet-rf.rds")
     file.remove("../data/bullet-test.csv")
@@ -33,6 +40,8 @@ This is done to be safe about not deleting or replacing files.
     file.remove("../data/bullet-train.csv.zip")
     file.remove("../data/example-signatures.csv")
     file.remove("../data/example-signatures.csv.zip")
+    file.remove("../data/sine-data-test.rds")
+    file.remove("../data/sine-data-train.rds")
     file.remove("../data/sine-lime-explain.rds")
     file.remove("../data/raw/h224-set1-features.rds")
     file.remove("../data/raw/h224-set1-features.rds.zip")
@@ -42,14 +51,14 @@ This is done to be safe about not deleting or replacing files.
     file.remove("../data/raw/CCFs_withlands.csv.zip")
     file.remove("../data/raw/signatures.rds")
     file.remove("../data/raw/signatures.rds.zip")
+    file.remove("../figure-static/figure-06-1.eps")
+    file.remove("../figure-static/figure-06-1.png.zip")
     file.remove("../figure-static/figure-08-1.eps")
-    file.remove("../figure-static/figure-08-1.png.zip")
-    file.remove("../figure-static/figure-10-1.eps")
-    file.remove("../figure-static/figure-10-1.png")
+    file.remove("../figure-static/figure-08-1.png")
     
     # Folders to delete
     unlink("../figure", recursive = TRUE)
-    unlink("../submission", recursive = TRUE)
+    unlink(submission_folder, recursive = TRUE)
     ```
 
 2.  Manually run the code in `code/01-raw-file-compression.Rmd` to add
@@ -70,9 +79,6 @@ This is done to be safe about not deleting or replacing files.
     ``` r
     # Load package
     library(zip)
-    
-    # Create a submission folder file path:
-    submission_folder <- "../submission"
     
     # If the submission folder does not exist, create one
     if (!dir.exists(submission_folder)) dir.create(submission_folder) 
@@ -129,6 +135,11 @@ This is done to be safe about not deleting or replacing files.
     file.copy("../references.bib", submission_folder)
     file.copy("../WileyNJD-AMS.bst", submission_folder)
     file.copy("../WileyNJD-v2.cls", submission_folder)
+    
+    # SUPPORTING INFORMATION
+    
+    # Copy the supporting information pdf to the submission folder
+    file.copy("../support-info/supporting-information.pdf", submission_folder)
     ```
 
 6.  Manually delete `figure/` and `figure-static/` from the figure file
@@ -167,10 +178,11 @@ This is done to be safe about not deleting or replacing files.
 <!-- end list -->
 
   - `code-and-data.zip`
-  - `figure-01-1.eps` through `figure-C3-1.eps`
+  - `figure-01-1.eps` through `figure-B1-1.eps`
   - `paper.pdf`
   - `paper.tex`
   - `references.bib`
+  - `supporting-information.pdf`
   - `WileyNJD-AMS.bst`
   - `WileyNJD-v2.cls`
 

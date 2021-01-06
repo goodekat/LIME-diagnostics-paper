@@ -1,7 +1,7 @@
 Compression of Raw Files
 ================
 Katherine Goode
-<br>October 07, 2020
+<br>January 05, 2021
 
 This document contains code for compressing the raw files (data and
 figure) associated with the manuscript.
@@ -19,8 +19,8 @@ Save the bullet image used in the paper as a zip file:
 
 ``` r
 zip(
-  zipfile = "../figure-static/figure-08-1.png.zip",
-  files =  "../figure-static/figure-08-1.png"
+  zipfile = "../figure-static/figure-06-1.png.zip",
+  files =  "../figure-static/figure-06-1.png"
 )
 ```
 
