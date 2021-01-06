@@ -70,7 +70,7 @@ Contains the data used to generate the manuscript:
         raw versions of the bullet testing data
       - [signatures.rds.zip](data/raw/signatures.rds.zip): raw version
         of the example matching signatures data
-  - [readme.txt](data/readme.txt) contains descriptions of the data
+  - [README.txt](data/README.txt) contains descriptions of the data
     files (and code files) provided with the submission of the paper.
   - [sine-data-test.rds](data/sine-data-test.rds) and
     [sine-data-train.rds](data/sine-data-train.rds) contain saved
