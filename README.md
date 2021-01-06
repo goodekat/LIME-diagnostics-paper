@@ -99,7 +99,7 @@ Hamby bullets used to create the training data.
 Contains the files associated with an old version of the manuscript that
 is much longer than the submitted version.
 
-[**submission**](submission/)
+[**submissions**](submissions/)
 
 Contains folders with the files submitted to the ASA Data Science
 Journal. The folders within are named by the date of submission. The

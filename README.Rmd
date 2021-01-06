@@ -67,7 +67,7 @@ Contains information on the land engraved areas (LEAs) excluded from the Hamby b
 
 Contains the files associated with an old version of the manuscript that is much longer than the submitted version.
 
-[**submission**](submission/)
+[**submissions**](submissions/)
 
 Contains folders with the files submitted to the ASA Data Science Journal. The folders within are named by the date of submission. The files are moved here using code in the file [code/03-submission-steps.R](code/03-submission-steps.Rmd). The only submission files not included on GitHub are the EPS figures due to size constraints.
 
