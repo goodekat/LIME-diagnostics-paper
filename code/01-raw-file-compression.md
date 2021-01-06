@@ -1,7 +1,7 @@
 Compression of Raw Files
 ================
 Katherine Goode
-<br>January 05, 2021
+<br>January 06, 2021
 
 This document contains code for compressing the raw files (data and
 figure) associated with the manuscript.

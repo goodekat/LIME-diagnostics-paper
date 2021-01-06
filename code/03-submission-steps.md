@@ -1,7 +1,7 @@
 Sumbission Steps
 ================
 Katherine Goode
-<br>January 05, 2021
+<br>January 06, 2021
 
 This document contains the steps to follow to make sure all guidelines
 are met for submission to the ASA Data Science Journal.
@@ -193,4 +193,4 @@ This is done to be safe about not deleting or replacing files.
 
 <!-- end list -->
 
-10. Knit this document to make sure the md version is up to date.
+11. Knit this document to make sure the md version is up to date.

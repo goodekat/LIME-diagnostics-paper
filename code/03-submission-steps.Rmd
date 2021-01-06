@@ -172,4 +172,4 @@ This document contains the steps to follow to make sure all guidelines are met f
   - `WileyNJD-AMS.bst`
   - `WileyNJD-v2.cls`
 
-10. Knit this document to make sure the md version is up to date.
+11. Knit this document to make sure the md version is up to date.
