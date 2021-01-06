@@ -59,6 +59,7 @@ This is done to be safe about not deleting or replacing files.
     # Folders to delete
     unlink("../figure", recursive = TRUE)
     unlink(submission_folder, recursive = TRUE)
+    unlink("../support-info/figure", recursive = TRUE)
     ```
 
 2.  Manually run the code in `code/01-raw-file-compression.Rmd` to add
@@ -73,7 +74,10 @@ This is done to be safe about not deleting or replacing files.
 
 4.  Knit the file `paper.Rnw`.
 
-5.  Run the following code to move all files necessary to the submission
+5.  Knit the supporting information document
+    `support-info/supporting-information.Rnw`.
+
+6.  Run the following code to move all files necessary to the submission
     folder.
     
     ``` r
@@ -142,37 +146,38 @@ This is done to be safe about not deleting or replacing files.
     file.copy("../support-info/supporting-information.pdf", submission_folder)
     ```
 
-6.  Manually delete `figure/` and `figure-static/` from the figure file
-    paths in `paper.tex`. For example, change
+7.  Manually delete `figure/` and `figure-static/` from the figure file
+    paths in the submissions folder `paper.tex`. For example, change
     `\includegraphics[width=6.5in]{figure/figure-01-1}` to
     `\includegraphics[width=6.5in]{figure-01-1}`.
 
-7.  Compile the file `paper.tex` to make sure it compiles correctly
-    (especially references). (If using texShop, make sure to compile
-    using LaTex, then bibTex, then LaTeX twice more.)
+8.  Compile the file in the submissions folder `paper.tex` to make sure
+    it compiles correctly (especially references). (If using texShop,
+    make sure to compile using LaTex, then bibTex, then LaTeX twice
+    more.)
 
-8.  Besides for `paper.pdf`, delete all other files generated when
+9.  Besides for `paper.pdf`, delete all other files generated when
     `paper.tex` was compiled. This includes other paper files and pdf
     versions of the figures.
     
     ``` r
     # Remove the paper files that may have been generated during compilation
-    file.remove("../submission/paper.aux")
-    file.remove("../submission/paper.bbl")
-    file.remove("../submission/paper.blg")
-    file.remove("../submission/paper.log")
-    file.remove("../submission/paper.synctex.gz")
-    file.remove("../submission/paper.pag")
+    file.remove(paste0(submission_folder, "/paper.aux"))
+    file.remove(paste0(submission_folder, "/paper.bbl"))
+    file.remove(paste0(submission_folder, "/paper.blg"))
+    file.remove(paste0(submission_folder, "/paper.log"))
+    file.remove(paste0(submission_folder, "/paper.synctex.gz"))
+    file.remove(paste0(submission_folder, "/paper.pag"))
     
     # Remove the pdf versions of the figures generated during compilation
     file.remove(list.files(
-      path = "../submission/",
+      path = submission_folder,
       pattern = "converted-to",
       full.names = TRUE
     ))
     ```
 
-9.  Upload all remaining files in the submission folder to the ASA Data
+10. Upload all remaining files in the submission folder to the ASA Data
     Science Journal submission page which should be:
 
 <!-- end list -->

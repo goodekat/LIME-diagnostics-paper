@@ -1,0 +1,217 @@
+\documentclass{article}\usepackage[]{graphicx}\usepackage[]{color}
+% maxwidth is the original width if it is less than linewidth
+% otherwise use linewidth (to make sure the graphics do not exceed the margin)
+\makeatletter
+\def\maxwidth{ %
+  \ifdim\Gin@nat@width>\linewidth
+    \linewidth
+  \else
+    \Gin@nat@width
+  \fi
+}
+\makeatother
+
+\definecolor{fgcolor}{rgb}{0.345, 0.345, 0.345}
+\newcommand{\hlnum}[1]{\textcolor[rgb]{0.686,0.059,0.569}{#1}}%
+\newcommand{\hlstr}[1]{\textcolor[rgb]{0.192,0.494,0.8}{#1}}%
+\newcommand{\hlcom}[1]{\textcolor[rgb]{0.678,0.584,0.686}{\textit{#1}}}%
+\newcommand{\hlopt}[1]{\textcolor[rgb]{0,0,0}{#1}}%
+\newcommand{\hlstd}[1]{\textcolor[rgb]{0.345,0.345,0.345}{#1}}%
+\newcommand{\hlkwa}[1]{\textcolor[rgb]{0.161,0.373,0.58}{\textbf{#1}}}%
+\newcommand{\hlkwb}[1]{\textcolor[rgb]{0.69,0.353,0.396}{#1}}%
+\newcommand{\hlkwc}[1]{\textcolor[rgb]{0.333,0.667,0.333}{#1}}%
+\newcommand{\hlkwd}[1]{\textcolor[rgb]{0.737,0.353,0.396}{\textbf{#1}}}%
+\let\hlipl\hlkwb
+
+\usepackage{framed}
+\makeatletter
+\newenvironment{kframe}{%
+ \def\at@end@of@kframe{}%
+ \ifinner\ifhmode%
+  \def\at@end@of@kframe{\end{minipage}}%
+  \begin{minipage}{\columnwidth}%
+ \fi\fi%
+ \def\FrameCommand##1{\hskip\@totalleftmargin \hskip-\fboxsep
+ \colorbox{shadecolor}{##1}\hskip-\fboxsep
+     % There is no \\@totalrightmargin, so:
+     \hskip-\linewidth \hskip-\@totalleftmargin \hskip\columnwidth}%
+ \MakeFramed {\advance\hsize-\width
+   \@totalleftmargin\z@ \linewidth\hsize
+   \@setminipage}}%
+ {\par\unskip\endMakeFramed%
+ \at@end@of@kframe}
+\makeatother
+
+\definecolor{shadecolor}{rgb}{.97, .97, .97}
+\definecolor{messagecolor}{rgb}{0, 0, 0}
+\definecolor{warningcolor}{rgb}{1, 0, 1}
+\definecolor{errorcolor}{rgb}{1, 0, 0}
+\newenvironment{knitrout}{}{} % an empty environment to be redefined in TeX
+
+\usepackage{alltt}
+\usepackage{hyperref}
+\usepackage{natbib}
+\usepackage{placeins}
+\bibliographystyle{unsrtnat}
+\newcommand{\data}{sine data}
+\title{Supporting Information for the Manuscript ``Visual Diagnostics of an Explainer Model -- Tools for the Assessment of LIME Explanations"}
+\date{}
+\IfFileExists{upquote.sty}{\usepackage{upquote}}{}
+\begin{document}
+
+\maketitle
+\tableofcontents
+
+
+
+\section{Explanation Scatterplots Under Density Simulation Scenarios}
+
+The manuscript introduces explanation scatterplots under the default simulation method in the \emph{lime} R package: 4-quantile-bins. The structure of an explanation scatterplot remains the same if any bin based simulation method is used, i.e., any number of quantile or equally spaced bins. However, if the kernel density or normal approximation simulation methods are used, the format of the explanation scatterplot changes. In the density based simulation method scenarios, LIME uses the standardized versions of the predictor variables to fit the explainer model. Thus, the explainer model needs to be represented differently in the explanation scatterplot.
+
+When the kernel density or normal approximation simulation methods are applied, the explanation scatterplot depicts the complex model by plotting the complex model predictions versus a feature in LIME the explanation from the simulated data. The explainer model is included as a line on the figure where all features excluding the one plotted on the x-axis are set to the observed values of the prediction of interest. An explanation scatterplot is created for each feature included in the LIME explanation. As with the bin based simulation method, the size of the points represent the weight assigned by LIME.
+
+Figure \ref{fig:figure-s1} provides example explanation scatterplots for the \data \ prediction of interest when the kernel density simulation method is used. The plots show the relationships between the random forest prediction and the selected features of $x_1$ and $x_2$ on the left and right, respectively.  
+
+\vspace{0.5cm}
+
+\renewcommand{\thefigure}{S1}
+\begin{figure*}[!thp]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=4.5in]{figure/figure-s1-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Explanation scatterplots for the \data \ prediction of interest with the kernel density simulation method.}
+\label{fig:figure-s1}
+\end{figure*}
+
+\section{Extreme Feature Heatmap Scenarios}
+
+Two hypothetical examples of feature heatmaps are included in Figure \ref{fig:figure-s2}. The plots are created with the assumption that LIME is applied to select the top feature out of $p=4$  features for $n=10$ cases with $t=5$ sets of tuning parameter values. Situation 1 (left) is an example where the features selected are consistent across tuning parameter values within a case but vary across cases within a tuning parameter value. This is the ideal situation, because the LIME explanations do not depend on the tuning parameters but do depend on the location of the observation in the feature space. Situation 2 (right) is an example where the selected features vary across tuning parameter values within a case but are consistent across cases within a tuning parameter value. This situation indicates that the features selected by LIME are dependent on the tuning parameters, and the explanations may not be  local, because the same feature is chosen regardless of the case. In practice, it is expected that the plot will exhibit a combination of these two situations.
+
+\vspace{0.5cm}
+
+\renewcommand{\thefigure}{S2}
+\begin{figure}[!h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=4in]{figure/figure-s2-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Hypothetical examples of feature heatmaps in two possible situations. (Left) Situation 1 is the ideal, because the explanations vary across cases but do not depend on tuning parameter values. (Right) Situation 2 suggests global explanations and extreme explanation dependence on tuning parameter values.}
+\label{fig:figure-s2}
+\end{figure}
+
+\section{Additional Information on the Bullet Matching Data}
+
+\subsection{Training Data}
+
+The bullet matching training data has 83,028 rows and 13 columns that contain comparison features described in \citet{hare:2017} based on high resolution microscopy scans of fired bullets from Hamby sets 173 and 252 \citep{hamby:2009}. This dataset is created from the x3p scans of bullet land engraved areas available from the NIST Ballistics Toolmark Research Database\footnote{\url{https://tsapps.nist.gov/NRBTD/}}. It contains comparisons from 408 bullet-land signatures. 12 of the overall 420 lands (6 lands per bullets, 35 bullets in each set) are excluded from the comparison. Six of these lands show so-called "tank rash" - damage to the bullets after it exited the barrel.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/LEAscans/tankrash.md}} Another bullet (Bullet E from Hamby 173) is excluded because it could not be matched visually to the barrel it was supposedly from.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/LEAscans/bullete.md}}
+
+The training data used in the manuscript it generated from a raw file of comparison features.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/CCFs\_withlands.zip}} The steps taken to create the bullet training data from the raw data involve renaming some variables, selecting the variables of interest for the manuscript, and adjusting the land IDs associated with the signatures.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/code/02-data-preparation.Rmd}} 
+
+\subsection{Testing Data}
+
+The bullet test data has 364 rows and 13 columns that contains comparison features from test sets 1 and 11 of the Hamby 224 Clone Test Sets. Each test set is arranged as a combination of three bullets: two known bullets and a questioned bullet. Similar to the training set, each bullet has 6 lands. The data contains comparisons of bullet-lands within a set. With three bullets with six lands per set, there are a total of (2 sets) $\times$ (3! bullet comparisons) $\times$ ($6^2$ land comparisons) = 432 comparisons. However, there are only 364 comparisons in the bullet-test data. This is due to the fact that some of the lands are missing from the data (due to tank rash): land 4 from the unknown bullet in set 1, land 2 from bullet 1 in set 11, and land 4 from the unknown bullet in set 11. The test data set using in the manuscript is generated from the raw versions of the data for set 1 and set 11.\footnote{\url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/h224-set1-features.rds.zip} and \url{https://github.com/goodekat/LIME-diagnostics-paper/blob/master/data/raw/h224-set11-features.rds.zip}}
+
+\subsection{Variable Definitions}
+
+The variables included in the bullet training and testing data sets are defined below. Further descriptions of the comparison features are found in \citet{hare:2017}.\\
+
+\noindent Index variables:
+
+\begin{itemize}
+\item \textbf{case}: ID number associated with the bullet-land signature comparison.
+\item \textbf{land\_id1}, \textbf{land\_id2}: IDs describing the two land engraved areas in the comparison. The format is study-barrel-bullet-land.
+\end{itemize}
+
+\noindent Predictor (comparison) variables:
+
+\begin{itemize}
+\item \textbf{ccf}: Maximized cross-correlation between two LEA signatures.
+\item \textbf{rough\_cor}: Correlation after detrending aligned signatures.
+\item \textbf{D}: Euclidean distance (in millimeters) between two aligned signatures.
+\item \textbf{sd\_D}: Standard deviation of the previous measure along the signature.
+\item \textbf{matches}, \textbf{mismatches}: Number of matching/non-matching peaks and valleys in the aligned signatures.
+\item \textbf{cms}: Consecutively matching striae is a measure introduced by \citet{biasotti:1959} describing the longest run of matching peaks between two aligned signatures.
+\item \textbf{non\_cms}: The number of consecutively non-matching peaks.
+\item \textbf{sum\_peaks}: The depth of peaks measured as the sum of matching peaks between two aligned signatures (in microns).
+\end{itemize}
+
+\noindent Response variable:
+
+\begin{itemize}
+\item \textbf{samesource}: Ground truth whether a pair is from the same source (TRUE) or from different sources (FALSE).
+\end{itemize}
+
+\section{Additional Bullet Matching Explanation Scatterplots}
+
+Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} include visual representations of LIME explanations from the \emph{lime} R package (left) and explanation scatterplots (right) for a known match observation in the the bullet example referred to as case M. The explanations in Figures \ref{fig:figure-s3} and \ref{fig:figure-s4} are obtained using 4-quantile-bins and 4-equal-bins, respectively. The explanations appear to be more faithful to the random forest than those associated with the known non-match (case NM) shown in the manuscript. However, the intersections of the bins are still not well aligned with the regions containing similar probabilities produced by the random forest. Figure \ref{fig:figure-s5} includes explanation scatterplots using the kernel density simulation method for both cases M and NM from the bullet example.
+
+\vspace{0.5cm}
+
+
+
+\renewcommand{\thefigure}{S3}
+\begin{figure*}[!h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=4.5in]{figure/figure-s3-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Explanation plot from \emph{lime} R package (left) and explanation scatterplot (right) for case M in the bullet test data for 4-quantile-bins.}
+\label{fig:figure-s3}
+\end{figure*}
+
+\renewcommand{\thefigure}{S4}
+\begin{figure*}[!h]
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=4.5in]{figure/figure-s4-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Explanation plot from \emph{lime} R package (left) and explanation scatterplot (right) for case M in the bullet test data for 4-equal-bins.}
+\label{fig:figure-s4}
+
+\vspace*{\floatsep}
+
+\renewcommand{\thefigure}{S5}
+\begin{knitrout}
+\definecolor{shadecolor}{rgb}{0.969, 0.969, 0.969}\color{fgcolor}
+
+{\centering \includegraphics[width=4.5in]{figure/figure-s5-1} 
+
+}
+
+
+
+\end{knitrout}
+\caption{Explanation scatterplots for LIME explanations using kernel density simulation for cases M (top) and NM (bottom) of the bullet comparison test data.}
+\label{fig:figure-s5}
+\end{figure*}
+
+\FloatBarrier
+
+\bibliography{support-info-references}
+
+\end{document}
