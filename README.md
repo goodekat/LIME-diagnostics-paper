@@ -158,9 +158,9 @@ remotes::install_github("goodekat/limeaid")
 ## Additional Information on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
-described below. Note that this text is also included in the file
-[data/readme.txt](data/readme.txt) that is submitted with the
-manuscript.
+described below. Note that this text is also included in the manuscript
+supporting information and the file [data/README.txt](data/README.txt)
+that is submitted with the manuscript.
 
 ### bullet-train.csv
 
