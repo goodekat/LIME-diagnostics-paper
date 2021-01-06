@@ -453,6 +453,6 @@ plot_grid(bullet_es_M, bullet_es_NM, nrow = 2)
 
 \FloatBarrier
 
-\bibliography{references}
+\bibliography{support-info-references}
 
 \end{document}
