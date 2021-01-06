@@ -14,6 +14,7 @@
 *.Rapp.history
 *.rds
 *.Rproj
+*.toc
 
 code/renv*
 cover-letter/signature.png
@@ -24,6 +25,7 @@ figure-static/lime-screen-shot-explain.png
 figure-static/lime-screen-shot-lime.png
 figure-08-1.png
 figure-10-1.png
+support-info/supporting-information-concordance.tex
 paper-concordance.tex
 
 
