@@ -8,11 +8,14 @@ This repository contains the files associated with the manuscript
 LIME Explanations” by Katherine Goode and Heike Hofmann. The rest of
 this readme contains:
 
-  - information about the files in the repository,
-  - instructions for knitting the manuscript,
-  - descriptions of the bullet data used in the manuscript, and
-  - information on the font sizes used for the figures in the
-    manuscript.
+  - [information about the files in the
+    repository](#description-of-items-in-repository),
+  - [instructions for knitting the
+    manuscript](#instructions-for-compiling-manuscript),
+  - [descriptions of the bullet data used in the
+    manuscript](#additional-information-on-bullet-data), and
+  - [information on the font sizes used for the figures in the
+    manuscript](#figure-font-size-information).
 
 ## Description of Items in Repository
 
@@ -46,11 +49,11 @@ Data Science journal.
 
 Contains the data used to generate the manuscript:
 
-  - [bullet-train.csv.zip](data/bullet-train.csv.zip) and
-    [bullet-test.csv.zip](data/bullet-test.csv.zip) contain the data
-    used for the bullet examples in the manuscript. See "“Additional
-    Information on Bullet Data” below for more information about the
-    data.
+  - [bullet-test.csv.zip](data/bullet-test.csv.zip) and
+    [bullet-train.csv.zip](data/bullet-train.csv.zip) contain the data
+    used for the bullet examples in the manuscript. See [“Additional
+    Information on Bullet Data”](#additional-information-on-bullet-data)
+    below for more information about the data.
   - [example-signatures.csv.zip](data/example-signatures.csv.zip)
     contains signature data from two matching bullet lands that is used
     to generate a figure in the manuscript.
@@ -65,14 +68,14 @@ Contains the data used to generate the manuscript:
         raw versions of the bullet testing data
       - [signatures.rds.zip](data/raw/signatures.rds.zip): raw version
         of the example matching signatures data
-  - [readme.txt](data/readme.txt) contains descriptions of the data
+  - [README.txt](data/README.txt) contains descriptions of the data
     files (and code files) provided with the submission of the paper.
 
 [**figure-static**](figure-static/)
 
 Contains the static figures associated with the project:
 
-  - [figure-08-1.png.zip](figure-static/figure-08-1.png.zip) is the one
+  - [figure-06-1.png.zip](figure-static/figure-06-1.png.zip) is the one
     figure in the manuscript that is not generated using R code.
   - [figure-readme.png](figure-static/figure-readme.png) is a figure
     used in this readme.
@@ -87,16 +90,32 @@ Hamby bullets used to create the training data.
 Contains the files associated with an old version of the manuscript that
 is much longer than the submitted version.
 
-[**submission**](submission)
+[**submissions**](submissions/)
 
-Contains the files submitted to the ASA Data Science Journal. These
-files are moved to this folder using code in the file
+Contains folders with the files submitted to the ASA Data Science
+Journal. The folders within are named by the date of submission. The
+files are moved here using code in the file
 [code/03-submission-steps.R](code/03-submission-steps.Rmd). The only
 submission files not included on GitHub are the EPS figures due to size
 constraints.
 
+[**support-info**](support-info/)
+
+Contains the files associated with the manuscript’s supporting
+information document:
+
+  - [support-info-references.bib](support-info/support-info-references.bib)
+    contains the bibtex information for the references in the supporting
+    information document.
+  - [supporting-information.pdf](support-info/supporting-information.pdf)
+    and
+    [supporting-information.Rnw](support-info/supporting-information.Rnw)
+    are the supporting information document.
+
 **Main Directory**
 
+  - [.gitattributes](.gitattributes) is needed for GitHub large file
+    storage.
   - [.gitignore](.gitignore) contains objects to be ignored by git.
   - [paper.Rnw](paper.Rnw), [paper.pdf](paper.pdf), and
     [paper.tex](paper.tex) are the manuscript. Note that paper.pdf and
@@ -139,9 +158,9 @@ remotes::install_github("goodekat/limeaid")
 ## Additional Information on Bullet Data
 
 The data used in the manuscript for the bullet comparison examples is
-described below. Note that this text is also included in the file
-[data/readme.txt](data/readme.txt) that is submitted with the
-manuscript.
+described below. Note that this text is also included in the manuscript
+supporting information and the file [data/README.txt](data/README.txt)
+that is submitted with the manuscript.
 
 ### bullet-train.csv
 
