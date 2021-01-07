@@ -1,7 +1,7 @@
 Sumbission Steps
 ================
 Katherine Goode
-<br>January 06, 2021
+<br>January 07, 2021
 
 This document contains the steps to follow to make sure all guidelines
 are met for submission to the ASA Data Science Journal.
@@ -24,7 +24,7 @@ This is done to be safe about not deleting or replacing files.
     
     ``` r
     # Specify date of submission folder
-    submission_date = "2021-01-06"
+    submission_date = "2021-01-07"
     
     # Create a submission folder file path:
     submission_folder <- paste0("../submissions/", submission_date)
@@ -58,8 +58,8 @@ This is done to be safe about not deleting or replacing files.
     
     # Folders to delete
     unlink("../figure", recursive = TRUE)
-    unlink(submission_folder, recursive = TRUE)
     unlink("../support-info/figure", recursive = TRUE)
+    unlink(submission_folder, recursive = TRUE) 
     ```
 
 2.  Manually run the code in `code/01-raw-file-compression.Rmd` to add
@@ -193,4 +193,29 @@ This is done to be safe about not deleting or replacing files.
 
 <!-- end list -->
 
-11. Knit this document to make sure the md version is up to date.
+11. Use latexdiff to generate a pdf showing the differences between the
+    this submission and the previous one. To do this, (i) run the R code
+    below, (ii) run the code `latexdiff submissions/2020-10-07/paper.tex
+    submissions/2021-01-07/paper.tex >
+    submissions/2021-01-07/diff/2020-10-07-to-2021-01-07.tex` in the
+    terminal (changes dates in the code as needed), and (iii) knit the
+    generated tex file to make sure the pdf with the changes looks good.
+    
+    ``` r
+    # Create folder to place the diff
+    diff_folder = paste0("../submissions/", submission_date, "/diff")
+    dir.create(diff_folder)
+    
+    # Create folders within diff to store the figures needed
+    dir.create(paste0(diff_folder, "/figure"))
+    dir.create(paste0(diff_folder, "/figure-static"))
+    
+    # Copy necessary files into the diff folder needed for the diff to work
+    file.copy("../references.bib", diff_folder)
+    file.copy("../WileyNJD-AMS.bst", diff_folder)
+    file.copy("../WileyNJD-v2.cls", diff_folder)
+    file.copy(list_of_generated_figures, paste0(diff_folder, "/figure"))
+    file.copy(list_of_static_figures, paste0(diff_folder, "/figure-static"))
+    ```
+
+12. Knit this document to make sure the md version is up to date.
