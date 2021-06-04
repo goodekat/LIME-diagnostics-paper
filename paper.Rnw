@@ -1005,14 +1005,14 @@ if (!file.exists("data/bullet-lime.rds") | !file.exists("data/bullet-explain.rds
 
 # Specify two cases of interest
 bullet_poi_match <- 
-  bullet_test %>% 
-  filter(land_id1 == "Hamby224-Set11-B1-L5", 
-         land_id2 == "Hamby224-Set11-B2-L2") %>% 
-  pull(case)
+bullet_test %>% 
+filter(land_id1 == "Hamby224-Set11-B1-L5", 
+       land_id2 == "Hamby224-Set11-B2-L2") %>% 
+pull(case)
 bullet_poi_nonmatch <- bullet_test %>% 
-  filter(land_id1 == "Hamby224-Set1-B2-L5", 
-         land_id2 == "Hamby224-Set1-BUnk-L3") %>% 
-  pull(case)
+filter(land_id1 == "Hamby224-Set1-B2-L5", 
+       land_id2 == "Hamby224-Set1-BUnk-L3") %>% 
+pull(case)
 
 # Apply LIME to two cases with the permutations returned
 bullet_lime_explain_perms <- apply_lime(
@@ -1048,6 +1048,7 @@ bullet_explain_perms <- bullet_lime_explain_perms$explain %>%
                        bullet_poi_match,
                        bullet_poi_nonmatch) %>% as.character())
 
+
 @
 
 <<bullet-lime-combined>>=
@@ -1081,7 +1082,7 @@ bullet_explain <- bullet_explain_noperms %>%
         -weights
       )
   )
-
+  
 @
 
 \subsection{LIME Assessment Visualizations} \label{bullet-assess-ex}
